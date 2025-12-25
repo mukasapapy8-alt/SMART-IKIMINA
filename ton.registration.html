@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Tontine | My Smart Ikimina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #2E5BFF;
+            --primary-dark: #1A3DB0;
+            --secondary: #00D4AA;
+            --success: #00C851;
+            --warning: #ffbb33;
+            --danger: #ff4444;
+            --dark: #2E384D;
+            --light: #F8F9FC;
+            --gray: #B0BAC9;
+            --gray-light: #EDF0F7;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 30px rgba(46, 91, 255, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .logo-icon:after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: var(--gradient);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        /* Registration Page Styles */
+        .registration-page {
+            flex: 1;
+            padding: 60px 0 100px;
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        }
+
+        .registration-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .registration-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .registration-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Form Layout */
+        .form-layout {
+            display: flex;
+            gap: 40px;
+        }
+
+        .form-main {
+            flex: 2;
+        }
+
+        .form-sidebar {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 40px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h2 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-group {
+            flex: 1 0 300px;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group.half {
+            flex: 1 0 50%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .required:after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 91, 255, 0.1);
+        }
+
+        input.error, select.error, textarea.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Tontine Preview Card */
+        .preview-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            position: sticky;
+            top: 100px;
+            border: 3px solid var(--gray-light);
+            transition: all 0.3s ease;
+        }
+
+        .preview-card h3 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .preview-section {
+            margin-bottom: 25px;
+        }
+
+        .preview-section h4 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preview-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            width: 120px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .preview-value {
+            flex: 1;
+            color: #555;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .preview-value.empty {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .preview-highlight {
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .preview-highlight .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .preview-highlight .label {
+            text-align: center;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        /* Cycle Settings */
+        .cycle-settings {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        .cycle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .cycle-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .cycle-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .cycle-dates {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Contribution Settings */
+        .contribution-settings {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        .contribution-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contribution-option:hover {
+            border-color: var(--primary);
+        }
+
+        .contribution-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(46, 91, 255, 0.05);
+        }
+
+        .contribution-radio {
+            margin-right: 15px;
+        }
+
+        .contribution-details {
+            flex: 1;
+        }
+
+        .contribution-amount {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .contribution-frequency {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Custom Amount Input */
+        .custom-amount {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .currency-prefix {
+            background: var(--gray-light);
+            padding: 14px 15px;
+            border: 2px solid var(--gray-light);
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            font-weight: 600;
+        }
+
+        .custom-amount input {
+            border-radius: 0 8px 8px 0;
+            flex: 1;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--gray-light);
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 50px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .modal h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .modal-code {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .form-layout {
+                flex-direction: column;
+            }
+            
+            .form-sidebar {
+                order: -1;
+            }
+            
+            .preview-card {
+                position: static;
+                margin-bottom: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .registration-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .form-group {
+                flex: 1 0 100%;
+            }
+            
+            .form-group.half {
+                flex: 1 0 100%;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="member-registration.html">Join Tontine</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-user-circle" style="margin-right: 5px;"></i> My Account</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Registration Page -->
+    <section class="registration-page">
+        <div class="container">
+            <div class="registration-header">
+                <h1>Create Your Tontine</h1>
+                <p>Register your own tontine group and invite members to join. Set your rules, contribution amounts, and cycle details.</p>
+            </div>
+
+            <div class="form-layout">
+                <!-- Main Form -->
+                <div class="form-main">
+                    <div class="form-container">
+                        <!-- Section 1: Tontine Basic Info -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-info-circle"></i> Tontine Information</h2>
+                            
+                            <div class="form-group">
+                                <label for="tontineName" class="required">Tontine Name</label>
+                                <input type="text" id="tontineName" name="tontineName" placeholder="e.g., Kigali Business Circle" required oninput="updatePreview()">
+                                <div class="error-message" id="nameError">Please enter a tontine name</div>
+                                <div class="form-help">Choose a descriptive name for your tontine group</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tontineDescription">Description (Optional)</label>
+                                <textarea id="tontineDescription" name="tontineDescription" rows="3" placeholder="Describe the purpose and goals of your tontine..." oninput="updatePreview()"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="maxMembers" class="required">Maximum Members</label>
+                                    <input type="number" id="maxMembers" name="maxMembers" min="5" max="100" value="20" required oninput="updatePreview()">
+                                    <div class="form-help">Minimum 5, Maximum 100 members</div>
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="visibility" class="required">Visibility</label>
+                                    <select id="visibility" name="visibility" required onchange="updatePreview()">
+                                        <option value="public">Public (Listed in directory)</option>
+                                        <option value="private">Private (Invite only)</option>
+                                        <option value="unlisted">Unlisted (Hidden from directory)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Location Information -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-map-marker-alt"></i> Location Information</h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="country" class="required">Country</label>
+                                    <select id="country" name="country" required onchange="updatePreview()">
+                                        <option value="">Select Country</option>
+                                        <option value="rwanda" selected>Rwanda</option>
+                                        <option value="burundi">Burundi</option>
+                                        <option value="tanzania">Tanzania</option>
+                                        <option value="uganda">Uganda</option>
+                                        <option value="kenya">Kenya</option>
+                                        <option value="drc">DR Congo</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="province" class="required">Province/Region</label>
+                                    <input type="text" id="province" name="province" placeholder="e.g., Kigali City" required oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="district" class="required">District/City</label>
+                                    <input type="text" id="district" name="district" placeholder="e.g., Gasabo" required oninput="updatePreview()">
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="sector" class="required">Sector</label>
+                                    <input type="text" id="sector" name="sector" placeholder="e.g., Nyarugenge" required oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="cell" class="required">Cell</label>
+                                    <input type="text" id="cell" name="cell" placeholder="e.g., Gitega" required oninput="updatePreview()">
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="village">Village (Optional)</label>
+                                    <input type="text" id="village" name="village" placeholder="e.g., Nyakabanda" oninput="updatePreview()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Administrator Information -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-user-shield"></i> Administrator Information</h2>
+                            <p class="form-help" style="margin-bottom: 20px;">You will be the primary administrator of this tontine.</p>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="adminFirstName" class="required">First Name</label>
+                                    <input type="text" id="adminFirstName" name="adminFirstName" required oninput="updatePreview()">
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="adminLastName" class="required">Last Name</label>
+                                    <input type="text" id="adminLastName" name="adminLastName" required oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="adminId" class="required">National ID Number</label>
+                                    <input type="text" id="adminId" name="adminId" required oninput="updatePreview()">
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="adminPhone" class="required">Phone Number</label>
+                                    <input type="tel" id="adminPhone" name="adminPhone" required oninput="updatePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="adminEmail" class="required">Email Address</label>
+                                    <input type="email" id="adminEmail" name="adminEmail" required oninput="updatePreview()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Cycle Settings -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-calendar-alt"></i> Cycle Settings</h2>
+                            
+                            <div class="cycle-settings">
+                                <div class="cycle-row">
+                                    <div class="cycle-info">
+                                        <div class="cycle-icon">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600;">Cycle Start Date</div>
+                                            <div class="form-help">When contributions will begin</div>
+                                        </div>
+                                    </div>
+                                    <input type="date" id="cycleStart" name="cycleStart" required onchange="updatePreview()">
+                                </div>
+                                
+                                <div class="cycle-row">
+                                    <div class="cycle-info">
+                                        <div class="cycle-icon">
+                                            <i class="fas fa-flag-checkered"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600;">Cycle End Date</div>
+                                            <div class="form-help">When the cycle will complete</div>
+                                        </div>
+                                    </div>
+                                    <input type="date" id="cycleEnd" name="cycleEnd" required onchange="updatePreview()">
+                                </div>
+                                
+                                <div class="form-row" style="margin-top: 20px;">
+                                    <div class="form-group half">
+                                        <label for="payoutFrequency" class="required">Payout Frequency</label>
+                                        <select id="payoutFrequency" name="payoutFrequency" required onchange="updatePreview()">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="biweekly">Bi-Weekly (Every 2 weeks)</option>
+                                            <option value="quarterly">Quarterly</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group half">
+                                        <label for="payoutDay" class="required">Payout Day</label>
+                                        <select id="payoutDay" name="payoutDay" required onchange="updatePreview()">
+                                            <option value="1">1st of the month</option>
+                                            <option value="15">15th of the month</option>
+                                            <option value="last">Last day of month</option>
+                                            <option value="monday">Monday</option>
+                                            <option value="friday">Friday</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Contribution Settings -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-money-bill-wave"></i> Contribution Settings</h2>
+                            
+                            <div class="contribution-settings">
+                                <h4 style="margin-bottom: 20px; color: var(--dark);">Minimum Share Contribution</h4>
+                                
+                                <div class="preview-highlight">
+                                    <div class="amount" id="minSharePreview">2,000 RWF</div>
+                                    <div class="label">Minimum Share per Member</div>
+                                </div>
+                                
+                                <div style="margin-top: 25px;">
+                                    <label for="contributionType" class="required">Contribution Type</label>
+                                    <select id="contributionType" name="contributionType" required onchange="updatePreview()" style="margin-bottom: 20px;">
+                                        <option value="fixed">Fixed Amount</option>
+                                        <option value="variable">Variable Amount</option>
+                                        <option value="tiered">Tiered (Multiple options)</option>
+                                    </select>
+                                    
+                                    <div class="form-group">
+                                        <label for="minContribution" class="required">Minimum Contribution (RWF)</label>
+                                        <div class="custom-amount">
+                                            <div class="currency-prefix">RWF</div>
+                                            <input type="number" id="minContribution" name="minContribution" min="2000" value="2000" step="1000" required oninput="updatePreview()">
+                                        </div>
+                                        <div class="form-help">Minimum: 2,000 RWF. Members can contribute more if you allow variable amounts.</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="maxContribution">Maximum Contribution (RWF) - Optional</label>
+                                        <div class="custom-amount">
+                                            <div class="currency-prefix">RWF</div>
+                                            <input type="number" id="maxContribution" name="maxContribution" min="2000" step="1000" oninput="updatePreview()">
+                                        </div>
+                                        <div class="form-help">Leave empty for no maximum limit</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-section">
+                            <div class="form-actions">
+                                <a href="index.html" class="btn btn-secondary">Cancel</a>
+                                <button type="button" class="btn btn-primary" onclick="submitTontineForm()">Create Tontine</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Sidebar -->
+                <div class="form-sidebar">
+                    <div class="preview-card" id="tontinePreview">
+                        <h3>Tontine Preview</h3>
+                        
+                        <div class="preview-section">
+                            <h4>Basic Information</h4>
+                            <div class="preview-item">
+                                <div class="preview-label">Name:</div>
+                                <div class="preview-value" id="previewName" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Description:</div>
+                                <div class="preview-value" id="previewDescription" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Members:</div>
+                                <div class="preview-value" id="previewMembers">0/20</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Visibility:</div>
+                                <div class="preview-value" id="previewVisibility">Public</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-section">
+                            <h4>Location</h4>
+                            <div class="preview-item">
+                                <div class="preview-label">Country:</div>
+                                <div class="preview-value" id="previewCountry" class="empty">Rwanda</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Province:</div>
+                                <div class="preview-value" id="previewProvince" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">District:</div>
+                                <div class="preview-value" id="previewDistrict" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Sector:</div>
+                                <div class="preview-value" id="previewSector" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Cell:</div>
+                                <div class="preview-value" id="previewCell" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Village:</div>
+                                <div class="preview-value" id="previewVillage" class="empty">Not set</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-section">
+                            <h4>Administrator</h4>
+                            <div class="preview-item">
+                                <div class="preview-label">Name:</div>
+                                <div class="preview-value" id="previewAdminName" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">ID Number:</div>
+                                <div class="preview-value" id="previewAdminId" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Phone:</div>
+                                <div class="preview-value" id="previewAdminPhone" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Email:</div>
+                                <div class="preview-value" id="previewAdminEmail" class="empty">Not set</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-section">
+                            <h4>Cycle & Contributions</h4>
+                            <div class="preview-item">
+                                <div class="preview-label">Cycle:</div>
+                                <div class="preview-value" id="previewCycle" class="empty">Not set</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Frequency:</div>
+                                <div class="preview-value" id="previewFrequency">Monthly</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">Payout Day:</div>
+                                <div class="preview-value" id="previewPayoutDay">1st of month</div>
+                            </div>
+                            
+                            <div class="preview-highlight">
+                                <div class="amount" id="previewMinShare">2,000 RWF</div>
+                                <div class="label">Minimum Share</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                            <div class="preview-item">
+                                <div class="preview-label">Status:</div>
+                                <div class="preview-value" style="color: var(--warning); font-weight: 600;">Draft</div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--gray); text-align: center; margin-top: 15px;">
+                                Preview updates in real-time as you fill the form
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="modal-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3>Tontine Created Successfully!</h3>
+            <p>Your tontine has been registered and is now active. You can start inviting members to join.</p>
+            
+            <div class="modal-code" id="tontineCode">IKI-TN-2023-001</div>
+            
+            <p><strong>Next Steps:</strong></p>
+            <ul style="text-align: left; margin: 20px 0; color: #666;">
+                <li>Share the tontine code with potential members</li>
+                <li>Set up your first meeting in the dashboard</li>
+                <li>Configure payment collection methods</li>
+                <li>Review and approve member applications</li>
+            </ul>
+            
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                <a href="index.html" class="btn btn-secondary">Return to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                </div>
+                <div>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-question-circle"></i> Help Center</a>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-phone"></i> Contact Support</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 My Smart Ikimina. All rights reserved. | <a href="#" style="color: var(--secondary);">Privacy Policy</a> | <a href="#" style="color: var(--secondary);">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form State
+        let formData = {
+            tontineName: '',
+            description: '',
+            maxMembers: 20,
+            visibility: 'public',
+            country: 'rwanda',
+            province: '',
+            district: '',
+            sector: '',
+            cell: '',
+            village: '',
+            adminFirstName: '',
+            adminLastName: '',
+            adminId: '',
+            adminPhone: '',
+            adminEmail: '',
+            cycleStart: '',
+            cycleEnd: '',
+            payoutFrequency: 'monthly',
+            payoutDay: '1',
+            minContribution: 2000,
+            maxContribution: '',
+            contributionType: 'fixed'
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default dates for cycle
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            
+            const sixMonthsLater = new Date(today);
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+            
+            // Format dates as YYYY-MM-DD
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            document.getElementById('cycleStart').value = formatDate(nextMonth);
+            document.getElementById('cycleEnd').value = formatDate(sixMonthsLater);
+            
+            // Set form data with defaults
+            formData.cycleStart = formatDate(nextMonth);
+            formData.cycleEnd = formatDate(sixMonthsLater);
+            
+            // Add event listeners to all form inputs
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                if (!input.oninput && !input.onchange) {
+                    const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+                    input.addEventListener(eventType, updatePreview);
+                }
+            });
+            
+            // Initial preview update
+            updatePreview();
+        });
+
+        // Update preview card dynamically
+        function updatePreview() {
+            // Get all form values
+            formData.tontineName = document.getElementById('tontineName').value;
+            formData.description = document.getElementById('tontineDescription').value;
+            formData.maxMembers = parseInt(document.getElementById('maxMembers').value) || 20;
+            formData.visibility = document.getElementById('visibility').value;
+            formData.country = document.getElementById('country').value;
+            formData.province = document.getElementById('province').value;
+            formData.district = document.getElementById('district').value;
+            formData.sector = document.getElementById('sector').value;
+            formData.cell = document.getElementById('cell').value;
+            formData.village = document.getElementById('village').value;
+            formData.adminFirstName = document.getElementById('adminFirstName').value;
+            formData.adminLastName = document.getElementById('adminLastName').value;
+            formData.adminId = document.getElementById('adminId').value;
+            formData.adminPhone = document.getElementById('adminPhone').value;
+            formData.adminEmail = document.getElementById('adminEmail').value;
+            formData.cycleStart = document.getElementById('cycleStart').value;
+            formData.cycleEnd = document.getElementById('cycleEnd').value;
+            formData.payoutFrequency = document.getElementById('payoutFrequency').value;
+            formData.payoutDay = document.getElementById('payoutDay').value;
+            formData.minContribution = parseInt(document.getElementById('minContribution').value) || 2000;
+            formData.maxContribution = document.getElementById('maxContribution').value;
+            formData.contributionType = document.getElementById('contributionType').value;
+            
+            // Update preview card
+            // Basic Information
+            document.getElementById('previewName').textContent = formData.tontineName || 'Not set';
+            document.getElementById('previewName').className = formData.tontineName ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewDescription').textContent = formData.description || 'Not set';
+            document.getElementById('previewDescription').className = formData.description ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewMembers').textContent = `0/${formData.maxMembers}`;
+            document.getElementById('previewVisibility').textContent = formatVisibility(formData.visibility);
+            
+            // Location
+            document.getElementById('previewCountry').textContent = formatCountry(formData.country);
+            document.getElementById('previewCountry').className = formData.country ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewProvince').textContent = formData.province || 'Not set';
+            document.getElementById('previewProvince').className = formData.province ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewDistrict').textContent = formData.district || 'Not set';
+            document.getElementById('previewDistrict').className = formData.district ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewSector').textContent = formData.sector || 'Not set';
+            document.getElementById('previewSector').className = formData.sector ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewCell').textContent = formData.cell || 'Not set';
+            document.getElementById('previewCell').className = formData.cell ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewVillage').textContent = formData.village || 'Not set';
+            document.getElementById('previewVillage').className = formData.village ? 'preview-value' : 'preview-value empty';
+            
+            // Administrator
+            const adminFullName = formData.adminFirstName || formData.adminLastName 
+                ? `${formData.adminFirstName} ${formData.adminLastName}`.trim()
+                : 'Not set';
+            document.getElementById('previewAdminName').textContent = adminFullName;
+            document.getElementById('previewAdminName').className = adminFullName !== 'Not set' ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewAdminId').textContent = formData.adminId || 'Not set';
+            document.getElementById('previewAdminId').className = formData.adminId ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewAdminPhone').textContent = formData.adminPhone || 'Not set';
+            document.getElementById('previewAdminPhone').className = formData.adminPhone ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewAdminEmail').textContent = formData.adminEmail || 'Not set';
+            document.getElementById('previewAdminEmail').className = formData.adminEmail ? 'preview-value' : 'preview-value empty';
+            
+            // Cycle & Contributions
+            const cycleText = formData.cycleStart && formData.cycleEnd 
+                ? `${formatDateDisplay(formData.cycleStart)} to ${formatDateDisplay(formData.cycleEnd)}`
+                : 'Not set';
+            document.getElementById('previewCycle').textContent = cycleText;
+            document.getElementById('previewCycle').className = (formData.cycleStart && formData.cycleEnd) ? 'preview-value' : 'preview-value empty';
+            
+            document.getElementById('previewFrequency').textContent = formatFrequency(formData.payoutFrequency);
+            document.getElementById('previewPayoutDay').textContent = formatPayoutDay(formData.payoutDay);
+            
+            // Update minimum share display
+            const minShare = formData.minContribution.toLocaleString();
+            document.getElementById('previewMinShare').textContent = `${minShare} RWF`;
+            document.getElementById('minSharePreview').textContent = `${minShare} RWF`;
+            
+            // Update preview card border color when form is filled
+            const previewCard = document.getElementById('tontinePreview');
+            const formFilled = formData.tontineName && formData.province && formData.district && 
+                               formData.sector && formData.cell && formData.adminFirstName && 
+                               formData.adminLastName && formData.adminId && formData.adminPhone && 
+                               formData.adminEmail;
+            
+            if (formFilled) {
+                previewCard.style.borderColor = 'var(--success)';
+                previewCard.style.boxShadow = '0 10px 30px rgba(0, 200, 81, 0.1)';
+            } else {
+                previewCard.style.borderColor = 'var(--gray-light)';
+                previewCard.style.boxShadow = 'var(--shadow)';
+            }
+        }
+
+        // Format helper functions
+        function formatCountry(countryCode) {
+            const countries = {
+                'rwanda': 'Rwanda',
+                'burundi': 'Burundi',
+                'tanzania': 'Tanzania',
+                'uganda': 'Uganda',
+                'kenya': 'Kenya',
+                'drc': 'DR Congo'
+            };
+            return countries[countryCode] || countryCode || 'Not set';
+        }
+
+        function formatVisibility(visibility) {
+            const visibilityMap = {
+                'public': 'Public',
+                'private': 'Private',
+                'unlisted': 'Unlisted'
+            };
+            return visibilityMap[visibility] || visibility;
+        }
+
+        function formatDateDisplay(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatFrequency(frequency) {
+            const frequencyMap = {
+                'monthly': 'Monthly',
+                'weekly': 'Weekly',
+                'biweekly': 'Bi-Weekly',
+                'quarterly': 'Quarterly',
+                'custom': 'Custom'
+            };
+            return frequencyMap[frequency] || frequency;
+        }
+
+        function formatPayoutDay(day) {
+            const dayMap = {
+                '1': '1st of month',
+                '15': '15th of month',
+                'last': 'Last day of month',
+                'monday': 'Monday',
+                'friday': 'Friday'
+            };
+            return dayMap[day] || day;
+        }
+
+        // Form validation and submission
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+            document.querySelectorAll('input, select').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Check required fields
+            const requiredFields = [
+                'tontineName', 'maxMembers', 'country', 'province', 'district',
+                'sector', 'cell', 'adminFirstName', 'adminLastName', 'adminId',
+                'adminPhone', 'adminEmail', 'cycleStart', 'cycleEnd'
+            ];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    document.getElementById(`${fieldId}Error`).style.display = 'block';
+                    isValid = false;
+                }
+            });
+            
+            // Validate minimum contribution
+            const minContribution = parseInt(document.getElementById('minContribution').value);
+            if (minContribution < 2000) {
+                document.getElementById('minContribution').classList.add('error');
+                document.getElementById('minContributionError').textContent = 'Minimum contribution must be at least 2,000 RWF';
+                document.getElementById('minContributionError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate max contribution if provided
+            const maxContribution = document.getElementById('maxContribution').value;
+            if (maxContribution && parseInt(maxContribution) < minContribution) {
+                document.getElementById('maxContribution').classList.add('error');
+                document.getElementById('maxContributionError').textContent = 'Maximum contribution must be greater than minimum';
+                document.getElementById('maxContributionError').style.display = 'block';
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function submitTontineForm() {
+            if (!validateForm()) {
+                alert('Please fix the errors in the form before submitting.');
+                return;
+            }
+            
+            // Generate a random tontine code
+            const tontineCode = 'IKI-TN-' + new Date().getFullYear() + '-' + Math.floor(100 + Math.random() * 900);
+            document.getElementById('tontineCode').textContent = tontineCode;
+            
+            // Show success modal
+            document.getElementById('successModal').classList.add('active');
+            
+            // Here you would normally send the data to your server
+            console.log('Tontine Registration Data:', formData);
+            console.log('Generated Tontine Code:', tontineCode);
+            
+            // Simulate API call
+            setTimeout(() => {
+                // In a real application, you would redirect to dashboard or show confirmation
+            }, 1000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
