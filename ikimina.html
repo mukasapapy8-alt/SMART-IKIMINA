@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Smart Ikimina | Modern Tontine Platform</title>
+    <title data-en="My Smart ekimina | Modern Tontine Platform" data-rw="My Smart ekimina | Inzira Y'ubucuruzi Y'ekimina" data-fr="My Smart ekimina | Plateforme Tontine Moderne">My Smart ekimina | Modern Tontine Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles & Variables */
@@ -109,14 +109,13 @@
 
         /* Header & Navigation */
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
             background-color: rgba(255, 255, 255, 0.95);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
             padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
 
         .navbar {
@@ -128,6 +127,7 @@
         .logo-container {
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
         .logo-icon {
@@ -164,7 +164,7 @@
         }
 
         .logo-text {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--primary);
         }
@@ -173,35 +173,79 @@
             color: var(--secondary);
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 6px 8px;
+            border-radius: 50px;
+            align-items: center;
+        }
+
+        .language-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 50px;
+        }
+
+        .language-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .language-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
         .nav-links {
             display: flex;
             list-style: none;
-        }
-
-        .nav-links li {
-            margin-left: 30px;
+            gap: 30px;
+            align-items: center;
         }
 
         .nav-links a {
+            color: var(--dark);
             font-weight: 600;
-            font-size: 1rem;
+            transition: color 0.3s ease;
             position: relative;
-            padding: 5px 0;
         }
 
-        .nav-links a:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover:after {
-            width: 100%;
+        .nav-links a:hover {
+            color: var(--primary);
         }
 
         .mobile-menu-btn {
@@ -213,31 +257,15 @@
 
         /* Hero Section */
         .hero {
-            padding-top: 150px;
-            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero:before {
-            content: "";
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 600px;
-            height: 600px;
-            background: var(--gradient);
-            border-radius: 50%;
-            opacity: 0.05;
-            z-index: 0;
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.05) 0%, rgba(0, 212, 170, 0.05) 100%);
+            padding: 100px 0;
         }
 
         .hero-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
-            z-index: 1;
+            gap: 60px;
         }
 
         .hero-text {
@@ -246,18 +274,17 @@
         }
 
         .hero-text h1 {
-            margin-bottom: 25px;
             background: var(--gradient);
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
         }
 
         .hero-text p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
             color: #666;
-            max-width: 500px;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
         }
 
         .hero-buttons {
@@ -265,19 +292,21 @@
             gap: 20px;
         }
 
+        .hero-buttons .btn {
+            font-size: 0.95rem;
+        }
+
         .hero-image {
             flex: 1;
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
+            align-items: center;
         }
 
         .hero-visual {
-            width: 500px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(46, 91, 255, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
-            border-radius: 20px;
             position: relative;
-            overflow: hidden;
+            width: 300px;
+            height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -285,56 +314,52 @@
 
         .circle-container {
             position: relative;
-            width: 300px;
-            height: 300px;
+            width: 100%;
+            height: 100%;
         }
 
         .circle {
             position: absolute;
             border-radius: 50%;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            color: var(--primary);
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
         }
 
         .circle-1 {
             width: 120px;
             height: 120px;
-            top: 0;
+            background: var(--primary);
+            top: 20px;
             left: 90px;
-            font-size: 1.5rem;
-            z-index: 3;
         }
 
         .circle-2 {
             width: 100px;
             height: 100px;
-            top: 150px;
-            left: 0;
-            font-size: 1.2rem;
-            z-index: 2;
+            background: var(--secondary);
+            bottom: 60px;
+            left: 30px;
         }
 
         .circle-3 {
             width: 90px;
             height: 90px;
-            top: 150px;
-            right: 0;
-            font-size: 1.1rem;
-            z-index: 2;
+            background: var(--primary);
+            opacity: 0.8;
+            bottom: 80px;
+            right: 40px;
         }
 
         .circle-4 {
             width: 80px;
             height: 80px;
-            top: 220px;
-            left: 110px;
-            font-size: 1rem;
-            z-index: 1;
+            background: var(--secondary);
+            top: 80px;
+            right: 60px;
         }
 
         /* Features Section */
@@ -512,6 +537,14 @@
             color: white;
         }
 
+        .footer-link-icon {
+            margin-right: 8px;
+        }
+
+        .footer-logo-container {
+            margin-bottom: 20px;
+        }
+
         .copyright {
             text-align: center;
             padding-top: 30px;
@@ -553,31 +586,45 @@
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
+                z-index: 1001;
             }
             
             .nav-links {
                 position: fixed;
                 top: 80px;
                 left: 0;
-                width: 100%;
+                right: 0;
+                width: 100vw;
                 background: white;
                 flex-direction: column;
                 align-items: center;
                 padding: 20px 0;
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-                transform: translateY(-100%);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                pointer-events: none;
                 opacity: 0;
-                transition: all 0.3s ease;
-                z-index: 999;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+                z-index: 1000;
             }
             
             .nav-links.active {
-                transform: translateY(0);
+                pointer-events: auto;
                 opacity: 1;
+                visibility: visible;
             }
             
             .nav-links li {
                 margin: 15px 0;
+            }
+            
+            .nav-right {
+                gap: 15px;
+            }
+            
+            .language-switcher {
+                display: none;
             }
             
             .hero-buttons, .cta-buttons {
@@ -620,23 +667,31 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <div class="logo-container">
+                <a href="ikimina.html" class="logo-container">
                     <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>Ikimina</span></div>
-                </div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </a>
                 
-                <div class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
+                <div class="nav-right">
+                    <div class="language-switcher" id="languageSwitcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="rw">RW</button>
+                        <button class="language-btn" data-lang="fr">FR</button>
+                    </div>
+
+                    <div class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    
+                    <ul class="nav-links" id="navLinks">
+                        <li><a href="ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                        <li><a href="#features" data-en="How It Works" data-rw="Uburyo Ibikorwa" data-fr="Comment Ça Marche">How It Works</a></li>
+                        <li><a href="#testimonials" data-en="Testimonials" data-rw="Amategeko" data-fr="Témoignages">Testimonials</a></li>
+                        <li><a href="#about" data-en="About" data-rw="Kubijyanye" data-fr="À Propos">About</a></li>
+                        <li><a href="#contact" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
+                        <li><a href="register.html" class="btn btn-primary" data-en="Get Started" data-rw="Tangira" data-fr="Commencer">Get Started</a></li>
+                    </ul>
                 </div>
-                
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="ikimina.html">Home</a></li>
-                    <li><a href="#features">How It Works</a></li>
-                    <li><a href="#testimonials">Testimonials</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="register.html" class="btn btn-primary">Get Started</a></li>
-                </ul>
             </nav>
         </div>
     </header>
@@ -646,20 +701,20 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>Smart Group Savings & Investments</h1>
-                    <p>My Smart Ikimina revolutionizes traditional tontines with a secure, transparent, and digital platform for collective savings, investments, and financial empowerment.</p>
+                    <h1 data-en="Smart Group Savings & Investments" data-rw="Ubwonko bw'Itsinda n'Imigire" data-fr="Épargne et Investissements de Groupe Intelligents">Smart Group Savings & Investments</h1>
+                    <p data-en="My Smart ekimina revolutionizes traditional tontines with a secure, transparent, and digital platform for collective savings, investments, and financial empowerment." data-rw="My Smart ekimina ihindura ubucuruzi bw'ekimina n'inzira nshya y'ubwonko bwunganire, ikazabera cyane, ishyaka ry'amafaranga, n'inzira nshya y'abagore n'abagabo." data-fr="My Smart ekimina révolutionne les tontines traditionnelles avec une plateforme sécurisée, transparente et numérique pour les épargnes collectives, les investissements et l'autonomisation financière.">My Smart ekimina revolutionizes traditional tontines with a secure, transparent, and digital platform for collective savings, investments, and financial empowerment.</p>
                     <div class="hero-buttons">
-                        <a href="#" class="btn btn-primary">Start Your Ikimina</a>
-                        <a href="#features" class="btn btn-secondary">Learn More</a>
+                        <a href="register.html" class="btn btn-primary" data-en="Start Your ekimina" data-rw="Tangira Ekimina Cyawe" data-fr="Commencer Votre ekimina">Start Your ekimina</a>
+                        <a href="#features" class="btn btn-secondary" data-en="Learn More" data-rw="Menya Byinshi" data-fr="En Savoir Plus">Learn More</a>
                     </div>
                 </div>
                 <div class="hero-image">
                     <div class="hero-visual">
                         <div class="circle-container">
-                            <div class="circle circle-1">Secure</div>
-                            <div class="circle circle-2">Transparent</div>
-                            <div class="circle circle-3">Digital</div>
-                            <div class="circle circle-4">Growth</div>
+                            <div class="circle circle-1" data-en="Secure" data-rw="Byizeye" data-fr="Sécurisé">Secure</div>
+                            <div class="circle circle-2" data-en="Transparent" data-rw="Kandi Cyane" data-fr="Transparent">Transparent</div>
+                            <div class="circle circle-3" data-en="Digital" data-rw="Digitale" data-fr="Numérique">Digital</div>
+                            <div class="circle circle-4" data-en="Growth" data-rw="Iterambere" data-fr="Croissance">Growth</div>
                         </div>
                     </div>
                 </div>
@@ -670,54 +725,54 @@
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="container">
-            <h2>Why Choose My Smart Ikimina</h2>
+            <h2 data-en="Why Choose My Smart ekimina" data-rw="Kuki Uhisemo My Smart ekimina" data-fr="Pourquoi Choisir My Smart ekimina">Why Choose My Smart ekimina</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3>Bank-Level Security</h3>
-                    <p>Your funds are protected with advanced encryption and secure banking partnerships. We prioritize the safety of your contributions above all else.</p>
+                    <h3 data-en="Bank-Level Security" data-rw="Ubwiyunge bwa Banki" data-fr="Sécurité de Niveau Bancaire">Bank-Level Security</h3>
+                    <p data-en="Your funds are protected with advanced encryption and secure banking partnerships. We prioritize the safety of your contributions above all else." data-rw="Amafaranga yacu arinzwe no mu gisirikare cyane na iyi mwanya no mu iwabo. Duhambuza umutekano w'imigire yacu." data-fr="Vos fonds sont protégés par un chiffrement avancé et des partenariats bancaires sécurisés. Nous priorisons la sécurité de vos contributions avant tout.">Your funds are protected with advanced encryption and secure banking partnerships. We prioritize the safety of your contributions above all else.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3>Smart Investment Tools</h3>
-                    <p>Automated investment options that grow your pooled funds. Our algorithms help maximize returns while maintaining security.</p>
+                    <h3 data-en="Smart Investment Tools" data-rw="Ibikoresho by'Imigire Nzira Nshya" data-fr="Outils d'Investissement Intelligents">Smart Investment Tools</h3>
+                    <p data-en="Automated investment options that grow your pooled funds. Our algorithms help maximize returns while maintaining security." data-rw="Ibikoresho by'imigire bikorera binini amafaranga yacu runganire. Porogaramu yacu isigura ubwonko byuzuye." data-fr="Des options d'investissement automatisées qui font croître vos fonds mutualisés. Nos algorithmes aident à maximiser les rendements tout en maintenant la sécurité.">Automated investment options that grow your pooled funds. Our algorithms help maximize returns while maintaining security.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-eye"></i>
                     </div>
-                    <h3>Complete Transparency</h3>
-                    <p>Real-time tracking of all contributions, payouts, and investments. Every member can see the flow of funds at any time.</p>
+                    <h3 data-en="Complete Transparency" data-rw="Kandi Cyane Cyose" data-fr="Transparence Complète">Complete Transparency</h3>
+                    <p data-en="Real-time tracking of all contributions, payouts, and investments. Every member can see the flow of funds at any time." data-rw="Kurikirana igoromonine ry'uruhare rwose, kubyigura, n'imigire. Buri munyamuryango areba aho amafaranga ari mu gihe cyose." data-fr="Suivi en temps réel de toutes les contributions, versements et investissements. Chaque membre peut voir le flux de fonds à tout moment.">Real-time tracking of all contributions, payouts, and investments. Every member can see the flow of funds at any time.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3>Community Governance</h3>
-                    <p>Democratic decision-making tools for your group. Vote on important matters directly through the platform.</p>
+                    <h3 data-en="Community Governance" data-rw="Ubuyobozi bw'Itsinda" data-fr="Gouvernance Communautaire">Community Governance</h3>
+                    <p data-en="Democratic decision-making tools for your group. Vote on important matters directly through the platform." data-rw="Ibikoresho by'imigire ikorera bikorera itsinda ryacu. Vota ku by'inzira mu rwibutso rwacu." data-fr="Outils de prise de décision démocratique pour votre groupe. Votez directement sur les questions importantes via la plateforme.">Democratic decision-making tools for your group. Vote on important matters directly through the platform.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-mobile-alt"></i>
                     </div>
-                    <h3>Mobile-First Experience</h3>
-                    <p>Manage your ikimina from anywhere with our intuitive mobile app. Get notifications and make decisions on the go.</p>
+                    <h3 data-en="Mobile-First Experience" data-rw="Ibikoresho by'Telefone Mbere" data-fr="Expérience Prioritaire Mobile">Mobile-First Experience</h3>
+                    <p data-en="Manage your ekimina from anywhere with our intuitive mobile app. Get notifications and make decisions on the go." data-rw="Kohereza ekimina cyacu kuva ahantu hose, hamwe n'iyi porogaramu nzira nshya. Wiga amatangazo n'ubwigize mu gihe cyose." data-fr="Gérez votre ekimina n'importe où avec notre application mobile intuitive. Recevez les notifications et prenez les décisions en déplacement.">Manage your ekimina from anywhere with our intuitive mobile app. Get notifications and make decisions on the go.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-handshake"></i>
                     </div>
-                    <h3>Flexible Payout Options</h3>
-                    <p>Customizable payout schedules that work for your group. Rotating, emergency, or investment-based distributions.</p>
+                    <h3 data-en="Flexible Payout Options" data-rw="Inzira Nshya y'Kubyigura" data-fr="Options de Paiement Flexibles">Flexible Payout Options</h3>
+                    <p data-en="Customizable payout schedules that work for your group. Rotating, emergency, or investment-based distributions." data-rw="Inzira nshya y'kubyigura itoze ku itsinda ryacu. Iterambere, icyemezo, cyangwa imigire y'inzira nshya." data-fr="Des calendriers de paiement personnalisables qui conviennent à votre groupe. Distributions tournantes, d'urgence ou basées sur l'investissement.">Customizable payout schedules that work for your group. Rotating, emergency, or investment-based distributions.</p>
                 </div>
             </div>
         </div>
@@ -726,37 +781,37 @@
     <!-- Testimonials Section -->
     <section class="testimonials" id="testimonials">
         <div class="container">
-            <h2>Trusted by Thousands</h2>
+            <h2 data-en="Trusted by Thousands" data-rw="Icyifuzo cyababigize" data-fr="Approuvé par des Milliers">Trusted by Thousands</h2>
             <div class="testimonials-grid">
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"My Smart Ikimina transformed our village savings group. We've grown our pooled funds by 40% in just one year with their investment tools."</p>
+                    <p class="testimonial-text" data-en="&quot;My Smart ekimina transformed our village savings group. We've grown our pooled funds by 40% in just one year with their investment tools.&quot;" data-rw="&quot;My Smart ekimina yeguye itsinda ryacu ry'ubwonko. Twarangije imigire yacu guteranira kuri 40% mu mwaka umwe gusa hamwe n'ibikoresho by'imigire byabo.&quot;" data-fr="&quot;My Smart ekimina a transformé notre groupe d'épargne villageoise. Nous avons augmenté nos fonds communs de 40% en seulement un an avec leurs outils d'investissement.&quot;">"My Smart ekimina transformed our village savings group. We've grown our pooled funds by 40% in just one year with their investment tools."</p>
                     <div class="testimonial-author">
                         <div class="author-avatar">JM</div>
                         <div class="author-info">
                             <h4>Jean Marie</h4>
-                            <p>Kigali Business Group</p>
+                            <p data-en="Kigali Business Group" data-rw="Itsinda ry'ubucuruzi Kigali" data-fr="Groupe d'Affaires de Kigali">Kigali Business Group</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"The transparency features eliminated all the disputes in our group. Now everyone trusts the process and we can focus on growing together."</p>
+                    <p class="testimonial-text" data-en="&quot;The transparency features eliminated all the disputes in our group. Now everyone trusts the process and we can focus on growing together.&quot;" data-rw="&quot;Ibikoresho by'ubwiyunge byacu hagaritse ibibazo byose mu itsinda ryacu. Ubu buri munyamuryango ahemba inzira n'ubwigize kugeza iterambere.&quot;" data-fr="&quot;Les fonctionnalités de transparence ont éliminé tous les litiges dans notre groupe. Maintenant, tout le monde fait confiance au processus et nous pouvons nous concentrer sur la croissance ensemble.&quot;">"The transparency features eliminated all the disputes in our group. Now everyone trusts the process and we can focus on growing together."</p>
                     <div class="testimonial-author">
                         <div class="author-avatar">AS</div>
                         <div class="author-info">
                             <h4>Alice Safari</h4>
-                            <p>Women Entrepreneurs Circle</p>
+                            <p data-en="Women Entrepreneurs Circle" data-rw="Itsinda ry'Abagore Babigenza Ubucuruzi" data-fr="Cercle des Femmes Entrepreneures">Women Entrepreneurs Circle</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"As a diaspora member, I can now participate in my family's ikimina back home. The digital platform made cross-border contributions seamless."</p>
+                    <p class="testimonial-text" data-en="&quot;As a diaspora member, I can now participate in my family's ekimina back home. The digital platform made cross-border contributions seamless.&quot;" data-rw="&quot;Nk'umuntu w'inyamaswa, nshobora kugira inzira mu ekimina ry'inzu nyuma. Porogaramu y'ubwigize yaratukwibaza kunyeganya imigire.&quot;" data-fr="&quot;En tant que membre de la diaspora, je peux maintenant participer à l'ekimina de ma famille à la maison. La plateforme numérique a rendu les contributions transfrontalières transparentes.&quot;">"As a diaspora member, I can now participate in my family's ekimina back home. The digital platform made cross-border contributions seamless."</p>
                     <div class="testimonial-author">
                         <div class="author-avatar">DK</div>
                         <div class="author-info">
                             <h4>David Kabera</h4>
-                            <p>Diaspora Investors Group</p>
+                            <p data-en="Diaspora Investors Group" data-rw="Itsinda ry'Abakora mu Mahoro" data-fr="Groupe des Investisseurs de la Diaspora">Diaspora Investors Group</p>
                         </div>
                     </div>
                 </div>
@@ -767,11 +822,11 @@
     <!-- CTA Section -->
     <section class="container">
         <div class="cta-section">
-            <h2>Ready to Start Your Smart Ikimina?</h2>
-            <p>Join thousands of groups already growing their wealth through our secure, transparent platform. Financial empowerment begins with the first step.</p>
+            <h2 data-en="Ready to Start Your Smart ekimina?" data-rw="Witeguye Gutangira Ekimina Cyawe?" data-fr="Prêt à Démarrer Votre Smart ekimina ?">Ready to Start Your Smart ekimina?</h2>
+            <p data-en="Join thousands of groups already growing their wealth through our secure, transparent platform. Financial empowerment begins with the first step." data-rw="Injira n'amatsinda y'ibihumbi arimo gurangiza ubwonko bwabo hamwe n'iyi nzira nyabyo, y'ubwiyunge. Ubwigize bw'amafaranga butangira ku gusoza." data-fr="Rejoignez des milliers de groupes en train de développer leur richesse grâce à notre plateforme sécurisée et transparente. L'autonomisation financière commence par la première étape.">Join thousands of groups already growing their wealth through our secure, transparent platform. Financial empowerment begins with the first step.</p>
             <div class="cta-buttons">
-                <a href="#" class="btn">Create Free Account</a>
-                <a href="#" class="btn btn-secondary">Schedule a Demo</a>
+                <a href="register.html" class="btn" data-en="Create Free Account" data-rw="Kurema Konte Nta Mahoro" data-fr="Créer un Compte Gratuit">Create Free Account</a>
+                <a href="#" class="btn btn-secondary" data-en="Schedule a Demo" data-rw="Menya Ibigwemwo" data-fr="Planifier une Démo">Schedule a Demo</a>
             </div>
         </div>
     </section>
@@ -781,106 +836,159 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <div class="logo-container" style="margin-bottom: 20px;">
+                    <a href="#" class="logo-container footer-logo-container">
                         <div class="logo-icon"></div>
-                        <div class="logo-text">My Smart <span>Ikimina</span></div>
-                    </div>
-                    <p>Revolutionizing traditional tontines with technology for secure, transparent, and profitable group savings and investments.</p>
+                        <div class="logo-text">My Smart <span>ekimina</span></div>
+                    </a>
+                    <p data-en="Revolutionizing traditional tontines with technology for secure, transparent, and profitable group savings and investments." data-rw="Kuguhindura ubucuruzi bw'ekimina n'ubwigize bwuzuye, y'ubwiyunge, n'imigire icyiza itsinda ryacu." data-fr="Révolutionner les tontines traditionnelles avec la technologie pour des épargnes et des investissements de groupe sécurisés, transparents et rentables.">Revolutionizing traditional tontines with technology for secure, transparent, and profitable group savings and investments.</p>
                 </div>
                 
                 <div class="footer-column">
-                    <h3>Platform</h3>
+                    <h3 data-en="Platform" data-rw="Inzira" data-fr="Plateforme">Platform</h3>
                     <ul class="footer-links">
-                        <li><a href="#">How It Works</a></li>
-                        <li><a href="#">Features</a></li>
-                        <li><a href="#">Pricing</a></li>
-                        <li><a href="#">Security</a></li>
+                        <li><a href="#features" data-en="How It Works" data-rw="Uburyo Ibikorwa" data-fr="Comment Ça Marche">How It Works</a></li>
+                        <li><a href="#features" data-en="Features" data-rw="Ibikoresho" data-fr="Fonctionnalités">Features</a></li>
+                        <li><a href="#" data-en="Pricing" data-rw="Imikoresho" data-fr="Tarification">Pricing</a></li>
+                        <li><a href="#" data-en="Security" data-rw="Ubwiyunge" data-fr="Sécurité">Security</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-column">
-                    <h3>Company</h3>
+                    <h3 data-en="Company" data-rw="Isosiyete" data-fr="Entreprise">Company</h3>
                     <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#" data-en="About Us" data-rw="Kubijyanye Neza" data-fr="À Propos de Nous">About Us</a></li>
+                        <li><a href="#" data-en="Blog" data-rw="Iburaya" data-fr="Blog">Blog</a></li>
+                        <li><a href="#" data-en="Careers" data-rw="Akazi" data-fr="Carrières">Careers</a></li>
+                        <li><a href="#" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-column">
-                    <h3>Connect</h3>
+                    <h3 data-en="Connect" data-rw="Injira" data-fr="Connecter">Connect</h3>
                     <ul class="footer-links">
-                        <li><a href="#"><i class="fab fa-twitter" style="margin-right: 8px;"></i> Twitter</a></li>
-                        <li><a href="#"><i class="fab fa-facebook" style="margin-right: 8px;"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin" style="margin-right: 8px;"></i> LinkedIn</a></li>
-                        <li><a href="#"><i class="fas fa-envelope" style="margin-right: 8px;"></i> Newsletter</a></li>
+                        <li><a href="#"><i class="fab fa-twitter footer-link-icon"></i><span data-en="Twitter" data-rw="Twitter" data-fr="Twitter">Twitter</span></a></li>
+                        <li><a href="#"><i class="fab fa-facebook footer-link-icon"></i><span data-en="Facebook" data-rw="Facebook" data-fr="Facebook">Facebook</span></a></li>
+                        <li><a href="#"><i class="fab fa-linkedin footer-link-icon"></i><span data-en="LinkedIn" data-rw="LinkedIn" data-fr="LinkedIn">LinkedIn</span></a></li>
+                        <li><a href="#"><i class="fas fa-envelope footer-link-icon"></i><span data-en="Newsletter" data-rw="Amatangazo" data-fr="Bulletin">Newsletter</span></a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="copyright">
-                <p>&copy; 2025 My Smart Ikimina. All rights reserved. | <a href="#" style="color: var(--secondary);">Privacy Policy</a> | <a href="#" style="color: var(--secondary);">Terms of Service</a></p>
+                <p data-en="© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved. | " data-rw="© 2025 My Smart ekimina-ikintu ky'isosiyete ya cooloff Ltd. Uburenganzira bwose buzemwa. | " data-fr="© 2025 My Smart ekimina-un produit de cooloff company ltd. Tous les droits réservés. | ">© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved. | <a href="#" class="footer-link-secondary" data-en="Privacy Policy" data-rw="Isi Yabwiyunge" data-fr="Politique de Confidentialité">Privacy Policy</a> | <a href="#" class="footer-link-secondary" data-en="Terms of Service" data-rw="Amategeko y'Ubwigize" data-fr="Conditions de Service">Terms of Service</a></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+        // Language Switching Functionality
+        let currentLanguage = 'en';
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language from localStorage
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguage(savedLanguage);
+
+            // Add click event listeners to language buttons
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    localStorage.setItem('selectedLanguage', lang);
+                });
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
             
-            // Change icon
-            const icon = mobileMenuBtn.querySelector('i');
-            if (navLinks.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
                 
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    // Close mobile menu if open
-                    if (navLinks.classList.contains('active')) {
-                        navLinks.classList.remove('active');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
+                // Change icon
+                const icon = mobileMenuBtn.querySelector('i');
+                if (navLinks.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
                     
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Close mobile menu if open
+                        if (navLinks.classList.contains('active')) {
+                            navLinks.classList.remove('active');
+                            const icon = mobileMenuBtn.querySelector('i');
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                        
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Add scroll effect to header
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('header');
+                if (window.scrollY > 100) {
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                } else {
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
+                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
                 }
             });
         });
-        
-        // Add scroll effect to header
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-                header.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            } else {
-                header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
-                header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-            }
-        });
+
+        // Function to set the language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+
+            // Update active button
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-lang') === lang) {
+                    button.classList.add('active');
+                }
+            });
+
+            // Update all elements with data attributes
+            const elementsWithData = document.querySelectorAll('[data-en]');
+            elementsWithData.forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    // Check if it's a title attribute
+                    if (element.tagName === 'TITLE') {
+                        document.title = text;
+                    } else if (element.hasAttribute('title')) {
+                        element.setAttribute('title', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+
+            // Update document language attribute
+            document.documentElement.lang = lang;
+        }
     </script>
 </body>
 </html>

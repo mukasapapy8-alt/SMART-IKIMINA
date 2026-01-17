@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Tontine | My Smart Ikimina</title>
+    <title>Register Tontine | My Smart ekimina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles & Variables */
@@ -602,6 +602,75 @@
             font-size: 0.9rem;
         }
 
+        .nav-links a i {
+            margin-right: 5px;
+        }
+
+        .admin-info-help {
+            margin-bottom: 20px;
+        }
+
+        .cycle-date-label {
+            font-weight: 600;
+        }
+
+        .form-row-margin-top {
+            margin-top: 20px;
+        }
+
+        .min-share-label {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .contribution-margin-top {
+            margin-top: 25px;
+        }
+
+        .contribution-type-margin {
+            margin-bottom: 20px;
+        }
+
+        .preview-section-separator {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .preview-status {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .preview-hint {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .modal-next-steps {
+            text-align: left;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        .modal-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .footer-link {
+            color: white;
+            margin-left: 20px;
+        }
+
+        .footer-link-secondary {
+            color: var(--secondary);
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .form-layout {
@@ -655,16 +724,15 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo-container">
+                <a href="ik.html" class="logo-container">
                     <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
                 </a>
                 
                 <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="member-registration.html">Join Tontine</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="#"><i class="fas fa-user-circle" style="margin-right: 5px;"></i> My Account</a></li>
+                    <li><a href="ikimina.html">Home</a></li>
+                    <li><a href="register.html">Join Tontine</a></li>
+                    <li><a href="login.html"><i class="fas fa-user-circle"></i> login</a></li>
                 </ul>
             </nav>
         </div>
@@ -768,7 +836,7 @@
                         <!-- Section 3: Administrator Information -->
                         <div class="form-section">
                             <h2><i class="fas fa-user-shield"></i> Administrator Information</h2>
-                            <p class="form-help" style="margin-bottom: 20px;">You will be the primary administrator of this tontine.</p>
+                            <p class="form-help admin-info-help">You will be the primary administrator of this tontine.</p>
                             
                             <div class="form-row">
                                 <div class="form-group half">
@@ -813,11 +881,11 @@
                                             <i class="fas fa-play"></i>
                                         </div>
                                         <div>
-                                            <div style="font-weight: 600;">Cycle Start Date</div>
+                                            <div class="cycle-date-label">Cycle Start Date</div>
                                             <div class="form-help">When contributions will begin</div>
                                         </div>
                                     </div>
-                                    <input type="date" id="cycleStart" name="cycleStart" required onchange="updatePreview()">
+                                    <input type="date" id="cycleStart" name="cycleStart" title="Cycle Start Date" placeholder="Select start date" required onchange="updatePreview()">
                                 </div>
                                 
                                 <div class="cycle-row">
@@ -826,14 +894,14 @@
                                             <i class="fas fa-flag-checkered"></i>
                                         </div>
                                         <div>
-                                            <div style="font-weight: 600;">Cycle End Date</div>
+                                            <div class="cycle-date-label">Cycle End Date</div>
                                             <div class="form-help">When the cycle will complete</div>
                                         </div>
                                     </div>
-                                    <input type="date" id="cycleEnd" name="cycleEnd" required onchange="updatePreview()">
+                                    <input type="date" id="cycleEnd" name="cycleEnd" title="Cycle End Date" placeholder="Select end date" required onchange="updatePreview()">
                                 </div>
                                 
-                                <div class="form-row" style="margin-top: 20px;">
+                                <div class="form-row form-row-margin-top">
                                     <div class="form-group half">
                                         <label for="payoutFrequency" class="required">Payout Frequency</label>
                                         <select id="payoutFrequency" name="payoutFrequency" required onchange="updatePreview()">
@@ -864,16 +932,16 @@
                             <h2><i class="fas fa-money-bill-wave"></i> Contribution Settings</h2>
                             
                             <div class="contribution-settings">
-                                <h4 style="margin-bottom: 20px; color: var(--dark);">Minimum Share Contribution</h4>
+                                <h4 class="min-share-label">Minimum Share Contribution</h4>
                                 
                                 <div class="preview-highlight">
                                     <div class="amount" id="minSharePreview">2,000 RWF</div>
                                     <div class="label">Minimum Share per Member</div>
                                 </div>
                                 
-                                <div style="margin-top: 25px;">
+                                <div class="contribution-margin-top">
                                     <label for="contributionType" class="required">Contribution Type</label>
-                                    <select id="contributionType" name="contributionType" required onchange="updatePreview()" style="margin-bottom: 20px;">
+                                    <select id="contributionType" name="contributionType" required onchange="updatePreview()" class="contribution-type-margin">
                                         <option value="fixed">Fixed Amount</option>
                                         <option value="variable">Variable Amount</option>
                                         <option value="tiered">Tiered (Multiple options)</option>
@@ -903,7 +971,7 @@
                         <!-- Form Actions -->
                         <div class="form-section">
                             <div class="form-actions">
-                                <a href="index.html" class="btn btn-secondary">Cancel</a>
+                                <a href="ikimina.html" class="btn btn-secondary">Cancel</a>
                                 <button type="button" class="btn btn-primary" onclick="submitTontineForm()">Create Tontine</button>
                             </div>
                         </div>
@@ -1004,12 +1072,12 @@
                             </div>
                         </div>
                         
-                        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                        <div class="preview-section-separator">
                             <div class="preview-item">
                                 <div class="preview-label">Status:</div>
-                                <div class="preview-value" style="color: var(--warning); font-weight: 600;">Draft</div>
+                                <div class="preview-value preview-status">Draft</div>
                             </div>
-                            <div style="font-size: 0.8rem; color: var(--gray); text-align: center; margin-top: 15px;">
+                            <div class="preview-hint">
                                 Preview updates in real-time as you fill the form
                             </div>
                         </div>
@@ -1031,16 +1099,16 @@
             <div class="modal-code" id="tontineCode">IKI-TN-2023-001</div>
             
             <p><strong>Next Steps:</strong></p>
-            <ul style="text-align: left; margin: 20px 0; color: #666;">
+            <ul class="modal-next-steps">
                 <li>Share the tontine code with potential members</li>
                 <li>Set up your first meeting in the dashboard</li>
                 <li>Configure payment collection methods</li>
                 <li>Review and approve member applications</li>
             </ul>
             
-            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
-                <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                <a href="index.html" class="btn btn-secondary">Return to Home</a>
+            <div class="modal-actions">
+                <a href="leader-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                <a href="ikimina.html" class="btn btn-secondary">Return to Home</a>
             </div>
         </div>
     </div>
@@ -1051,15 +1119,15 @@
             <div class="footer-content">
                 <div class="logo-container">
                     <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
                 </div>
                 <div>
-                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-question-circle"></i> Help Center</a>
-                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-phone"></i> Contact Support</a>
+                    <a href="#" class="footer-link"><i class="fas fa-question-circle"></i> Help Center</a>
+                    <a href="#" class="footer-link"><i class="fas fa-phone"></i> Contact Support</a>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 My Smart Ikimina. All rights reserved. | <a href="#" style="color: var(--secondary);">Privacy Policy</a> | <a href="#" style="color: var(--secondary);">Terms of Service</a></p>
+                <p>&copy; 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved. | <a href="#" class="footer-link-secondary">Privacy Policy</a> | <a href="#" class="footer-link-secondary">Terms of Service</a></p>
             </div>
         </div>
     </footer>

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="My Dashboard | My Smart ekimina" data-rw="Ikibaho Cyanje | My Smart ekimina" data-fr="Mon Tableau de Bord | My Smart ekimina">My Dashboard | My Smart ekimina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #2E5BFF;
+            --primary-dark: #1A3DB0;
+            --secondary: #00D4AA;
+            --success: #00C851;
+            --warning: #ffbb33;
+            --danger: #ff4444;
+            --dark: #2E384D;
+            --light: #F8F9FC;
+            --gray: #B0BAC9;
+            --gray-light: #EDF0F7;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 30px rgba(46, 91, 255, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .logo-icon:after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: var(--gradient);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            gap: 5px;
+        }
+
+        .language-btn {
+            padding: 8px 15px;
+            border: 2px solid var(--gray-light);
+            background: white;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .language-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .language-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 25px 0;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: rgba(46, 91, 255, 0.05);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-icon {
+            width: 20px;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        .menu-item.active .menu-icon,
+        .menu-item:hover .menu-icon {
+            color: var(--primary);
+        }
+
+        .menu-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .menu-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: var(--gradient);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner:before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .welcome-content h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .welcome-content p {
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .action-desc {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* My Recent Contributions */
+        .my-contributions {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .contributions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .contributions-table th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid var(--gray-light);
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .contributions-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .contribution-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: rgba(0, 200, 81, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 187, 51, 0.1);
+            color: var(--warning);
+        }
+
+        .status-overdue {
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Monthly Reports */
+        .monthly-reports {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .report-card {
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .report-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .report-info {
+            flex: 1;
+        }
+
+        .report-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .report-date {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        /* Upcoming Events */
+        .upcoming-events {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: var(--light);
+        }
+
+        .event-date {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .event-day {
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .event-month {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .event-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 91, 255, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 0 15px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 15px;
+            }
+            
+            .menu-item {
+                flex-direction: column;
+                min-width: 100px;
+                text-align: center;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+            
+            .menu-item.active {
+                border-left: none;
+                border-bottom-color: var(--primary);
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-right {
+                gap: 15px;
+            }
+            
+            .language-switcher {
+                display: none;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-content h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </a>
+                
+                <div class="nav-right">
+                    <div class="language-switcher" id="languageSwitcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="rw">RW</button>
+                        <button class="language-btn" data-lang="fr">FR</button>
+                    </div>
+                    
+                    <div class="user-profile" id="userProfile">
+                        <div class="user-avatar">JM</div>
+                        <div class="user-info">
+                            <div class="user-name">Jean Marie</div>
+                            <div class="user-role" data-en="Member" data-rw="Umwe mu Banyamuryango" data-fr="Membre">Member</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title" data-en="Kigali Business Circle" data-rw="Itsinda ry'Ubucuruzi Kigali" data-fr="Cercle d'Affaires de Kigali">Kigali Business Circle</div>
+                <div class="sidebar-subtitle" data-en="Tontine Member" data-rw="Umwe mu Banyamuryango" data-fr="Membre Tontine">Tontine Member</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active" onclick="switchMenu('dashboard')">
+                    <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div class="menu-text" data-en="Dashboard" data-rw="Ikibaho" data-fr="Tableau de Bord">Dashboard</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('payments')">
+                    <div class="menu-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="menu-text" data-en="Make Payment" data-rw="Kwishyura" data-fr="Faire un Paiement">Make Payment</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('history')">
+                    <div class="menu-icon"><i class="fas fa-history"></i></div>
+                    <div class="menu-text" data-en="My Contributions" data-rw="Uruhare Rwanjye" data-fr="Mes Contributions">My Contributions</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('reports')">
+                    <div class="menu-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="menu-text" data-en="My Reports" data-rw="Raporo Zanjye" data-fr="Mes Rapports">My Reports</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('notifications')">
+                    <div class="menu-icon"><i class="fas fa-bell"></i></div>
+                    <div class="menu-text" data-en="Notifications" data-rw="Amatangazo" data-fr="Notifications">Notifications</div>
+                    <div class="menu-badge" id="notificationCount">3</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('events')">
+                    <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="menu-text" data-en="Upcoming Events" data-rw="Ibyabaye" data-fr="Événements à Venir">Upcoming Events</div>
+                </li>
+                <li class="menu-item" onclick="switchMenu('profile')">
+                    <div class="menu-icon"><i class="fas fa-user"></i></div>
+                    <div class="menu-text" data-en="My Profile" data-rw="Umwirondoro Wanjye" data-fr="Mon Profil">My Profile</div>
+                </li>
+                <li class="menu-item" onclick="logout()">
+                    <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                    <div class="menu-text" data-en="Logout" data-rw="Sohoka" data-fr="Déconnexion">Logout</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-content">
+                    <h1 data-en="Welcome back, Jean Marie!" data-rw="Murakaza neza, Yohani Mariya!" data-fr="Bon retour, Jean Marie!">Welcome back, Jean Marie!</h1>
+                    <p data-en="Here's your personal dashboard. Track your contributions, make payments, and stay updated with your tontine." 
+                       data-rw="Dore ikibaho cyawe. Kurikirana uruhare rwawe, kwishyura, no kumenya ibyabaye mu kimina cyawe." 
+                       data-fr="Voici votre tableau de bord personnel. Suivez vos contributions, effectuez des paiements et restez informé de votre tontine.">
+                       Here's your personal dashboard. Track your contributions, make payments, and stay updated with your tontine.
+                    </p>
+                    <button class="btn btn-primary btn-icon" onclick="openPaymentModal()">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span data-en="Make Payment Now" data-rw="Kwishyura Noneho" data-fr="Faire un Paiement Maintenant">Make Payment Now</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--primary);">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label" data-en="My Today's Contribution" data-rw="Uruhare Rwanjye rwa None" data-fr="Ma Contribution d'Aujourd'hui">My Today's Contribution</div>
+                        <div class="stat-value">0 RWF</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-clock"></i>
+                            <span data-en="Due today" data-rw="Urakenewe uyu munsi" data-fr="Dû aujourd'hui">Due today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--success);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label" data-en="My Total Contributions" data-rw="Uruhare Rwanjye Rwose" data-fr="Mes Contributions Totales">My Total Contributions</div>
+                        <div class="stat-value">600,000 RWF</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span data-en="Good standing" data-rw="Imiterere nziza" data-fr="Bon statut">Good standing</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--warning);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label" data-en="Next Meeting" data-rw="Inama Ikurikira" data-fr="Prochaine Réunion">Next Meeting</div>
+                        <div class="stat-value">Dec 15, 2023</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock"></i>
+                            <span data-en="In 3 days" data-rw="Mu minsi 3" data-fr="Dans 3 jours">In 3 days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--secondary);">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label" data-en="My Performance" data-rw="Ibyiza Byanjye" data-fr="Ma Performance">My Performance</div>
+                        <div class="stat-value">100%</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-trophy"></i>
+                            <span data-en="Perfect record" data-rw="Icyiza cyuzuye" data-fr="Record parfait">Perfect record</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="section-header">
+                    <div class="section-title" data-en="Quick Actions" data-rw="Ibikorwa byihuse" data-fr="Actions Rapides">Quick Actions</div>
+                </div>
+                
+                <div class="actions-grid">
+                    <div class="action-card" onclick="openPaymentModal()">
+                        <div class="action-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="action-title" data-en="Make Payment" data-rw="Kwishyura" data-fr="Faire un Paiement">Make Payment</div>
+                        <div class="action-desc" data-en="Pay your tontine contribution" data-rw="Shyira uruhare rwawe mu kimina" data-fr="Payez votre contribution tontine">Pay your tontine contribution</div>
+                    </div>
+
+                    <div class="action-card" onclick="downloadMyReport('monthly')">
+                        <div class="action-icon">
+                            <i class="fas fa-file-download"></i>
+                        </div>
+                        <div class="action-title" data-en="Download Report" data-rw="Kuramo Raporo" data-fr="Télécharger Rapport">Download Report</div>
+                        <div class="action-desc" data-en="My monthly contribution report" data-rw="Raporo y'ukwezi y'uruhare rwanjye" data-fr="Mon rapport mensuel de contribution">My monthly contribution report</div>
+                    </div>
+
+                    <div class="action-card" onclick="viewMyContributions()">
+                        <div class="action-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="action-title" data-en="View My History" data-rw="Reba Amateka Yanjye" data-fr="Voir Mon Historique">View My History</div>
+                        <div class="action-desc" data-en="Check all my contributions" data-rw="Reba uruhare rwanjye rwose" data-fr="Voir toutes mes contributions">Check all my contributions</div>
+                    </div>
+
+                    <div class="action-card" onclick="contactAdmin()">
+                        <div class="action-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="action-title" data-en="Contact Admin" data-rw="Vugana n'Ubuyobozi" data-fr="Contacter l'Admin">Contact Admin</div>
+                        <div class="action-desc" data-en="Message tontine administrator" data-rw="Ohereza ubutumwa k'umuyobozi" data-fr="Message à l'administrateur">Message tontine administrator</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Recent Contributions -->
+            <div class="my-contributions">
+                <div class="section-header">
+                    <div class="section-title" data-en="My Recent Contributions" data-rw="Uruhare Rwanjye rwa Vuba" data-fr="Mes Contributions Récentes">My Recent Contributions</div>
+                    <button class="btn btn-secondary btn-sm" onclick="viewAllMyContributions()" data-en="View All" data-rw="Reba Byose" data-fr="Voir Tout">View All</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="contributions-table">
+                        <thead>
+                            <tr>
+                                <th data-en="Date" data-rw="Itariki" data-fr="Date">Date</th>
+                                <th data-en="Amount" data-rw="Amafaranga" data-fr="Montant">Amount</th>
+                                <th data-en="Payment Method" data-rw="Uburyo bwo Kwishyura" data-fr="Méthode de Paiement">Payment Method</th>
+                                <th data-en="Status" data-rw="Imiterere" data-fr="Statut">Status</th>
+                                <th data-en="Receipt" data-rw="Resi" data-fr="Reçu">Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dec 1, 2023</td>
+                                <td>50,000 RWF</td>
+                                <td data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</td>
+                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
+                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('dec1')"><i class="fas fa-download"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>Nov 15, 2023</td>
+                                <td>50,000 RWF</td>
+                                <td data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</td>
+                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
+                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('nov15')"><i class="fas fa-download"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>Nov 1, 2023</td>
+                                <td>50,000 RWF</td>
+                                <td data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</td>
+                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
+                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('nov1')"><i class="fas fa-download"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 15, 2023</td>
+                                <td>50,000 RWF</td>
+                                <td data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</td>
+                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
+                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('oct15')"><i class="fas fa-download"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>Today</td>
+                                <td>50,000 RWF</td>
+                                <td data-en="Not Paid" data-rw="Ntacyashyizwe" data-fr="Non Payé">Not Paid</td>
+                                <td><span class="contribution-status status-pending" data-en="Pending" data-rw="Bitegereje" data-fr="En Attente">Pending</span></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="openPaymentModal()" data-en="Pay Now" data-rw="Shyira Noneho" data-fr="Payer Maintenant">Pay Now</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Reports -->
+            <div class="monthly-reports">
+                <div class="section-header">
+                    <div class="section-title" data-en="My Monthly Reports" data-rw="Raporo Zanjye z'Ukwezi" data-fr="Mes Rapports Mensuels">My Monthly Reports</div>
+                </div>
+                
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="report-info">
+                            <div class="report-title" data-en="November 2023 Report" data-rw="Raporo ya Ukwakira 2023" data-fr="Rapport Novembre 2023">November 2023 Report</div>
+                            <div class="report-date" data-en="Generated: Dec 1, 2023" data-rw="Yatangiye: 1 Mutarama 2023" data-fr="Généré: 1 Déc 2023">Generated: Dec 1, 2023</div>
+                            <button class="btn btn-sm btn-primary" onclick="downloadReport('nov2023')" data-en="Download" data-rw="Kuramo" data-fr="Télécharger">Download</button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="report-info">
+                            <div class="report-title" data-en="October 2023 Report" data-rw="Raporo ya Ugushyingo 2023" data-fr="Rapport Octobre 2023">October 2023 Report</div>
+                            <div class="report-date" data-en="Generated: Nov 1, 2023" data-rw="Yatangiye: 1 Ukuboza 2023" data-fr="Généré: 1 Nov 2023">Generated: Nov 1, 2023</div>
+                            <button class="btn btn-sm btn-primary" onclick="downloadReport('oct2023')" data-en="Download" data-rw="Kuramo" data-fr="Télécharger">Download</button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="report-info">
+                            <div class="report-title" data-en="September 2023 Report" data-rw="Raporo ya Nzeli 2023" data-fr="Rapport Septembre 2023">September 2023 Report</div>
+                            <div class="report-date" data-en="Generated: Oct 1, 2023" data-rw="Yatangiye: 1 Ukwakira 2023" data-fr="Généré: 1 Oct 2023">Generated: Oct 1, 2023</div>
+                            <button class="btn btn-sm btn-primary" onclick="downloadReport('sep2023')" data-en="Download" data-rw="Kuramo" data-fr="Télécharger">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="upcoming-events">
+                <div class="section-header">
+                    <div class="section-title" data-en="Upcoming Events" data-rw="Ibyabaye" data-fr="Événements à Venir">Upcoming Events</div>
+                    <button class="btn btn-secondary btn-sm" onclick="viewAllEvents()" data-en="View Calendar" data-rw="Reba Kalendari" data-fr="Voir Calendrier">View Calendar</button>
+                </div>
+                
+                <div class="events-list">
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">15</div>
+                            <div class="event-month" data-en="Dec" data-rw="Mutarama" data-fr="Déc">Dec</div>
+                        </div>
+                        <div class="event-info">
+                            <div class="event-title" data-en="Monthly Tontine Meeting" data-rw="Inama y'Ukwezi y'ekimina" data-fr="Réunion Mensuelle Tontine">Monthly Tontine Meeting</div>
+                            <div class="event-time">
+                                <i class="far fa-clock"></i>
+                                <span data-en="2:00 PM - Kigali Conference Center" data-rw="14:00 - Icyicaro cya Kigali" data-fr="14:00 - Centre de Conférence de Kigali">2:00 PM - Kigali Conference Center</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">20</div>
+                            <div class="event-month" data-en="Dec" data-rw="Mutarama" data-fr="Déc">Dec</div>
+                        </div>
+                        <div class="event-info">
+                            <div class="event-title" data-en="Contribution Deadline" data-rw="Igihe cyo Kwishyura" data-fr="Date Limite de Contribution">Contribution Deadline</div>
+                            <div class="event-time">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span data-en="All December payments due" data-rw="Amafaranga ya Nzeli yose akenewe" data-fr="Tous les paiements de décembre dus">All December payments due</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">25</div>
+                            <div class="event-month" data-en="Dec" data-rw="Mutarama" data-fr="Déc">Dec</div>
+                        </div>
+                        <div class="event-info">
+                            <div class="event-title" data-en="Christmas Social Event" data-rw="Umuganda w'Ikiriho" data-fr="Événement Social de Noël">Christmas Social Event</div>
+                            <div class="event-time">
+                                <i class="fas fa-glass-cheers"></i>
+                                <span data-en="6:00 PM - Member's Residence" data-rw="18:00 - Aho umwe mu banyamuryango aba" data-fr="18:00 - Résidence d'un Membre">6:00 PM - Member's Residence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" data-en="Make Payment" data-rw="Kwishyura" data-fr="Faire un Paiement">Make Payment</div>
+                <p data-en="Pay your tontine contribution securely" data-rw="Shyira uruhare rwawe mu kimina mu buryo bukorerwa" data-fr="Payez votre contribution tontine en toute sécurité">Pay your tontine contribution securely</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="paymentAmount" data-en="Amount (RWF)" data-rw="Amafaranga (RWF)" data-fr="Montant (RWF)">Amount (RWF)</label>
+                <input type="number" id="paymentAmount" value="50000" min="50000" step="1000">
+                <small style="color: var(--gray); font-size: 0.85rem;" data-en="Minimum: 50,000 RWF" data-rw="Amafaranga make: 50,000 RWF" data-fr="Minimum: 50,000 RWF">Minimum: 50,000 RWF</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="paymentMethod" data-en="Payment Method" data-rw="Uburyo bwo Kwishyura" data-fr="Méthode de Paiement">Payment Method</label>
+                <select id="paymentMethod">
+                    <option value="mobile" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</option>
+                    <option value="bank" data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</option>
+                    <option value="cash" data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="mobileNumberField" style="display: block;">
+                <label for="mobileNumber" data-en="Mobile Number" data-rw="Numero ya Telefone" data-fr="Numéro de Mobile">Mobile Number</label>
+                <input type="tel" id="mobileNumber" placeholder="0781234567">
+            </div>
+            
+            <div class="form-group" id="bankDetailsField" style="display: none;">
+                <label for="bankDetails" data-en="Bank Account Details" data-rw="Amakuru ya Konti ya Banki" data-fr="Détails du Compte Bancaire">Bank Account Details</label>
+                <textarea id="bankDetails" rows="3" placeholder="Account number, bank name, etc." data-placeholder-en="Account number, bank name, etc." data-placeholder-rw="Numero ya konti, izina ry'banki, n'ibindi" data-placeholder-fr="Numéro de compte, nom de banque, etc."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closePaymentModal()" data-en="Cancel" data-rw="Hagarika" data-fr="Annuler">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="processPayment()" data-en="Pay Now" data-rw="Shyira Noneho" data-fr="Payer Maintenant">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </div>
+                <div>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-question-circle"></i> 
+                        <span data-en="Help Center" data-rw="Ubufasha" data-fr="Centre d'aide">Help Center</span>
+                    </a>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-phone"></i> 
+                        <span data-en="Contact Support" data-rw="Vugana n'Abafasha" data-fr="Contactez le support">Contact Support</span>
+                    </a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 My Smart ekimina. 
+                    <a href="#" style="color: var(--secondary);" data-en="Privacy Policy" data-rw="Politiki y'Ibanga" data-fr="Politique de confidentialité">Privacy Policy</a> | 
+                    <a href="#" style="color: var(--secondary);" data-en="Terms of Service" data-rw="Amategeko y'Uburyo" data-fr="Conditions d'utilisation">Terms of Service</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Current language
+        let currentLanguage = 'en';
+
+        // Language switching function
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-en], [data-rw], [data-fr]').forEach(element => {
+                if (element.dataset[lang]) {
+                    element.textContent = element.dataset[lang];
+                }
+            });
+            
+            // Update all input placeholders
+            document.querySelectorAll('[data-placeholder-en], [data-placeholder-rw], [data-placeholder-fr]').forEach(input => {
+                // Convert 'en' to 'En', 'rw' to 'Rw', 'fr' to 'Fr' for camelCase dataset property
+                const placeholderKey = 'placeholder' + lang.charAt(0).toUpperCase() + lang.slice(1);
+                if (input.dataset[placeholderKey]) {
+                    input.placeholder = input.dataset[placeholderKey];
+                }
+            });
+            
+            // Update page title
+            const title = document.querySelector('title');
+            if (title.dataset[lang]) {
+                title.textContent = title.dataset[lang];
+            }
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Save language preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language preference
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            switchLanguage(savedLang);
+            
+            // Setup language switcher buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.dataset.lang);
+                });
+            });
+            
+            // Setup payment method toggle
+            document.getElementById('paymentMethod').addEventListener('change', function() {
+                const method = this.value;
+                document.getElementById('mobileNumberField').style.display = method === 'mobile' ? 'block' : 'none';
+                document.getElementById('bankDetailsField').style.display = method === 'bank' ? 'block' : 'none';
+            });
+            
+            // Check for pending notifications
+            updateNotificationBadge();
+        });
+
+        // Menu switching
+        function switchMenu(menu) {
+            // Update active menu item
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // In a real app, this would load different content
+            alert(getTranslation('menuSwitch', 'Switching to ' + menu));
+        }
+
+        // Payment modal functions
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function processPayment() {
+            const amount = document.getElementById('paymentAmount').value;
+            const method = document.getElementById('paymentMethod').value;
+            
+            if (amount < 50000) {
+                alert(getTranslation('minAmountError', 'Minimum amount is 50,000 RWF'));
+                return;
+            }
+            
+            // Show loading
+            const payBtn = document.querySelector('#paymentModal .btn-primary');
+            const originalText = payBtn.textContent;
+            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + getTranslation('processing', 'Processing...');
+            payBtn.disabled = true;
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Reset button
+                payBtn.innerHTML = originalText;
+                payBtn.disabled = false;
+                
+                // Close modal
+                closePaymentModal();
+                
+                // Show success message
+                alert(getTranslation('paymentSuccess', 'Payment of ' + amount + ' RWF processed successfully!'));
+                
+                // Update dashboard
+                updateDashboardAfterPayment();
+            }, 2000);
+        }
+
+        function updateDashboardAfterPayment() {
+            // Update today's contribution status
+            const todayStat = document.querySelector('.stat-card .stat-value');
+            todayStat.textContent = '50,000 RWF';
+            
+            const todayStatus = document.querySelector('.stat-card .stat-change');
+            todayStatus.innerHTML = '<i class="fas fa-check"></i> ' + getTranslation('paidToday', 'Paid today');
+            todayStatus.className = 'stat-change positive';
+            
+            // Update recent contributions table
+            const tableRow = document.querySelector('.contributions-table tbody tr:nth-child(5)');
+            tableRow.innerHTML = `
+                <td>${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                <td>50,000 RWF</td>
+                <td>${getTranslation('mobileMoney', 'Mobile Money')}</td>
+                <td><span class="contribution-status status-paid">${getTranslation('paid', 'Paid')}</span></td>
+                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('today')"><i class="fas fa-download"></i></button></td>
+            `;
+        }
+
+        // Download functions
+        function downloadReceipt(receiptId) {
+            alert(getTranslation('downloadReceipt', 'Downloading receipt #' + receiptId + '...'));
+            // In real app, this would download a PDF
+        }
+
+        function downloadReport(reportId) {
+            alert(getTranslation('downloadReport', 'Downloading ' + reportId + ' report...'));
+            // In real app, this would download a PDF
+        }
+
+        function downloadMyReport(type) {
+            const reportName = type === 'monthly' ? getTranslation('monthlyReport', 'Monthly Report') : getTranslation('yearlyReport', 'Yearly Report');
+            alert(getTranslation('downloading', 'Downloading your ') + reportName + '...');
+        }
+
+        // View functions
+        function viewAllMyContributions() {
+            alert(getTranslation('viewAllContributions', 'Opening all your contributions...'));
+        }
+
+        function viewAllEvents() {
+            alert(getTranslation('viewCalendar', 'Opening calendar view...'));
+        }
+
+        function contactAdmin() {
+            alert(getTranslation('contactAdmin', 'Opening contact form for administrator...'));
+        }
+
+        function viewMyContributions() {
+            alert(getTranslation('viewHistory', 'Opening your contribution history...'));
+        }
+
+        // Notification functions
+        function updateNotificationBadge() {
+            // In real app, this would fetch from API
+            const count = 3;
+            document.getElementById('notificationCount').textContent = count;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm(getTranslation('confirmLogout', 'Are you sure you want to logout?'))) {
+                // In real app, this would clear session and redirect
+                localStorage.removeItem('userToken');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Helper function for translations
+        function getTranslation(key, defaultText) {
+            const translations = {
+                'menuSwitch': {
+                    'en': 'Switching to ',
+                    'rw': 'Kwinjira muri ',
+                    'fr': 'Passage à '
+                },
+                'minAmountError': {
+                    'en': 'Minimum amount is 50,000 RWF',
+                    'rw': 'Amafaranga make ni 50,000 RWF',
+                    'fr': 'Le montant minimum est de 50,000 RWF'
+                },
+                'processing': {
+                    'en': 'Processing...',
+                    'rw': 'Biri gukorwa...',
+                    'fr': 'Traitement...'
+                },
+                'paymentSuccess': {
+                    'en': 'Payment of ',
+                    'rw': 'Amafaranga ',
+                    'fr': 'Paiement de '
+                },
+                'paidToday': {
+                    'en': 'Paid today',
+                    'rw': 'Yishyuye uyu munsi',
+                    'fr': 'Payé aujourd\'hui'
+                },
+                'downloadReceipt': {
+                    'en': 'Downloading receipt #',
+                    'rw': 'Kuramo resi #',
+                    'fr': 'Téléchargement du reçu #'
+                },
+                'downloadReport': {
+                    'en': 'Downloading ',
+                    'rw': 'Kuramo ',
+                    'fr': 'Téléchargement '
+                },
+                'monthlyReport': {
+                    'en': 'Monthly Report',
+                    'rw': 'Raporo y\'Ukwezi',
+                    'fr': 'Rapport Mensuel'
+                },
+                'yearlyReport': {
+                    'en': 'Yearly Report',
+                    'rw': 'Raporo y\'Umwaka',
+                    'fr': 'Rapport Annuel'
+                },
+                'downloading': {
+                    'en': 'Downloading your ',
+                    'rw': 'Kuramo ',
+                    'fr': 'Téléchargement de votre '
+                },
+                'viewAllContributions': {
+                    'en': 'Opening all your contributions...',
+                    'rw': 'Gufungura uruhare rwawe rwose...',
+                    'fr': 'Ouverture de toutes vos contributions...'
+                },
+                'viewCalendar': {
+                    'en': 'Opening calendar view...',
+                    'rw': 'Gufungura kalendari...',
+                    'fr': 'Ouverture du calendrier...'
+                },
+                'contactAdmin': {
+                    'en': 'Opening contact form for administrator...',
+                    'rw': 'Gufungura ifishi yo kuvugana n\'umuyobozi...',
+                    'fr': 'Ouverture du formulaire de contact pour l\'administrateur...'
+                },
+                'viewHistory': {
+                    'en': 'Opening your contribution history...',
+                    'rw': 'Gufungura amateka y\'uruhare rwawe...',
+                    'fr': 'Ouverture de votre historique de contributions...'
+                },
+                'confirmLogout': {
+                    'en': 'Are you sure you want to logout?',
+                    'rw': 'Urakomeye ko ushaka gusohoka?',
+                    'fr': 'Êtes-vous sûr de vouloir vous déconnecter?'
+                },
+                'paid': {
+                    'en': 'Paid',
+                    'rw': 'Yishyuye',
+                    'fr': 'Payé'
+                },
+                'mobileMoney': {
+                    'en': 'Mobile Money',
+                    'rw': 'Amafaranga ya Telefone',
+                    'fr': 'Mobile Money'
+                }
+            };
+            
+            const parts = defaultText.split(' ');
+            const baseKey = key;
+            const dynamicPart = parts.length > 2 ? parts.slice(2).join(' ') : '';
+            
+            return translations[key]?.[currentLanguage] || defaultText;
+        }
+    </script>
+</body>
+</html>

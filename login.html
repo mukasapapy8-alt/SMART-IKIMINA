@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Login | My Smart ekimina" data-rw="Injira | My Smart ekimina" data-fr="Connexion | My Smart ekimina">Login | My Smart ekimina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #2E5BFF;
+            --primary-dark: #1A3DB0;
+            --secondary: #00D4AA;
+            --success: #00C851;
+            --warning: #ffbb33;
+            --danger: #ff4444;
+            --dark: #2E384D;
+            --light: #F8F9FC;
+            --gray: #B0BAC9;
+            --gray-light: #EDF0F7;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 30px rgba(46, 91, 255, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .logo-icon:after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: var(--gradient);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            gap: 5px;
+            margin-left: 20px;
+        }
+
+        .language-btn {
+            padding: 8px 15px;
+            border: 2px solid var(--gray-light);
+            background: white;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .language-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .language-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Login Page Styles */
+        .login-page {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        /* Login Illustration Side */
+        .login-illustration {
+            flex: 1;
+            background: var(--gradient);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-illustration:before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .login-illustration:after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .illustration-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .illustration-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .illustration-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .illustration-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .features-list li i {
+            margin-right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Login Form Side */
+        .login-form-side {
+            flex: 1;
+            background: white;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            margin-bottom: 40px;
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .login-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Login Form */
+        .login-form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .required:after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 91, 255, 0.1);
+        }
+
+        input.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: auto;
+        }
+
+        .remember-me label {
+            margin-bottom: 0;
+            cursor: pointer;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-button {
+            margin-bottom: 30px;
+        }
+
+        .login-button .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: var(--gray);
+        }
+
+        .divider:before, .divider:after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--gray-light);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Social Login */
+        .social-login {
+            margin-bottom: 30px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .social-btn.google {
+            color: #DB4437;
+        }
+
+        .social-btn.facebook {
+            color: #4267B2;
+        }
+
+        /* Signup Link */
+        .signup-link {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .alert.error {
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert.success {
+            background: rgba(0, 200, 81, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .login-illustration {
+                padding: 40px 30px;
+            }
+            
+            .login-form-side {
+                padding: 40px 30px;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links li:not(:last-child) {
+                display: none;
+            }
+            
+            .language-switcher {
+                margin-left: 10px;
+            }
+            
+            .language-btn {
+                padding: 6px 12px;
+                min-width: 40px;
+            }
+            
+            .illustration-content h2 {
+                font-size: 1.8rem;
+            }
+            
+            .login-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="ikimina.html" class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="C:\Users\papy\Desktop\SMART -IKIMINA\ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                    <li><a href="C:\Users\papy\Desktop\SMART -IKIMINA\register.html" data-en="Join Tontine" data-rw="Injira mu Ikimina" data-fr="Rejoindre Tontine">Join Tontine</a></li>
+                    <li><a href="C:\Users\papy\Desktop\SMART -IKIMINA\ton.registration.html" data-en="Create Tontine" data-rw="Fata Ikimina" data-fr="Créer Tontine">Create Tontine</a></li>
+                    <li>
+                        <div class="language-switcher">
+                            <button class="language-btn active" data-lang="en">EN</button>
+                            <button class="language-btn" data-lang="rw">RW</button>
+                            <button class="language-btn" data-lang="fr">FR</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Login Page -->
+    <section class="login-page">
+        <div class="container">
+            <div class="login-container">
+                <!-- Illustration Side -->
+                <div class="login-illustration">
+                    <div class="illustration-content">
+                        <div class="illustration-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2 data-en="Welcome Back to Smart ekimina" 
+                            data-rw="Murakaza neza kurubuga rwikoranabuhanga rwa My Smart ekimina" 
+                            data-fr="Bienvenue sur Smart ekimina">
+                            Welcome Back to Smart Ikimina
+                        </h2>
+                        <p data-en="Access your tontine dashboard, manage contributions, and connect with your group members securely." 
+                           data-rw="Gera kumbonerahamwe y'amakuru yawe, Genzura umusanzu wawe, sangira ibitekerezo nabo mubana mu itsinda kandi birizewe."
+                           data-fr="Accédez à votre tableau de bord de tontine, gérez les contributions et connectez-vous avec les membres de votre groupe en toute sécurité.">
+                           Access your tontine dashboard, manage contributions, and connect with your group members securely.
+                        </p>
+                        
+                        <ul class="features-list">
+                            <li>
+                                <i class="fas fa-shield-alt"></i>
+                                <span data-en="Bank-level security for your funds" 
+                                      data-rw="Umutekano w'amafaranga yawe urizewe kurwego rwamabanki"
+                                      data-fr="Sécurité bancaire pour vos fonds">Bank-level security for your funds</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-chart-line"></i>
+                                <span data-en="Real-time contribution tracking" 
+                                      data-rw="Gukurikirana uruhare rwawe mugutanga umusanzu"
+                                      data-fr="Suivi des contributions en temps réel">Real-time contribution tracking</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-comments"></i>
+                                <span data-en="Direct communication with members" 
+                                      data-rw="Vugana nabanyamuryango ako kanya"
+                                      data-fr="Communication directe avec les membres">Direct communication with members</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-mobile-alt"></i>
+                                <span data-en="Mobile-friendly dashboard" 
+                                      data-rw="Ikibaho gikoreshwa neza kuri telefone"
+                                      data-fr="Tableau de bord adapté aux mobiles">Mobile-friendly dashboard</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Login Form Side -->
+                <div class="login-form-side">
+                    <div class="login-header">
+                        <h1 data-en="Sign In to Your Account" 
+                            data-rw="Injira mu Konti yawe" 
+                            data-fr="Connectez-vous à votre compte">
+                            Sign In to Your Account
+                        </h1>
+                        <p data-en="Enter your credentials to access your dashboard" 
+                           data-rw="Shyiramo ibyangombwa kugirango ugere kumbonerahamwe y'amakuru"
+                           data-fr="Entrez vos identifiants pour accéder à votre tableau de bord">
+                           Enter your credentials to access your dashboard
+                        </p>
+                    </div>
+
+                    <!-- Error/Success Alert -->
+                    <div class="alert error" id="loginError">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        <span id="errorMessage" data-en="Invalid email or password" 
+                              data-rw="Imeli cyangwa ijambobanga ntabwo ari byo"
+                              data-fr="Email ou mot de passe invalide">Invalid email or password</span>
+                    </div>
+
+                    <div class="alert success" id="loginSuccess" style="display: none;">
+                        <i class="fas fa-check-circle"></i> 
+                        <span data-en="Login successful! Redirecting..." 
+                              data-rw="Winjiye neza! Turi kuri..." 
+                              data-fr="Connexion réussie ! Redirection...">Login successful! Redirecting...</span>
+                    </div>
+
+                    <form class="login-form" id="loginForm">
+                        <div class="form-group">
+                            <label for="email" class="required" data-en="Email Address" data-rw="Imeli" data-fr="Adresse Email">Email Address</label>
+                            <input type="email" id="email" name="email" required 
+                                   data-placeholder-en="Enter your email"
+                                   data-placeholder-rw="Shyiramo imeli yawe"
+                                   data-placeholder-fr="Entrez votre email">
+                            <div class="error-message" id="emailError" 
+                                 data-en="Please enter a valid email address"
+                                 data-rw="Nyamuneka shyira imeli nziza"
+                                 data-fr="Veuillez entrer une adresse email valide">Please enter a valid email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="required" data-en="Password" data-rw="Ijambobanga" data-fr="Mot de Passe">Password</label>
+                            <input type="password" id="password" name="password" required 
+                                   data-placeholder-en="Enter your password"
+                                   data-placeholder-rw="Shyiramo ijambobanga ryawe"
+                                   data-placeholder-fr="Entrez votre mot de passe">
+                            <div class="error-message" id="passwordError" 
+                                 data-en="Please enter your password"
+                                 data-rw="Nyamuneka shyiramo ijambobanga ryawe"
+                                 data-fr="Veuillez entrer votre mot de passe">Please enter your password</div>
+                        </div>
+
+                        <div class="form-options">
+                            <div class="remember-me">
+                                <input type="checkbox" id="rememberMe" name="rememberMe">
+                                <label for="rememberMe" data-en="Remember me" data-rw="Nyibuka" data-fr="Se souvenir de moi">Remember me</label>
+                            </div>
+                            <a href="forgot-password.html" class="forgot-password" 
+                               data-en="Forgot Password?" 
+                               data-rw="Wibagiwe ijambobanga?" 
+                               data-fr="Mot de passe oublié?">Forgot Password?</a>
+                        </div>
+
+                        <div class="login-button">
+                            <button type="button" class="btn btn-primary" onclick="login()" 
+                                    data-en="Sign In" 
+                                    data-rw="Injira" 
+                                    data-fr="Se Connecter">Sign In</button>
+                        </div>
+
+                        <div class="divider">
+                            <span data-en="Or continue with" data-rw="Cyangwa komeza na" data-fr="Ou continuer avec">Or continue with</span>
+                        </div>
+
+                        <div class="social-login">
+                            <div class="social-buttons">
+                                <button type="button" class="social-btn google" onclick="loginWithGoogle()">
+                                    <i class="fab fa-google"></i>
+                                    <span data-en="Google" data-rw="Google" data-fr="Google">Google</span>
+                                </button>
+                                <button type="button" class="social-btn facebook" onclick="loginWithFacebook()">
+                                    <i class="fab fa-facebook-f"></i>
+                                    <span data-en="Facebook" data-rw="Facebook" data-fr="Facebook">Facebook</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="signup-link">
+                            <span data-en="Don't have an account?" data-rw="Nta konti ufite?" data-fr="Vous n'avez pas de compte?">Don't have an account?</span>
+                            <a href="C:\Users\papy\Desktop\SMART -IKIMINA\register.html" 
+                               data-en="Join a Tontine" 
+                               data-rw="Injira mu Ikimina" 
+                               data-fr="Rejoindre une Tontine">Join a Tontine</a>
+                            <span data-en="or" data-rw="cyangwa" data-fr="ou">or</span>
+                            <a href="C:\Users\papy\Desktop\SMART -IKIMINA\ton.registration.html" 
+                               data-en="Create a Tontine" 
+                               data-rw="Shinga Ikimina" 
+                               data-fr="Créer une Tontine">Create a Tontine</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </div>
+                <div>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-question-circle"></i> 
+                        <span data-en="Help Center" data-rw="Ubufasha" data-fr="Centre d'aide">Help Center</span>
+                    </a>
+                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-phone"></i> 
+                        <span data-en="Contact Support" data-rw="Vugana n'Abafasha" data-fr="Contactez le support">Contact Support</span>
+                    </a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 My Smart ekimina-a product of cooloff company ltd. 
+                    <a href="#" style="color: var(--secondary);" data-en="Privacy Policy" data-rw="Politiki y'Ibanga" data-fr="Politique de confidentialité">Privacy Policy</a> | 
+                    <a href="#" style="color: var(--secondary);" data-en="Terms of Service" data-rw="Amategeko y'Uburyo" data-fr="Conditions d'utilisation">Terms of Service</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Current language
+        let currentLanguage = 'en';
+
+        // Language switching function
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-en]').forEach(element => {
+                if (element.dataset[lang]) {
+                    element.textContent = element.dataset[lang];
+                }
+            });
+            
+            // Update all input placeholders
+            document.querySelectorAll('[data-placeholder-en]').forEach(input => {
+                const placeholderKey = 'placeholder-' + lang;
+                if (input.dataset[placeholderKey]) {
+                    input.placeholder = input.dataset[placeholderKey];
+                }
+            });
+            
+            // Update page title
+            const title = document.querySelector('title');
+            if (title.dataset[lang]) {
+                title.textContent = title.dataset[lang];
+            }
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Save language preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date for date of birth (18+ years old)
+            const today = new Date();
+            const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            // Load saved language preference
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            switchLanguage(savedLang);
+            
+            // Setup language switcher buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.dataset.lang);
+                });
+            });
+            
+            // Enter key to submit form
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
+
+        // Login validation
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // Show/hide error messages
+        function showError(elementId) {
+            document.getElementById(elementId).style.display = 'block';
+            document.getElementById(elementId.replace('Error', '')).classList.add('error');
+        }
+
+        function hideError(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+            document.getElementById(elementId.replace('Error', '')).classList.remove('error');
+        }
+
+        // Show/hide alert messages
+        function showAlert(type, message = '') {
+            const alertElement = type === 'error' ? document.getElementById('loginError') : document.getElementById('loginSuccess');
+            const otherAlert = type === 'error' ? document.getElementById('loginSuccess') : document.getElementById('loginError');
+            
+            otherAlert.style.display = 'none';
+            
+            if (message && type === 'error') {
+                document.getElementById('errorMessage').textContent = message;
+            }
+            
+            alertElement.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Main login function
+        function login() {
+            // Reset errors
+            hideError('emailError');
+            hideError('passwordError');
+            document.getElementById('loginError').style.display = 'none';
+            
+            // Get values
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Validate
+            let isValid = true;
+            
+            if (!email) {
+                showError('emailError');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                document.getElementById('emailError').textContent = getTranslation('emailError', 'Please enter a valid email address');
+                showError('emailError');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError('passwordError');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                document.getElementById('passwordError').textContent = getTranslation('passwordError', 'Password must be at least 6 characters');
+                showError('passwordError');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading state
+            const loginBtn = document.querySelector('.login-button .btn');
+            const originalText = loginBtn.textContent;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + getTranslation('loginBtnLoading', 'Signing in...');
+            loginBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Reset button
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                
+                // For demo purposes, accept specific credentials
+                const demoAccounts = [
+                    { email: 'demo@ikimina.com', password: 'demo123' },
+                    { email: 'test@ikimina.com', password: 'test123' },
+                    { email: 'admin@ikimina.com', password: 'admin123' }
+                ];
+                
+                const isValidAccount = demoAccounts.some(account => 
+                    account.email === email && account.password === password
+                );
+                
+                if (isValidAccount) {
+                    // Show success
+                    showAlert('success');
+                    
+                    // Save login state if remember me is checked
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedEmail', email);
+                    }
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else {
+                    // Show error
+                    showAlert('error');
+                }
+            }, 1500);
+        }
+
+        // Social login functions (demo)
+        function loginWithGoogle() {
+            showAlert('success', getTranslation('googleLogin', 'Google login would open here'));
+            
+            // In real implementation, this would redirect to Google OAuth
+            // window.location.href = '/auth/google';
+        }
+
+        function loginWithFacebook() {
+            showAlert('success', getTranslation('facebookLogin', 'Facebook login would open here'));
+            
+            // In real implementation, this would redirect to Facebook OAuth
+            // window.location.href = '/auth/facebook';
+        }
+
+        // Helper function for translations
+        function getTranslation(key, defaultText) {
+            // In a real app, you'd have a full translation dictionary
+            const translations = {
+                'emailError': {
+                    'en': 'Please enter a valid email address',
+                    'rw': 'Nyamuneka shyira imeli nziza',
+                    'fr': 'Veuillez entrer une adresse email valide'
+                },
+                'passwordError': {
+                    'en': 'Password must be at least 6 characters',
+                    'rw': 'Ijambobanga rigomba kuba rifite inyuguti 6',
+                    'fr': 'Le mot de passe doit comporter au moins 6 caractères'
+                },
+                'loginBtnLoading': {
+                    'en': 'Signing in...',
+                    'rw': 'Uri kwinjira...',
+                    'fr': 'Connexion...'
+                },
+                'googleLogin': {
+                    'en': 'Google login would open here',
+                    'rw': 'Kwinjira na Google biza fungurwa hano',
+                    'fr': 'La connexion Google s\'ouvrirait ici'
+                },
+                'facebookLogin': {
+                    'en': 'Facebook login would open here',
+                    'rw': 'Kwinjira na Facebook biza fungurwa hano',
+                    'fr': 'La connexion Facebook s\'ouvrirait ici'
+                }
+            };
+            
+            return translations[key]?.[currentLanguage] || defaultText;
+        }
+
+        // Auto-fill remembered email
+        window.onload = function() {
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        };
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | My Smart Ikimina</title>
+    <title data-en="Join Tontine | My Smart ekimina" data-rw="Injira mu Ikimina | My Smart ekimina" data-fr="Rejoindre Tontine | My Smart ekimina">Join Tontine | My Smart ekimina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles & Variables */
@@ -183,6 +183,45 @@
 
         .nav-links a:hover:after {
             width: 100%;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 50px;
+        }
+
+        .language-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .language-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
         }
 
         /* Registration Page Styles */
@@ -733,8 +772,90 @@
             font-size: 0.9rem;
         }
 
+        .nav-links a i {
+            margin-right: 5px;
+        }
+
+        .progress-fill-width {
+            width: 25%;
+        }
+
+        .section-description {
+            margin-bottom: 20px;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .error-message-margin {
+            margin-top: 10px;
+        }
+
+        .modal-steps-list {
+            text-align: left;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        .modal-actions-container {
+            margin-top: 30px;
+        }
+
+        .footer-link {
+            color: white;
+            margin-left: 20px;
+        }
+
+        .footer-link-secondary {
+            color: var(--secondary);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+                z-index: 1001;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                width: 100vw;
+                background: white;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                pointer-events: none;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                pointer-events: auto;
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .nav-right {
+                gap: 15px;
+            }
+            
+            .language-switcher {
+                display: none;
+            }
+            
             .registration-header h1 {
                 font-size: 2.2rem;
             }
@@ -763,10 +884,6 @@
             
             .form-group.half {
                 flex: 1 0 100%;
-            }
-            
-            .nav-links {
-                display: none;
             }
             
             .step-navigation {
@@ -798,17 +915,28 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo-container">
+                <a href="ikimina.html" class="logo-container">
                     <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
                 </a>
                 
-                <ul class="nav-links">
-                    <li><a href="ikimina.html">Home</a></li>
-                    <li><a href="ton.registration.html">Create Tontine</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="#"><i class="fas fa-user-circle" style="margin-right: 5px;"></i> Login</a></li>
-                </ul>
+                <div class="nav-right">
+                    <div class="language-switcher" id="languageSwitcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="rw">RW</button>
+                        <button class="language-btn" data-lang="fr">FR</button>
+                    </div>
+
+                    <div class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    
+                    <ul class="nav-links" id="navLinks">
+                        <li><a href="ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                        <li><a href="ton.registration.html" data-en="Create Tontine" data-rw="Shinga Ikimina" data-fr="Créer Tontine">Create Tontine</a></li>
+                        <li><a href="login.html" data-en="Login" data-rw="Injira" data-fr="Connexion"><i class="fas fa-user-circle"></i> Login</a></li>
+                    </ul>
+                </div>
             </nav>
         </div>
     </header>
@@ -817,14 +945,14 @@
     <section class="registration-page">
         <div class="container">
             <div class="registration-header">
-                <h1>Join My Smart Ikimina</h1>
-                <p>Complete the registration form to join a tontine. Fill each step and click Next to continue.</p>
+                <h1 data-en="Join My Smart ekimina" data-rw="Injira mu My Smart ekimina" data-fr="Rejoindre My Smart ekimina">Join My Smart ekimina</h1>
+                <p data-en="Complete the registration form to join a tontine. Fill each step and click Next to continue." data-rw="Uzuza fomu yo kwiyandikisha kugirango ushyireho ikimina. Uzuza buri ntambwe hanyuma ukande komeza." data-fr="Remplissez le formulaire d'inscription pour rejoindre une tontine. Remplissez chaque étape et cliquez sur Suivant pour continuer.">Complete the registration form to join a tontine. Fill each step and click Next to continue.</p>
             </div>
 
             <div class="registration-flow">
                 <!-- Progress Steps -->
                 <div class="progress-steps">
-                    <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+                    <div class="progress-fill progress-fill-width" id="progressFill"></div>
                     
                     <div class="step-indicator active" id="stepIndicator1">
                         <div class="step-circle">1</div>
@@ -850,35 +978,35 @@
                 <!-- Step 1: Personal Information -->
                 <div class="step-content active" id="step1">
                     <div class="step-header">
-                        <h2>Personal Information</h2>
-                        <p>Enter your personal details and contact information</p>
+                        <h2 data-en="Personal Information" data-rw="Amakuru y'umuntu" data-fr="Informations personnelles">Personal Information</h2>
+                        <p data-en="Enter your personal details and contact information" data-rw="Injiza amakuru yanyayo akuranga " data-fr="Entrez vos coordonnées personnelles et vos informations de contact">Enter your personal details and contact information</p>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group half">
-                            <label for="firstName" class="required">First Name</label>
+                            <label for="firstName" class="required">First Name/Izina ryambere</label>
                             <input type="text" id="firstName" name="firstName" required>
-                            <div class="error-message" id="firstNameError">Please enter your first name</div>
+                            <div class="error-message" id="firstNameError">Please enter your first name/uzuza ryawe ryambere</div>
                         </div>
                         
                         <div class="form-group half">
-                            <label for="lastName" class="required">Last Name</label>
+                            <label for="lastName" class="required">Last Name/izina riheruka</label>
                             <input type="text" id="lastName" name="lastName" required>
-                            <div class="error-message" id="lastNameError">Please enter your last name</div>
+                            <div class="error-message" id="lastNameError">Please enter your last name/uzuza izina riheruka</div>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group half">
-                            <label for="idNumber" class="required">National ID Number</label>
+                            <label for="idNumber" class="required">National ID Number/nimero y'indangamuntu</label>
                             <input type="text" id="idNumber" name="idNumber" required>
-                            <div class="error-message" id="idNumberError">Please enter a valid ID number</div>
+                            <div class="error-message" id="idNumberError">Please enter a valid ID number/uzuza nimero y'indangamuntu</div>
                         </div>
                         
                         <div class="form-group half">
-                            <label for="dateOfBirth" class="required">Date of Birth</label>
+                            <label for="dateOfBirth" class="required">Date of Birth/italiki y'amavuko</label>
                             <input type="date" id="dateOfBirth" name="dateOfBirth" required>
-                            <div class="error-message" id="dobError">Please enter your date of birth</div>
+                            <div class="error-message" id="dobError">Please enter your date of birth/uzuza italiki y'amavuko</div>
                         </div>
                     </div>
                     
@@ -891,9 +1019,9 @@
                         </div>
                         
                         <div class="form-group half">
-                            <label for="phone" class="required">Phone Number</label>
+                            <label for="phone" class="required">Phone Number/nimero ya telefone</label>
                             <input type="tel" id="phone" name="phone" required>
-                            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+                            <div class="error-message" id="phoneError">Please enter a valid phone number/uzuza nimero ya telefone</div>
                             <div class="success-message" id="phoneSuccess">✓ Valid phone number</div>
                         </div>
                     </div>
@@ -910,24 +1038,24 @@
                                 <option value="kenya">Kenya</option>
                                 <option value="drc">DR Congo</option>
                             </select>
-                            <div class="error-message" id="countryError">Please select your country</div>
+                            <div class="error-message" id="countryError">Please select your country/hitamo igihugu</div>
                         </div>
                     </div>
                     
                     <div class="step-navigation">
                         <div></div>
-                        <button type="button" class="btn btn-primary" id="nextStep1" onclick="validateStep1()">Next: Tontine Selection</button>
+                        <button type="button" class="btn btn-primary" id="nextStep1" onclick="validateStep1()" data-en="Next: Tontine Selection" data-rw="Komeza: Hitamo Ikimina" data-fr="Suivant: Sélection Tontine">Next: Tontine Selection</button>
                     </div>
                 </div>
 
                 <!-- Step 2: Tontine Selection -->
                 <div class="step-content" id="step2">
                     <div class="step-header">
-                        <h2>Select Your Tontine</h2>
-                        <p>Choose a tontine group to join</p>
+                        <h2 data-en="Select Your Tontine" data-rw="Hitamo Ikimina " data-fr="Sélectionnez Votre Tontine">Select Your Tontine</h2>
+                        <p data-en="Choose a tontine group to join" data-rw="Hitamo ikimina cyogukorana nacyo" data-fr="Choisissez un groupe de tontine à rejoindre">Choose a tontine group to join</p>
                     </div>
                     
-                    <p style="margin-bottom: 20px;">Select a tontine from the available options below:</p>
+                    <p class="section-description">Select a tontine from the available options below:</p>
                     
                     <div class="tontine-grid" id="tontineList">
                         <!-- Tontine options will be populated by JavaScript -->
@@ -938,83 +1066,83 @@
                     <div class="success-message" id="tontineSuccess">✓ Tontine selected successfully</div>
                     
                     <div class="step-navigation">
-                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">Back to Personal Info</button>
-                        <button type="button" class="btn btn-primary" id="nextStep2" onclick="validateStep2()">Next: Upload Documents</button>
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)" data-en="Back to Personal Info" data-rw="Subira ku Makuru y'Umuntu" data-fr="Retour aux Informations Personnelles">Back to Personal Info</button>
+                        <button type="button" class="btn btn-primary" id="nextStep2" onclick="validateStep2()" data-en="Next: Upload Documents" data-rw="Komeza: Kwiyandikisha Inyandiko" data-fr="Suivant: Télécharger les Documents">Next: Upload Documents</button>
                     </div>
                 </div>
 
                 <!-- Step 3: Document Upload -->
                 <div class="step-content" id="step3">
                     <div class="step-header">
-                        <h2>Upload Documents</h2>
-                        <p>Upload required identification documents</p>
+                        <h2 data-en="Upload Documents" data-rw="injiza ibyangombwa" data-fr="Télécharger les documents">Upload Documents</h2>
+                        <p data-en="Upload required identification documents" data-rw="injiza ibyangomba bikenewe" data-fr="Téléchargez les documents d'identification requis">Upload required identification documents</p>
                     </div>
                     
-                    <p style="margin-bottom: 20px;">Upload the required documents for identity verification:</p>
+                    <p class="section-description">Upload the required documents for identity verification:</p>
                     
                     <div class="form-group">
-                        <label for="idDocument" class="required">National ID Document</label>
+                        <label for="idDocument" class="required">National ID Document/injiza ifoto y'indangamuntu(ifoto ikeye)</label>
                         <div class="upload-area" id="idUploadArea">
                             <div class="upload-icon">
                                 <i class="fas fa-cloud-upload-alt"></i>
                             </div>
                             <div class="upload-text">Click to upload or drag and drop</div>
                             <div class="upload-subtext">PNG, JPG or PDF (Max. 5MB)</div>
-                            <input type="file" id="idDocument" name="idDocument" accept=".png,.jpg,.jpeg,.pdf" style="display: none;" required>
+                            <input type="file" id="idDocument" name="idDocument" accept=".png,.jpg,.jpeg,.pdf" class="hidden-file-input" required>
                         </div>
                         <div class="uploaded-files" id="idUploadedFiles"></div>
-                        <div class="error-message" id="idDocumentError">Please upload your ID document</div>
-                        <div class="success-message" id="idDocumentSuccess">✓ ID document uploaded successfully</div>
+                        <div class="error-message" id="idDocumentError">Please upload your ID document/injiza indangamuntu/div>
+                        <div class="success-message" id="idDocumentSuccess">✓ ID document uploaded successfully/indangamuntu yemejwe</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="addressProof">Proof of Address (Optional)</label>
+                        <label for="addressProof">Proof of Address (Optional)/ikemezo cyuko utuye</label>
                         <div class="upload-area" id="addressUploadArea">
                             <div class="upload-icon">
                                 <i class="fas fa-cloud-upload-alt"></i>
                             </div>
                             <div class="upload-text">Click to upload or drag and drop</div>
                             <div class="upload-subtext">PNG, JPG or PDF (Max. 5MB)</div>
-                            <input type="file" id="addressProof" name="addressProof" accept=".png,.jpg,.jpeg,.pdf" style="display: none;">
+                            <input type="file" id="addressProof" name="addressProof" accept=".png,.jpg,.jpeg,.pdf" class="hidden-file-input">
                         </div>
                         <div class="uploaded-files" id="addressUploadedFiles"></div>
                     </div>
                     
                     <div class="step-navigation">
-                        <button type="button" class="btn btn-secondary" onclick="goToStep(2)">Back to Tontine Selection</button>
-                        <button type="button" class="btn btn-primary" id="nextStep3" onclick="validateStep3()">Next: Review & Submit</button>
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(2)" data-en="Back to Tontine Selection" data-rw="Subira ku Muhinzo w'Ikimina" data-fr="Retour à la Sélection Tontine">Back to Tontine Selection</button>
+                        <button type="button" class="btn btn-primary" id="nextStep3" onclick="validateStep3()" data-en="Next: Review &amp; Submit" data-rw="Komeza: Menya &amp; Ohereza" data-fr="Suivant: Vérifier &amp; Soumettre">Next: Review & Submit</button>
                     </div>
                 </div>
 
                 <!-- Step 4: Review & Submit -->
                 <div class="step-content" id="step4">
                     <div class="step-header">
-                        <h2>Review & Submit</h2>
-                        <p>Review your information and submit application</p>
+                        <h2 data-en="Review &amp; Submit" data-rw="suzuma &amp; Ohereza" data-fr="Vérifier &amp; Soumettre">Review & Submit</h2>
+                        <p data-en="Review your information and submit application" data-rw="suzuma amakuru,ubone kohereza" data-fr="Passez en revue vos informations et soumettez la demande">Review your information and submit application</p>
                     </div>
                     
                     <div class="review-summary">
                         <div class="review-section">
-                            <h4>Personal Information</h4>
+                            <h4>Personal Information/amakuru akuranga</h4>
                             <div class="review-item">
-                                <div class="review-label">Full Name:</div>
-                                <div class="review-value" id="reviewFullName">Not provided</div>
+                                <div class="review-label">Full Name/amazina yose:</div>
+                                <div class="review-value" id="reviewFullName">Not provided/ntibyatanzwe</div>
                             </div>
                             <div class="review-item">
-                                <div class="review-label">ID Number:</div>
-                                <div class="review-value" id="reviewIdNumber">Not provided</div>
+                                <div class="review-label">ID Number/nimero y'irangamuntu:</div>
+                                <div class="review-value" id="reviewIdNumber">Not provided/ntibyatanzwe</div>
                             </div>
                             <div class="review-item">
-                                <div class="review-label">Date of Birth:</div>
-                                <div class="review-value" id="reviewDOB">Not provided</div>
+                                <div class="review-label">Date of Birth/italiki y'amavuko:</div>
+                                <div class="review-value" id="reviewDOB">Not provided/ntibyatanzwe</div>
                             </div>
                             <div class="review-item">
                                 <div class="review-label">Email:</div>
-                                <div class="review-value" id="reviewEmail">Not provided</div>
+                                <div class="review-value" id="reviewEmail">Not provided/ntibyatanzwe</div>
                             </div>
                             <div class="review-item">
                                 <div class="review-label">Phone:</div>
-                                <div class="review-value" id="reviewPhone">Not provided</div>
+                                <div class="review-value" id="reviewPhone">Not provided/ntibyatanzwe</div>
                             </div>
                             <div class="review-item">
                                 <div class="review-label">Country:</div>
@@ -1023,21 +1151,21 @@
                         </div>
                         
                         <div class="review-section">
-                            <h4>Tontine Selection</h4>
+                            <h4>Tontine Selection/hitamo ikimina</h4>
                             <div class="review-item">
-                                <div class="review-label">Selected Tontine:</div>
-                                <div class="review-value" id="reviewTontine">Not selected</div>
+                                <div class="review-label">Selected Tontine/ikimina wahisemo:</div>
+                                <div class="review-value" id="reviewTontine">Not selected/ntacyo wahisemo</div>
                             </div>
                         </div>
                         
                         <div class="review-section">
-                            <h4>Documents</h4>
+                            <h4>Documents/ibyangombwa</h4>
                             <div class="review-item">
-                                <div class="review-label">ID Document:</div>
-                                <div class="review-value" id="reviewIdDoc">Not uploaded</div>
+                                <div class="review-label">ID Document/nimero y'irangamuntu:</div>
+                                <div class="review-value" id="reviewIdDoc">Not uploaded/ntabyatanzwe</div>
                             </div>
                             <div class="review-item">
-                                <div class="review-label">Address Proof:</div>
+                                <div class="review-label">Address Proof/ikemezo cyuko utuye:</div>
                                 <div class="review-value" id="reviewAddressDoc">Not uploaded</div>
                             </div>
                         </div>
@@ -1048,14 +1176,14 @@
                             <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
                         </div>
                         <div class="terms-text">
-                            I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a> of My Smart Ikimina. I understand that my application will be reviewed by the tontine administrator and I may be contacted for additional information.
+                            I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a> of My Smart ekimina. I understand that my application will be reviewed by the tontine administrator and I may be contacted for additional information.
                         </div>
                     </div>
-                    <div class="error-message" id="termsError" style="margin-top: 10px;">You must agree to the terms and conditions</div>
+                    <div class="error-message error-message-margin" id="termsError">You must agree to the terms and conditions</div>
                     
                     <div class="step-navigation">
-                        <button type="button" class="btn btn-secondary" onclick="goToStep(3)">Back to Documents</button>
-                        <button type="button" class="btn btn-primary" onclick="submitRegistration()">Submit Application</button>
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(3)" data-en="Back to Documents" data-rw="Subira ku Inyandiko" data-fr="Retour aux Documents">Back to Documents</button>
+                        <button type="button" class="btn btn-primary" onclick="submitRegistration()" data-en="Submit Application" data-rw="Ohereza ubusabe" data-fr="Soumettre la Demande">Submit Application</button>
                     </div>
                 </div>
             </div>
@@ -1074,15 +1202,15 @@
             <div class="modal-code" id="applicationId">MSI-2023-00145</div>
             
             <p><strong>What happens next:</strong></p>
-            <ul style="text-align: left; margin: 20px 0; color: #666;">
+            <ul class="modal-steps-list">
                 <li>The tontine administrator will review your application</li>
                 <li>You'll receive an email notification once approved</li>
                 <li>After approval, you can access the tontine dashboard</li>
                 <li>You'll be able to make your first contribution</li>
             </ul>
             
-            <div style="margin-top: 30px;">
-                <a href="index.html" class="btn btn-primary">Return to Homepage</a>
+            <div class="modal-actions-container">
+                <a href="ikimina.html" class="btn btn-primary">Return to Homepage</a>
             </div>
         </div>
     </div>
@@ -1093,20 +1221,93 @@
             <div class="footer-content">
                 <div class="logo-container">
                     <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>Ikimina</span></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
                 </div>
                 <div>
-                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-question-circle"></i> Help Center</a>
-                    <a href="#" style="color: white; margin-left: 20px;"><i class="fas fa-phone"></i> Contact Support</a>
+                    <a href="#" class="footer-link"><i class="fas fa-question-circle"></i> Help Center</a>
+                    <a href="#" class="footer-link"><i class="fas fa-phone"></i> Contact Support</a>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 My Smart Ikimina. All rights reserved. | <a href="#" style="color: var(--secondary);">Privacy Policy</a> | <a href="#" style="color: var(--secondary);">Terms of Service</a></p>
+                <p>&copy; 2025 My Smart Ikimina-a product of cooloff company ltd. All rights reserved. | <a href="#" class="footer-link-secondary">Privacy Policy</a> | <a href="#" class="footer-link-secondary">Terms of Service</a></p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Multilingual Support
+        let currentLanguage = 'en';
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language from localStorage
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguage(savedLanguage);
+
+            // Add click event listeners to language buttons
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    localStorage.setItem('selectedLanguage', lang);
+                });
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                    
+                    // Change icon
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (navLinks.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
+        });
+
+        // Function to set the language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+
+            // Update active button
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-lang') === lang) {
+                    button.classList.add('active');
+                }
+            });
+
+            // Update all elements with data attributes
+            const elementsWithData = document.querySelectorAll('[data-en], [data-rw], [data-fr]');
+            elementsWithData.forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    // Check if it's a title attribute
+                    if (element.tagName === 'TITLE') {
+                        document.title = text;
+                    } else if (element.hasAttribute('title')) {
+                        element.setAttribute('title', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+
+            // Update document language attribute
+            document.documentElement.lang = lang;
+        }
+
         // Registration State
         let currentStep = 1;
         const totalSteps = 4;
