@@ -178,9 +178,10 @@
             align-items: center;
             gap: 30px;
         }
+        /* Language Switcher Single Button */
         .language-switcher {
             display: flex;
-            gap: 8px;
+            gap: 0;
             background: var(--light);
             padding: 6px 8px;
             border-radius: 50px;
@@ -199,29 +200,8 @@
             transition: all 0.3s ease;
         }
 
-        .language-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .language-switcher {
-            display: flex;
-            gap: 8px;
-            background: var(--light);
-            padding: 8px;
-            border-radius: 50px;
-        }
-
-        .language-btn {
-            padding: 8px 16px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--gray);
-            transition: all 0.3s ease;
-            border-radius: 50px;
-            font-size: 0.9rem;
+        .language-btn:hover {
+            transform: scale(1.05);
         }
 
         .language-btn.active {
@@ -327,6 +307,8 @@
             font-weight: 600;
             color: white;
             transition: all 0.3s ease;
+            opacity: 0;
+            animation: slideshow 12s infinite ease-in-out;
         }
 
         .circle-1 {
@@ -335,6 +317,7 @@
             background: var(--primary);
             top: 20px;
             left: 90px;
+            animation-delay: 0s;
         }
 
         .circle-2 {
@@ -343,6 +326,7 @@
             background: var(--secondary);
             bottom: 60px;
             left: 30px;
+            animation-delay: 3s;
         }
 
         .circle-3 {
@@ -352,6 +336,7 @@
             opacity: 0.8;
             bottom: 80px;
             right: 40px;
+            animation-delay: 6s;
         }
 
         .circle-4 {
@@ -360,6 +345,30 @@
             background: var(--secondary);
             top: 80px;
             right: 60px;
+            animation-delay: 9s;
+        }
+
+        @keyframes slideshow {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            75% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
         }
 
         /* Features Section */
@@ -674,9 +683,7 @@
                 
                 <div class="nav-right">
                     <div class="language-switcher" id="languageSwitcher">
-                        <button class="language-btn active" data-lang="en">EN</button>
-                        <button class="language-btn" data-lang="rw">RW</button>
-                        <button class="language-btn" data-lang="fr">FR</button>
+                        <button class="language-btn" id="languageToggle" title="Click to change language">EN/RW/FR</button>
                     </div>
 
                     <div class="mobile-menu-btn" id="mobileMenuBtn">
@@ -687,7 +694,7 @@
                         <li><a href="ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
                         <li><a href="#features" data-en="How It Works" data-rw="Uburyo Ibikorwa" data-fr="Comment Ça Marche">How It Works</a></li>
                         <li><a href="#testimonials" data-en="Testimonials" data-rw="Amategeko" data-fr="Témoignages">Testimonials</a></li>
-                        <li><a href="#about" data-en="About" data-rw="Kubijyanye" data-fr="À Propos">About</a></li>
+                        <li><a href="About us.html" data-en="About" data-rw="Kubijyanye" data-fr="À Propos">About</a></li>
                         <li><a href="#contact" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
                         <li><a href="register.html" class="btn btn-primary" data-en="Get Started" data-rw="Tangira" data-fr="Commencer">Get Started</a></li>
                     </ul>
@@ -856,7 +863,7 @@
                 <div class="footer-column">
                     <h3 data-en="Company" data-rw="Isosiyete" data-fr="Entreprise">Company</h3>
                     <ul class="footer-links">
-                        <li><a href="#" data-en="About Us" data-rw="Kubijyanye Neza" data-fr="À Propos de Nous">About Us</a></li>
+                        <li><a href="About us.html" data-en="About Us" data-rw="Kubijyanye Neza" data-fr="À Propos de Nous">About Us</a></li>
                         <li><a href="#" data-en="Blog" data-rw="Iburaya" data-fr="Blog">Blog</a></li>
                         <li><a href="#" data-en="Careers" data-rw="Akazi" data-fr="Carrières">Careers</a></li>
                         <li><a href="#" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
@@ -883,6 +890,12 @@
     <script>
         // Language Switching Functionality
         let currentLanguage = 'en';
+        const languages = ['en', 'rw', 'fr'];
+        const languageNames = {
+            'en': 'EN/RW/FR',
+            'rw': 'RW/FR/EN',
+            'fr': 'FR/EN/RW'
+        };
 
         // Initialize language switcher
         document.addEventListener('DOMContentLoaded', function() {
@@ -890,14 +903,14 @@
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
             setLanguage(savedLanguage);
 
-            // Add click event listeners to language buttons
-            const languageButtons = document.querySelectorAll('.language-btn');
-            languageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    setLanguage(lang);
-                    localStorage.setItem('selectedLanguage', lang);
-                });
+            // Language button click to cycle through languages
+            const languageToggle = document.getElementById('languageToggle');
+            languageToggle.addEventListener('click', function() {
+                const currentIndex = languages.indexOf(currentLanguage);
+                const nextIndex = (currentIndex + 1) % languages.length;
+                const nextLanguage = languages[nextIndex];
+                setLanguage(nextLanguage);
+                localStorage.setItem('selectedLanguage', nextLanguage);
             });
 
             // Mobile menu toggle
@@ -961,14 +974,11 @@
         function setLanguage(lang) {
             currentLanguage = lang;
 
-            // Update active button
-            const languageButtons = document.querySelectorAll('.language-btn');
-            languageButtons.forEach(button => {
-                button.classList.remove('active');
-                if (button.getAttribute('data-lang') === lang) {
-                    button.classList.add('active');
-                }
-            });
+            // Update single language button display
+            const languageToggle = document.getElementById('languageToggle');
+            if (languageToggle) {
+                languageToggle.textContent = languageNames[lang];
+            }
 
             // Update all elements with data attributes
             const elementsWithData = document.querySelectorAll('[data-en]');

@@ -911,6 +911,9 @@
     </style>
 </head>
 <body>
+    <!-- API Configuration -->
+    <script src="js/api.js"></script>
+    
     <!-- Header -->
     <header>
         <div class="container">
@@ -1023,6 +1026,20 @@
                             <input type="tel" id="phone" name="phone" required>
                             <div class="error-message" id="phoneError">Please enter a valid phone number/uzuza nimero ya telefone</div>
                             <div class="success-message" id="phoneSuccess">✓ Valid phone number</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="password" class="required">Password/Ijambo banga</label>
+                            <input type="password" id="password" name="password" required minlength="6">
+                            <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+                        </div>
+                        
+                        <div class="form-group half">
+                            <label for="confirmPassword" class="required">Confirm Password/Emeza ijambo banga</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
                         </div>
                     </div>
                     
@@ -1143,6 +1160,10 @@
                             <div class="review-item">
                                 <div class="review-label">Phone:</div>
                                 <div class="review-value" id="reviewPhone">Not provided/ntibyatanzwe</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Password:</div>
+                                <div class="review-value" id="reviewPassword">••••••••</div>
                             </div>
                             <div class="review-item">
                                 <div class="review-label">Country:</div>
@@ -1620,6 +1641,11 @@
             document.getElementById('reviewDOB').textContent = document.getElementById('dateOfBirth')?.value || 'Not provided';
             document.getElementById('reviewEmail').textContent = document.getElementById('email')?.value || 'Not provided';
             document.getElementById('reviewPhone').textContent = document.getElementById('phone')?.value || 'Not provided';
+            
+            // Show password as masked
+            const password = document.getElementById('password')?.value || '';
+            document.getElementById('reviewPassword').textContent = password ? '•'.repeat(password.length) : 'Not provided';
+            
             const country = document.getElementById('country')?.value || 'Not provided';
             document.getElementById('reviewCountry').textContent = country;
 
@@ -1631,7 +1657,7 @@
             document.getElementById('reviewAddressDoc').textContent = uploadedFiles.addressProof ? uploadedFiles.addressProof.name : 'Not uploaded';
         }
 
-        function submitRegistration() {
+        async function submitRegistration() {
             const terms = document.getElementById('termsAgreement');
             const termsErr = document.getElementById('termsError');
             if (!terms || !terms.checked) {
@@ -1640,15 +1666,77 @@
             }
             if (termsErr) termsErr.style.display = 'none';
 
-            // Normally you'd send form data via fetch/XHR to your backend here.
-            // For demo, show success modal and generate a simple application id.
-            const modal = document.getElementById('successModal');
-            if (modal) modal.classList.add('active');
+            // Collect form data
+            const userData = {
+                firstName: document.getElementById('firstName')?.value?.trim() || '',
+                lastName: document.getElementById('lastName')?.value?.trim() || '',
+                email: document.getElementById('email')?.value?.trim() || '',
+                password: document.getElementById('password')?.value || '',
+                phone: document.getElementById('phone')?.value?.trim() || '',
+                idNumber: document.getElementById('idNumber')?.value?.trim() || ''
+            };
 
-            const appIdEl = document.getElementById('applicationId');
-            if (appIdEl) {
-                const rnd = Math.floor(Math.random() * 90000) + 10000;
-                appIdEl.textContent = `MSI-${new Date().getFullYear()}-${rnd}`;
+            // Validate required fields
+            if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitBtn = document.querySelector('.btn-primary[onclick="submitRegistration()"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+                    submitBtn.disabled = true;
+                }
+
+                // Step 1: Register the user
+                const response = await AuthAPI.register(userData);
+
+                // Step 2: If a tontine was selected, request to join it
+                const selectedTontineId = document.getElementById('selectedTontine')?.value;
+                let joinMessage = '';
+                
+                if (selectedTontineId && response.user?.role !== 'site_admin') {
+                    try {
+                        // Request to join the selected tontine group
+                        await GroupsAPI.joinGroup(selectedTontineId);
+                        joinMessage = 'Your request to join the tontine has been sent to the group leader for approval.';
+                    } catch (joinError) {
+                        console.log('Join request note:', joinError.message);
+                        joinMessage = 'Account created. You can request to join a tontine from your dashboard.';
+                    }
+                }
+
+                // Update success modal message
+                const modalMessage = document.querySelector('#successModal p');
+                if (modalMessage && joinMessage) {
+                    modalMessage.textContent = joinMessage;
+                }
+
+                // Show success modal
+                const modal = document.getElementById('successModal');
+                if (modal) modal.classList.add('active');
+
+                const appIdEl = document.getElementById('applicationId');
+                if (appIdEl) {
+                    appIdEl.textContent = response.user?.id?.substring(0, 18) || 'MSI-' + Date.now();
+                }
+
+                // Redirect after 3 seconds
+                setTimeout(() => {
+                    redirectToDashboard(response.user?.role || 'user');
+                }, 3000);
+
+            } catch (error) {
+                // Reset button
+                const submitBtn = document.querySelector('.btn-primary[onclick="submitRegistration()"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = 'Submit Application';
+                    submitBtn.disabled = false;
+                }
+                
+                alert('Registration failed: ' + (error.message || 'Please try again'));
             }
         }
 

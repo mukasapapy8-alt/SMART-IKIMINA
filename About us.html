@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="About My Smart ekimina | Solving Tontine Challenges" data-rw="Kubijyanye My Smart ekimina | Gukemura Ibibazo by'ekimina" data-fr="À Propos My Smart ekimina | Résoudre les Défis des Tontines">About My Smart ekimina | Solving Tontine Challenges</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #2E5BFF;
+            --primary-dark: #1A3DB0;
+            --secondary: #00D4AA;
+            --dark: #2E384D;
+            --light: #F8F9FC;
+            --gray: #B0BAC9;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 30px rgba(46, 91, 255, 0.1);
+            --border-radius: 12px;
+            --danger: #FF4757;
+            --success: #2ED573;
+            --warning: #FFA502;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .logo-icon:after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: var(--gradient);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 50px;
+        }
+
+        .language-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .language-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* About Hero Section */
+        .about-hero {
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.05) 0%, rgba(0, 212, 170, 0.05) 100%);
+            padding: 100px 0 60px;
+        }
+
+        .about-hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-hero h1 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .mission-card, .vision-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .mission-card h3, .vision-card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .mission-icon, .vision-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            background-color: var(--light);
+        }
+
+        .problem-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            border-left: 4px solid var(--danger);
+        }
+
+        .problem-card:nth-child(2) {
+            border-left-color: var(--warning);
+        }
+
+        .problem-card:nth-child(3) {
+            border-left-color: var(--primary);
+        }
+
+        .problem-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+        }
+
+        .problem-icon {
+            color: var(--danger);
+            font-size: 1.2rem;
+        }
+
+        /* Solution Section */
+        .solution-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .solution-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            border-top: 4px solid var(--success);
+        }
+
+        .solution-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .solution-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon-small {
+            min-width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.02) 0%, rgba(0, 212, 170, 0.02) 100%);
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        /* Team Section */
+        .team-section {
+            background-color: var(--light);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 80px 40px;
+            margin: 40px auto;
+            max-width: 1000px;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-link-icon {
+            margin-right: 8px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+            
+            h2 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+                z-index: 1001;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                width: 100vw;
+                background: white;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                pointer-events: none;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                pointer-events: auto;
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .nav-right {
+                gap: 15px;
+            }
+            
+            .language-switcher {
+                display: none;
+            }
+            
+            .steps-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step-card {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .cta-section {
+                padding: 60px 20px;
+            }
+            
+            .mission-card, .vision-card,
+            .problem-card, .solution-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="ikimina.html" class="logo-container">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">My Smart <span>ekimina</span></div>
+                </a>
+                
+                <div class="nav-right">
+                    <div class="language-switcher" id="languageSwitcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="rw">RW</button>
+                        <button class="language-btn" data-lang="fr">FR</button>
+                    </div>
+
+                    <div class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    
+                    <ul class="nav-links" id="navLinks">
+                        <li><a href="ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                        <li><a href="about.html" data-en="About Us" data-rw="Kubijyanye" data-fr="À Propos">About Us</a></li>
+                        <li><a href="#solutions" data-en="Solutions" data-rw="Ibyemewe" data-fr="Solutions">Solutions</a></li>
+                        <li><a href="#how-it-works" data-en="How It Works" data-rw="Uburyo" data-fr="Fonctionnement">How It Works</a></li>
+                        <li><a href="#team" data-en="Our Team" data-rw="Itsinda Ryawe" data-fr="Notre Équipe">Our Team</a></li>
+                        <li><a href="register.html" class="btn btn-primary" data-en="Get Started" data-rw="Tangira" data-fr="Commencer">Get Started</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <div class="container">
+            <div class="about-hero-content">
+                <h1 data-en="Solving Tontine Challenges with Technology" data-rw="Gukemura Ibibazo by'ekimina hamwe n'Ubumenyi" data-fr="Résoudre les Défis des Tontines avec la Technologie">Solving Tontine Challenges with Technology</h1>
+                <p data-en="My Smart ekimina was born from the real struggles faced by tontine leaders and members. We understand the pain points of manual reporting, unnecessary punishments, and complex loan processes. Our platform is designed specifically to address these challenges and make tontine management simple, transparent, and efficient for everyone." data-rw="My Smart ekimina yavukiye mu bibazo by'ukuri abayobozi n'abanyamuryango ba ekimina bahura na byo. Turatekereza ibibazo by'itangazo ry'ibibazo, ibihano bitari ngombwa, n'imirimo y'inguzanyo ikomeye. Porogaramu yacu yashyizweho mu buryo bwa mbere gukemura ibi bibazo no gukora ikimina mu buryo bworoshye, bwiyunze, kandi byiza kuri bose." data-fr="My Smart ekimina est né des vraies difficultés rencontrées par les leaders et membres de tontines. Nous comprenons les points douloureux des rapports manuels, des punitions inutiles et des processus de prêt complexes. Notre plateforme est conçue spécifiquement pour relever ces défis et rendre la gestion des tontines simple, transparente et efficace pour tous.">My Smart ekimina was born from the real struggles faced by tontine leaders and members. We understand the pain points of manual reporting, unnecessary punishments, and complex loan processes. Our platform is designed specifically to address these challenges and make tontine management simple, transparent, and efficient for everyone.</p>
+                
+                <div class="mission-vision">
+                    <div class="mission-card">
+                        <div class="mission-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3 data-en="Our Mission" data-rw="Intego Yacu" data-fr="Notre Mission">Our Mission</h3>
+                        <p data-en="To eliminate the administrative burdens of traditional tontines through digital automation, making group savings accessible, transparent, and free from unnecessary conflicts and punishments." data-rw="Kureka imitwaro y'ubuyobozi y'ibimina bya kera binyuze mu bwikorezi bwa digitale, gukora ubucuruzi bw'itsinda buroroshye, bwiyunze, kandi butagira amakimbirane n'ibihano bitari ngombwa." data-fr="Éliminer les fardeaux administratifs des tontines traditionnelles grâce à l'automatisation numérique, rendant l'épargne de groupe accessible, transparente et exempte de conflits et punitions inutiles.">To eliminate the administrative burdens of traditional tontines through digital automation, making group savings accessible, transparent, and free from unnecessary conflicts and punishments.</p>
+                    </div>
+                    
+                    <div class="vision-card">
+                        <div class="vision-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 data-en="Our Vision" data-rw="Icyerekezo Cyacu" data-fr="Notre Vision">Our Vision</h3>
+                        <p data-en="A world where every community savings group operates with digital efficiency, where contributions are automated, loans are accessible, and financial growth is accelerated through technology." data-rw="Isi aho buri itsinda ry'ubucuruzi ry'umuryango rikora hamwe n'ubwenge bwa digitale, aho ibyiciro biri mu buryo bwikora, inguzanyo zirabasha, kandi iterambere ry'amafaranga rihutishwa binyuze mu bumenyi." data-fr="Un monde où chaque groupe d'épargne communautaire fonctionne avec une efficacité numérique, où les contributions sont automatisées, les prêts sont accessibles et la croissance financière est accélérée par la technologie.">A world where every community savings group operates with digital efficiency, where contributions are automated, loans are accessible, and financial growth is accelerated through technology.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <h2 data-en="The Challenges We're Solving" data-rw="Ibibazo Dukemura" data-fr="Les Défis Que Nous Résolvons">The Challenges We're Solving</h2>
+            
+            <div class="problem-cards">
+                <div class="problem-card">
+                    <h3><i class="fas fa-file-alt problem-icon"></i> <span data-en="Manual Report Preparation" data-rw="Gutegura Itangazo mu Buryo bwa Muntu" data-fr="Préparation Manuelle des Rapports">Manual Report Preparation</span></h3>
+                    <p data-en="Tontine leaders spend hours, sometimes days, preparing handwritten reports. Errors in calculations lead to disputes, mistrust, and unnecessary punishments for members who are actually not at fault." data-rw="Abayobozi ba ekimina bakoresha amasaha, rimwe na rimwe iminsi, batunganya itangazo ryanditse n'amaboko. Amakosa mu ibarura biragira amakimbirane, kutishima, n'ibihano bitari ngombwa ku banyamuryango badakwiye." data-fr="Les leaders de tontines passent des heures, parfois des jours, à préparer des rapports manuscrits. Les erreurs de calcul entraînent des disputes, de la méfiance et des punitions inutiles pour les membres qui ne sont pas en faute.">Tontine leaders spend hours, sometimes days, preparing handwritten reports. Errors in calculations lead to disputes, mistrust, and unnecessary punishments for members who are actually not at fault.</p>
+                </div>
+                
+                <div class="problem-card">
+                    <h3><i class="fas fa-users problem-icon"></i> <span data-en="Physical Meeting Struggles" data-rw="Ibibazo by'Inama zo mu Buryo bwa Muntu" data-fr="Difficultés des Réunions Physiques">Physical Meeting Struggles</span></h3>
+                    <p data-en="Mandatory physical meetings exclude members who travel, are sick, or have family obligations. Missing meetings often results in unfair fines and punishments, creating financial strain and group conflicts." data-rw="Inama z'umubiri zitegerezwa zirekura abanyamuryango bahaguruka, barwaye, cyangwa bafite imitwaro y'umuryango. Kubura inama bimara kugira amende n'ibihano bidakwiye, bigira ingaruka z'amafaranga n'amakimbirane mu itsinda." data-fr="Les réunions physiques obligatoires excluent les membres qui voyagent, sont malades ou ont des obligations familiales. Manquer des réunions entraîne souvent des amendes et punitions injustes, créant des tensions financières et des conflits au sein du groupe.">Mandatory physical meetings exclude members who travel, are sick, or have family obligations. Missing meetings often results in unfair fines and punishments, creating financial strain and group conflicts.</p>
+                </div>
+                
+                <div class="problem-card">
+                    <h3><i class="fas fa-hand-holding-usd problem-icon"></i> <span data-en="Complex Loan & Payment Processes" data-rw="Imirimo Ikomeye y'Inguzanyo & Kwishyura" data-fr="Processus Complexes de Prêt & Paiement">Complex Loan & Payment Processes</span></h3>
+                    <p data-en="Requesting loans requires multiple approvals and physical presence. Contribution payments are difficult to track, leading to confusion about who has paid and who hasn't, resulting in incorrect penalties." data-rw="Gusaba inguzanyo bisaba ibyemezo byinshi no kuba hafi. Kwishyura ibyiciro biragoye kurondora, bigatuma haba mu buryo butari ukuri b'uwishyuye n'utawishyuye, bikagira ibihano bibidakwiye." data-fr="Demander des prêts nécessite de multiples approbations et une présence physique. Les paiements de contribution sont difficiles à suivre, entraînant une confusion quant à qui a payé et qui ne l'a pas fait, résultant en des pénalités incorrectes.">Requesting loans requires multiple approvals and physical presence. Contribution payments are difficult to track, leading to confusion about who has paid and who hasn't, resulting in incorrect penalties.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 data-en="The Result?" data-rw="Ibyavuye?" data-fr="Le Résultat ?">The Result?</h3>
+                <p data-en="Tontine members face unnecessary stress and financial penalties. Leaders are overwhelmed with administrative work. Trust erodes, groups disband, and communities lose valuable financial support systems." data-rw="Abanyamuryango ba ekimina bahura n'ingorane z'amafaranga n'ibihano bitari ngombwa. Abayobozi barazimiye mu mirimo y'ubuyobozi. Kwizerana kirangira, amatsinda atanyuranywa, n'imiryango igira ingaruka z'amafaranga." data-fr="Les membres des tontines font face à un stress inutile et à des pénalités financières. Les leaders sont débordés par le travail administratif. La confiance s'érode, les groupes se dissolvent et les communautés perdent des systèmes de soutien financier précieux.">Tontine members face unnecessary stress and financial penalties. Leaders are overwhelmed with administrative work. Trust erodes, groups disband, and communities lose valuable financial support systems.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Solutions Section -->
+    <section id="solutions">
+        <div class="container">
+            <h2 data-en="Our Digital Solutions" data-rw="Ibyemewe byacu bya Digitale" data-fr="Nos Solutions Numériques">Our Digital Solutions</h2>
+            
+            <div class="solution-cards">
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-en="Automated Reporting System" data-rw="Sisitemu y'Itangazo Ikora" data-fr="Système de Rapports Automatisé">Automated Reporting System</h3>
+                    <p data-en="No more manual calculations! Our system automatically generates accurate reports showing contributions, loans, balances, and penalties in real-time. Leaders can download or share reports with one click." data-rw="Ntago hari ibarura ry'amaboko! Sisitemu yacu itanga itangazo ry'ukuri rireba ibyiciro, inguzanyo, amasimbura, n'ibihano mu gihe nyacyo. Abayobozi bashobora kuzikura cyangwa kugabanya itangazo ukanda rimwe.">No more manual calculations! Our system automatically generates accurate reports showing contributions, loans, balances, and penalties in real-time. Leaders can download or share reports with one click.</p>
+                    <div class="features-grid" style="margin-top: 20px;">
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Eliminates calculation errors" data-rw="Kureka amakosa y'ibarura" data-fr="Élimine les erreurs de calcul">Eliminates calculation errors</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Saves hours of manual work" data-rw="Bika amasaha y'akazi k'amaboko" data-fr="Économise des heures de travail manuel">Saves hours of manual work</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 data-en="Virtual Meeting Platform" data-rw="Inzira y'Inama mu buryo bwa Digitale" data-fr="Plateforme de Réunions Virtuelles">Virtual Meeting Platform</h3>
+                    <p data-en="Attend meetings from anywhere! Our integrated video conferencing allows members to participate remotely. No more punishments for missing meetings due to travel, sickness, or family obligations." data-rw="Injira inama uva aho ariho hose! Video yacu ishyira hamwe yemerera abanyamuryango kugira uruhare kure. Ntago hari ibihano byo kubura inama bitewe no kugenda, indwara, cyangwa imitwaro y'umuryango.">Attend meetings from anywhere! Our integrated video conferencing allows members to participate remotely. No more punishments for missing meetings due to travel, sickness, or family obligations.</p>
+                    <div class="features-grid" style="margin-top: 20px;">
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Record meetings for later review" data-rw="Fata inama kugirango uzasubireho nyuma" data-fr="Enregistre les réunions pour révision ultérieure">Record meetings for later review</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Built-in voting system" data-rw="Sisitemu y'amatora iri muri yo" data-fr="Système de vote intégré">Built-in voting system</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 data-en="Mobile Loan & Payment System" data-rw="Sisitemu y'Inguzanyo & Kwishyura ya Mobile" data-fr="Système Mobile de Prêt & Paiement">Mobile Loan & Payment System</h3>
+                    <p data-en="Request loans and make contributions via mobile app! Automatic notifications remind members of due dates. Real-time tracking shows exactly who has paid and who hasn't, eliminating confusion and unfair penalties." data-rw="Saba inguzanyo ukaze ibyiciro binyuze kuri porogaramu ya mobile! Amatangazo y'ikora abwira abanyamuryango igihe cyo kwishyura. Kurondora mu gihe nyacyo kwereka neza uwishyuye n'utawishyuye, bikagira umwihariko n'ibihano bidakwiye.">Request loans and make contributions via mobile app! Automatic notifications remind members of due dates. Real-time tracking shows exactly who has paid and who hasn't, eliminating confusion and unfair penalties.</p>
+                    <div class="features-grid" style="margin-top: 20px;">
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Instant loan application & approval" data-rw="Gusaba inguzanyo byihuse & kwemerwa" data-fr="Demande et approbation instantanée de prêt">Instant loan application & approval</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p data-en="Multiple payment options" data-rw="Amahitamo menshi yo kwishyura" data-fr="Options de paiement multiples">Multiple payment options</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 data-en="How My Smart ekimina Works" data-rw="Uburyo My Smart ekimina Ikora" data-fr="Comment My Smart ekimina Fonctionne">How My Smart ekimina Works</h2>
+            
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 data-en="Create Your Group" data-rw="Kurema Itsinda Ryawe" data-fr="Créez Votre Groupe">Create Your Group</h3>
+                    <p data-en="Register your tontine group online. Invite members via email or phone. Set your contribution rules and schedules." data-rw="Iyandikishe itsinda ryawe ry'ekimina kuri interineti. Tumira abanyamuryango binyuze kuri imeyili cyangwa telefone. Shyiraho amategeko n'igihe cyo kwishyura." data-fr="Enregistrez votre groupe de tontine en ligne. Invitez des membres par e-mail ou téléphone. Définissez vos règles et calendriers de contribution.">Register your tontine group online. Invite members via email or phone. Set your contribution rules and schedules.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 data-en="Automate Contributions" data-rw="Kora Ibyiciro mu Buryo bwikora" data-fr="Automatisez les Contributions">Automate Contributions</h3>
+                    <p data-en="Members make contributions digitally. The system tracks all payments automatically. No more manual record-keeping or calculation errors." data-rw="Abanyamuryango bakora ibyiciro mu buryo bwa digitale. Sisitemu irondora amishyuro yose mu buryo bwikora. Ntago hari kubika amakuru mu buryo bwa muntu cyangwa amakosa y'ibarura." data-fr="Les membres effectuent des contributions numériquement. Le système suit automatiquement tous les paiements. Plus de tenue de registres manuelle ni d'erreurs de calcul.">Members make contributions digitally. The system tracks all payments automatically. No more manual record-keeping or calculation errors.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 data-en="Manage Easily" data-rw="Kora mu Buryo bworoheje" data-fr="Gérez Facilement">Manage Easily</h3>
+                    <p data-en="Conduct virtual meetings. Process loan requests digitally. Generate automatic reports. Eliminate unnecessary punishments and conflicts." data-rw="Kora inama mu buryo bwa digitale. Kora ibyifuzo by'inguzanyo mu buryo bwa digitale. Tera itangazo ry'ikora. Kureka ibihano bitari ngombwa n'amakimbirane." data-fr="Conduisez des réunions virtuelles. Traitez les demandes de prêt numériquement. Générez des rapports automatiques. Éliminez les punitions inutiles et les conflits.">Conduct virtual meetings. Process loan requests digitally. Generate automatic reports. Eliminate unnecessary punishments and conflicts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section" id="team">
+        <div class="container">
+            <h2 data-en="Our Team" data-rw="Itsinda Ryawe" data-fr="Notre Équipe">Our Team</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 50px;" data-en="We are a diverse team of financial experts, technologists, and former tontine members who understand the real challenges of traditional group savings." data-rw="Turi itsinda ry'impuguke z'amafaranga, abahanga mu bumenyi, n'abanyamuryango ba kera ba ekimina basobanukiwe ibibazo by'ukuri by'ubucuruzi bw'itsinda bwa kera." data-fr="Nous sommes une équipe diversifiée d'experts financiers, de technologues et d'anciens membres de tontines qui comprennent les vrais défis de l'épargne de groupe traditionnelle.">We are a diverse team of financial experts, technologists, and former tontine members who understand the real challenges of traditional group savings.</p>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">AM</div>
+                    <h3>Alice M.</h3>
+                    <p data-en="Former Tontine Leader" data-rw="Umuyobozi wa kera w'ekimina" data-fr="Ancienne Leader de Tontine">Former Tontine Leader</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);" data-en="&quot;I spent 15 years struggling with manual reports. I created this platform to save others from that burden.&quot;" data-rw="&quot;Nakoze imyaka 15 nihangana n'itangazo ry'amaboko. Naremeje iyi nzira kugirango mbike abandi kuri uwo mutwaro.&quot;" data-fr="&quot;J'ai passé 15 ans à lutter avec des rapports manuels. J'ai créé cette plateforme pour sauver les autres de ce fardeau.&quot;">"I spent 15 years struggling with manual reports. I created this platform to save others from that burden."</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">DP</div>
+                    <h3>David P.</h3>
+                    <p data-en="Financial Technology Expert" data-rw="Umuhanga mu Bumenyi bwa Financiya" data-fr="Expert en Technologie Financière">Financial Technology Expert</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);" data-en="&quot;We've built the most secure and user-friendly tontine platform in Africa. Every feature solves a real problem.&quot;" data-rw="&quot;Twazanye inzira y'ekimina yizewe kandi yoroshye cyane muri Afurika. Buri kintu gikemura ikibazo cy'ukuri.&quot;" data-fr="&quot;Nous avons construit la plateforme de tontine la plus sécurisée et conviviale d'Afrique. Chaque fonctionnalité résout un vrai problème.&quot;">"We've built the most secure and user-friendly tontine platform in Africa. Every feature solves a real problem."</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">SM</div>
+                    <h3>Sarah M.</h3>
+                    <p data-en="Community Relations" data-rw="Umutekano w'Umuryango" data-fr="Relations Communautaires">Community Relations</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);" data-en="&quot;I've seen too many tontine groups break up due to mistrust. Our platform rebuilds trust through transparency.&quot;" data-rw="&quot;Nabonye amatsinda menshi y'ekimina atanyuranywa bitewe no kutishima. Inzira yacu yubaka kwizerana binyuze mu buryo bwiyunze.&quot;" data-fr="&quot;J'ai vu trop de groupes de tontine se dissoudre à cause de la méfiance. Notre plateforme reconstruit la confiance par la transparence.&quot;">"I've seen too many tontine groups break up due to mistrust. Our platform rebuilds trust through transparency."</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">JK</div>
+                    <h3>James K.</h3>
+                    <p data-en="Software Developer" data-rw="Umusembuzi wa Porogaramu" data-fr="Développeur de Logiciels">Software Developer</p>
+                    <p style="font-size: 0.9rem; color: var(--gray);" data-en="&quot;Our automation features save leaders 20+ hours per month on administrative work. That's time for family and growth.&quot;" data-rw="&quot;Ibikoresho byacu by'ikora bika abayobozi amasaha 20+ ku kwezi mu kazi k'ubuyobozi. Icyo ni igihe cy'umuryango n'iterambere.&quot;" data-fr="&quot;Nos fonctionnalités d'automatisation économisent aux leaders 20+ heures par mois de travail administratif. C'est du temps pour la famille et la croissance.&quot;">"Our automation features save leaders 20+ hours per month on administrative work. That's time for family and growth."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="container">
+        <div class="cta-section">
+            <h2 data-en="End the Struggle Today" data-rw="Reka Guhangana Uyu munsi" data-fr="Mettez Fin à la Lutte Aujourd'hui">End the Struggle Today</h2>
+            <p data-en="Join thousands of tontine leaders and members who have eliminated manual reports, unnecessary punishments, and complex loan processes. Start your digital tontine journey now." data-rw="Injira n'abayobozi n'abanyamuryango b'ibihumbi by'ekimina bakuze itangazo ry'amaboko, ibihano bitari ngombwa, n'imirimo ikomeye y'inguzanyo. Tangira urugendo rwawe rwa digitale rw'ekimina nonaha." data-fr="Rejoignez des milliers de leaders et membres de tontines qui ont éliminé les rapports manuels, les punitions inutiles et les processus de prêt complexes. Commencez votre voyage de tontine numérique maintenant.">Join thousands of tontine leaders and members who have eliminated manual reports, unnecessary punishments, and complex loan processes. Start your digital tontine journey now.</p>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="register.html" class="btn" style="background: white; color: var(--primary);" data-en="Start Free Trial" data-rw="Tangira Kugerageza Nta Mahoro" data-fr="Commencer l'Essai Gratuit">Start Free Trial</a>
+                <a href="ikimina.html#testimonials" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white;" data-en="See Success Stories" data-rw="Reba Inkoranya z'Intsinzi" data-fr="Voir les Histoires de Réussite">See Success Stories</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <a href="#" class="logo-container footer-logo-container">
+                        <div class="logo-icon"></div>
+                        <div class="logo-text">My Smart <span>ekimina</span></div>
+                    </a>
+                    <p data-en="Eliminating tontine struggles through digital automation. No more manual reports, unnecessary punishments, or complex loan processes." data-rw="Kureka ibibazo by'ekimina binyuze mu bwikorezi bwa digitale. Ntago hari itangazo ry'amaboko, ibihano bitari ngombwa, cyangwa imirimo ikomeye y'inguzanyo." data-fr="Éliminer les difficultés des tontines grâce à l'automatisation numérique. Plus de rapports manuels, de punitions inutiles ou de processus de prêt complexes.">Eliminating tontine struggles through digital automation. No more manual reports, unnecessary punishments, or complex loan processes.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 data-en="Platform" data-rw="Inzira" data-fr="Plateforme">Platform</h3>
+                    <ul class="footer-links">
+                        <li><a href="ikimina.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                        <li><a href="about.html" data-en="About Us" data-rw="Kubijyanye" data-fr="À Propos">About Us</a></li>
+                        <li><a href="#solutions" data-en="Solutions" data-rw="Ibyemewe" data-fr="Solutions">Solutions</a></li>
+                        <li><a href="#how-it-works" data-en="How It Works" data-rw="Uburyo" data-fr="Fonctionnement">How It Works</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 data-en="Resources" data-rw="Ibikoresho" data-fr="Ressources">Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-en="Blog" data-rw="Iburaya" data-fr="Blog">Blog</a></li>
+                        <li><a href="#" data-en="Help Center" data-rw="Urwego rw'Ubufasha" data-fr="Centre d'Aide">Help Center</a></li>
+                        <li><a href="#" data-en="Tontine Guide" data-rw="Umuyoboro w'ekimina" data-fr="Guide des Tontines">Tontine Guide</a></li>
+                        <li><a href="#" data-en="Community" data-rw="Umuryango" data-fr="Communauté">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope footer-link-icon"></i><span data-en="support@mysmartekimina.com" data-rw="support@mysmartekimina.com" data-fr="support@mysmartekimina.com">support@mysmartekimina.com</span></a></li>
+                        <li><a href="#"><i class="fas fa-phone footer-link-icon"></i><span data-en="+250 788 123 456" data-rw="+250 788 123 456" data-fr="+250 788 123 456">+250 788 123 456</span></a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt footer-link-icon"></i><span data-en="Kigali, Rwanda" data-rw="Kigali, Rwanda" data-fr="Kigali, Rwanda">Kigali, Rwanda</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p data-en="© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved. | " data-rw="© 2025 My Smart ekimina-ikintu ky'isosiyete ya cooloff Ltd. Uburenganzira bwose buzemwa. | " data-fr="© 2025 My Smart ekimina-un produit de cooloff company ltd. Tous les droits réservés. | ">© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved. | <a href="#" class="footer-link-secondary" data-en="Privacy Policy" data-rw="Isi Yabwiyunge" data-fr="Politique de Confidentialité">Privacy Policy</a> | <a href="#" class="footer-link-secondary" data-en="Terms of Service" data-rw="Amategeko y'Ubwigize" data-fr="Conditions de Service">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Language Switching Functionality
+        let currentLanguage = 'en';
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language from localStorage
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguage(savedLanguage);
+
+            // Add click event listeners to language buttons
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    localStorage.setItem('selectedLanguage', lang);
+                });
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                
+                // Change icon
+                const icon = mobileMenuBtn.querySelector('i');
+                if (navLinks.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Close mobile menu if open
+                        if (navLinks.classList.contains('active')) {
+                            navLinks.classList.remove('active');
+                            const icon = mobileMenuBtn.querySelector('i');
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                        
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Add scroll effect to header
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('header');
+                if (window.scrollY > 100) {
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                } else {
+                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
+                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                }
+            });
+        });
+
+        // Function to set the language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+
+            // Update active button
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-lang') === lang) {
+                    button.classList.add('active');
+                }
+            });
+
+            // Update all elements with data attributes
+            const elementsWithData = document.querySelectorAll('[data-en]');
+            elementsWithData.forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    // Check if it's a title attribute
+                    if (element.tagName === 'TITLE') {
+                        document.title = text;
+                    } else if (element.hasAttribute('title')) {
+                        element.setAttribute('title', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+
+            // Update document language attribute
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Admin Dashboard | My Smart ekimina" data-rw="Ubuyobozi | My Smart ekimina" data-fr="Tableau de Bord Admin | My Smart ekimina">Admin Dashboard | My Smart ekimina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables - Matching My Smart ekimina */
+        :root {
+            --primary: #2E5BFF;
+            --primary-dark: #1A3DB0;
+            --secondary: #00D4AA;
+            --dark: #2E384D;
+            --light: #F8F9FC;
+            --gray: #B0BAC9;
+            --danger: #FF4757;
+            --success: #2ED573;
+            --warning: #FFA502;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 30px rgba(46, 91, 255, 0.1);
+            --border-radius: 12px;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--gradient);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: var(--gradient);
+            border-radius: 50%;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .admin-role {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left: 4px solid white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 0;
+            background-color: var(--light);
+            min-height: 100vh;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .top-nav {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 50px;
+            position: relative;
+            width: 300px;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px;
+            border-radius: 50px;
+        }
+
+        .language-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .language-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.pending {
+            background: var(--warning);
+        }
+
+        .stat-icon.approved {
+            background: var(--success);
+        }
+
+        .stat-icon.rejected {
+            background: var(--danger);
+        }
+
+        .stat-icon.total {
+            background: var(--primary);
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Main Content Sections */
+        .content-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+
+        th {
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #eee;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: rgba(46, 91, 255, 0.03);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 165, 2, 0.15);
+            color: var(--warning);
+        }
+
+        .status-approved {
+            background-color: rgba(46, 213, 115, 0.15);
+            color: var(--success);
+        }
+
+        .status-rejected {
+            background-color: rgba(255, 71, 87, 0.15);
+            color: var(--danger);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn i {
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #26c464;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff3742;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e69500;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eef2f7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .otp-display {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px dashed var(--primary);
+        }
+
+        .otp-code {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 10px;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+
+        .otp-expiry {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: var(--dark);
+                background: none;
+                border: none;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .dashboard-content {
+                padding: 15px;
+            }
+            
+            .content-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .top-nav {
+                padding: 12px 15px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+                order: 3;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .section-header button {
+                width: 100%;
+            }
+            
+            .stat-card {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 1.5rem;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .table-responsive table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .d-flex.gap-10 {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --sidebar-width: 100%;
+            }
+            
+            .sidebar {
+                width: 100% !important;
+                height: auto;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+            
+            .sidebar.active {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .dashboard-header p {
+                font-size: 0.9rem;
+            }
+            
+            .nav-right {
+                gap: 10px;
+                width: 100%;
+            }
+            
+            .language-switcher {
+                display: none;
+            }
+            
+            .user-profile {
+                gap: 8px;
+            }
+            
+            .user-profile div:last-child {
+                display: none;
+            }
+            
+            .modal-body {
+                padding: 15px;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+            
+            .table-responsive {
+                font-size: 0.75rem;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .btn i {
+                font-size: 0.75rem;
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stat-info {
+                width: 100%;
+            }
+            
+            .section-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .top-nav {
+                padding: 10px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .dashboard-content {
+                padding: 10px;
+            }
+            
+            .content-section {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .d-flex.gap-10 {
+                gap: 5px;
+            }
+            
+            .d-flex.gap-15 {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 992px) and (min-width: 768px) {
+            .sidebar {
+                width: 240px;
+                --sidebar-width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-0 { margin-bottom: 0; }
+        .mt-20 { margin-top: 20px; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-10 { gap: 10px; }
+        .gap-15 { gap: 15px; }
+        .w-100 { width: 100%; }
+        .search-input { width: 100%; padding-left: 40px; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); }
+        .user-name { font-weight: 600; }
+        .user-role { font-size: 0.8rem; color: var(--gray); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"></div>
+            <div>
+                <div class="logo-text">My Smart <span>ekimina</span></div>
+                <div class="admin-role" data-en="Super Administrator" data-rw="Ubuyobozi bw'ikirenga" data-fr="Super Administrateur">Super Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="Site-adminstrator-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> <span data-en="Dashboard" data-rw="Ikibaho" data-fr="Tableau de Bord">Dashboard</span></a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> <span data-en="Admin Approvals" data-rw="Kwemerwa kw'Abayobozi" data-fr="Approbations Admin">Admin Approvals</span></a></li>
+            <li><a href="tontine-groups-management.html"><i class="fas fa-users"></i> <span data-en="Tontine Groups" data-rw="Amatsinda y'ekimina" data-fr="Groupes de Tontines">Tontine Groups</span></a></li>
+            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> <span data-en="Financial Reports" data-rw="Raporo z'amafaranga" data-fr="Rapports Financiers">Financial Reports</span></a></li>
+            <li><a href="#"><i class="fas fa-history"></i> <span data-en="Activity Log" data-rw="Inkoranya y'Ibikorwa" data-fr="Journal d'Activité">Activity Log</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span data-en="Settings" data-rw="Igenamiterere" data-fr="Paramètres">Settings</span></a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span data-en="Logout" data-rw="Gusohoka" data-fr="Déconnexion">Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="d-flex align-center gap-15">
+                <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="form-control search-input" placeholder="Search...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="language-btn active" data-lang="en">EN</button>
+                    <button class="language-btn" data-lang="rw">RW</button>
+                    <button class="language-btn" data-lang="fr">FR</button>
+                </div>
+                
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar">SA</div>
+                    <div>
+                        <div class="user-name">Super Admin</div>
+                        <div class="user-role" data-en="System Administrator" data-rw="Umuyobozi wa Sisitemu" data-fr="Administrateur Système">System Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <h1 data-en="Administrator Dashboard" data-rw="Ikibaho cy'Ubuyobozi" data-fr="Tableau de Bord Administrateur">Administrator Dashboard</h1>
+                <p data-en="Manage tontine administrators, approve registrations, and monitor system activities" data-rw="Kora ubuyobozi bw'ekimina, emera iyandikishe, kandi urebe ibikorwa bya sisitemu" data-fr="Gérez les administrateurs de tontines, approuvez les inscriptions et surveillez les activités du système">Manage tontine administrators, approve registrations, and monitor system activities</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingCount">12</h3>
+                        <p data-en="Pending Approvals" data-rw="Kwemerwa Gitegereje" data-fr="Approbations en Attente">Pending Approvals</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon approved">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="approvedCount">156</h3>
+                        <p data-en="Approved Admins" data-rw="Abayobozi Bemerwe" data-fr="Admins Approuvés">Approved Admins</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon rejected">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="rejectedCount">8</h3>
+                        <p data-en="Rejected Requests" data-rw="Ibisingizo Byanze" data-fr="Demandes Rejetées">Rejected Requests</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCount">176</h3>
+                        <p data-en="Total Administrators" data-rw="Abayobozi Bose" data-fr="Total Administrateurs">Total Administrators</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Approvals Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 data-en="Pending Registration Approvals" data-rw="Kwemerwa kw'Iyandikishe Gitegereje" data-fr="Approbations d'Inscription en Attente">Pending Registration Approvals</h2>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> 
+                        <span data-en="Refresh" data-rw="Ongera" data-fr="Actualiser">Refresh</span>
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-en="Name" data-rw="Izina" data-fr="Nom">Name</th>
+                                <th data-en="Phone" data-rw="Telefone" data-fr="Téléphone">Phone</th>
+                                <th data-en="Email" data-rw="Imeri" data-fr="Email">Email</th>
+                                <th data-en="Tontine Group" data-rw="Itsinda ry'ekimina" data-fr="Groupe de Tontine">Tontine Group</th>
+                                <th data-en="Registration Date" data-rw="Itariki y'Iyandikishe" data-fr="Date d'Inscription">Registration Date</th>
+                                <th data-en="Status" data-rw="Imiterere" data-fr="Statut">Status</th>
+                                <th data-en="Actions" data-rw="Ibikorwa" data-fr="Actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTable">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-20">
+                    <button class="btn" onclick="loadMorePending()" data-en="Load More" data-rw="Zana Ibindi" data-fr="Charger Plus">Load More</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 data-en="Recent Admin Activities" data-rw="Ibikorwa by'Ubuyobozi Bigezeho" data-fr="Activités Récentes des Admins">Recent Admin Activities</h2>
+                </div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-en="Admin Name" data-rw="Izina ry'Ubuyobozi" data-fr="Nom Admin">Admin Name</th>
+                                <th data-en="Action" data-rw="Igikorwa" data-fr="Action">Action</th>
+                                <th data-en="Details" data-rw="Ibisobanuro" data-fr="Détails">Details</th>
+                                <th data-en="Time" data-rw="Igihe" data-fr="Heure">Time</th>
+                                <th data-en="IP Address" data-rw="Aderesi ya IP" data-fr="Adresse IP">IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTable">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-en="Generate OTP Password" data-rw="Kora ijambobanga rya OTP" data-fr="Générer Mot de Passe OTP">Generate OTP Password</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label data-en="Administrator Name" data-rw="Izina ry'Ubuyobozi" data-fr="Nom de l'Administrateur">Administrator Name</label>
+                    <input type="text" class="form-control" id="adminName" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label data-en="Phone Number" data-rw="Numero ya Telefone" data-fr="Numéro de Téléphone">Phone Number</label>
+                    <input type="text" class="form-control" id="adminPhone" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label data-en="Email Address" data-rw="Aderesi ya Imeri" data-fr="Adresse Email">Email Address</label>
+                    <input type="text" class="form-control" id="adminEmail" readonly>
+                </div>
+                
+                <div class="otp-display">
+                    <div data-en="OTP Password" data-rw="Ijambobanga rya OTP" data-fr="Mot de Passe OTP">OTP Password</div>
+                    <div class="otp-code" id="otpCode">XXXXXX</div>
+                    <div class="otp-expiry" data-en="Valid for 24 hours" data-rw="Bikora amasaha 24" data-fr="Valable 24 heures">Valid for 24 hours</div>
+                </div>
+                
+                <div class="form-group">
+                    <label data-en="Send OTP via" data-rw="Kohereza OTP binyuze" data-fr="Envoyer OTP via">Send OTP via</label>
+                    <div class="d-flex gap-15">
+                        <button class="btn btn-primary w-100" onclick="sendOTP('sms')">
+                            <i class="fas fa-sms"></i> 
+                            <span data-en="SMS" data-rw="SMS" data-fr="SMS">SMS</span>
+                        </button>
+                        <button class="btn btn-success w-100" onclick="sendOTP('email')">
+                            <i class="fas fa-envelope"></i> 
+                            <span data-en="Email" data-rw="Imeri" data-fr="Email">Email</span>
+                        </button>
+                        <button class="btn btn-warning w-100" onclick="sendOTP('whatsapp')">
+                            <i class="fab fa-whatsapp"></i> 
+                            <span data-en="WhatsApp" data-rw="WhatsApp" data-fr="WhatsApp">WhatsApp</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()" data-en="Close" data-rw="Funga" data-fr="Fermer">Close</button>
+                <button class="btn btn-primary" onclick="copyOTP()">
+                    <i class="fas fa-copy"></i> 
+                    <span data-en="Copy OTP" data-rw="Kopira OTP" data-fr="Copier OTP">Copy OTP</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language Management
+        let currentLanguage = 'en';
+        let currentAdmin = null;
+
+        // Sample Data
+        const pendingData = [
+            { id: 1, name: "Jean Paul N.", phone: "+250788123456", email: "jeanpaul@example.com", group: "Abaharanira Group", date: "2024-01-15", status: "pending" },
+            { id: 2, name: "Marie Claire K.", phone: "+250789654321", email: "marie@example.com", group: "Twizihize Tontine", date: "2024-01-14", status: "pending" },
+            { id: 3, name: "Eric Mutabazi", phone: "+250782345678", email: "eric@example.com", group: "Amizero Cooperative", date: "2024-01-13", status: "pending" },
+            { id: 4, name: "Alice Uwase", phone: "+250783456789", email: "alice@example.com", group: "Duterimbere Association", date: "2024-01-12", status: "pending" },
+            { id: 5, name: "Peter Hakizimana", phone: "+250784567890", email: "peter@example.com", group: "Tubane Hamwe", date: "2024-01-11", status: "pending" }
+        ];
+
+        const activityData = [
+            { admin: "Jean Paul N.", action: "Group Created", details: "Created 'Abaharanira Group'", time: "10:30 AM", ip: "196.200.45.12" },
+            { admin: "Marie Claire K.", action: "Member Added", details: "Added 5 new members", time: "Yesterday, 3:45 PM", ip: "196.200.45.13" },
+            { admin: "David M.", action: "Loan Approved", details: "Approved loan of RWF 500,000", time: "Jan 14, 2024", ip: "196.200.45.14" },
+            { admin: "Sarah J.", action: "Report Generated", details: "Monthly financial report", time: "Jan 13, 2024", ip: "196.200.45.15" },
+            { admin: "James K.", action: "Settings Updated", details: "Updated meeting schedule", time: "Jan 12, 2024", ip: "196.200.45.16" }
+        ];
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language
+            const savedLanguage = localStorage.getItem('adminLanguage') || 'en';
+            setLanguage(savedLanguage);
+            
+            // Initialize UI
+            updateStats();
+            populatePendingTable();
+            populateActivityTable();
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Language switcher
+            const languageButtons = document.querySelectorAll('.language-btn');
+            languageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    localStorage.setItem('adminLanguage', lang);
+                });
+            });
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth <= 992) {
+                    if (!sidebar.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Set Language Function
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-en]').forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    if (element.tagName === 'TITLE') {
+                        document.title = text;
+                    } else if (element.hasAttribute('title')) {
+                        element.setAttribute('title', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+            
+            // Update document language
+            document.documentElement.lang = lang;
+        }
+
+        // Update Statistics
+        function updateStats() {
+            document.getElementById('pendingCount').textContent = pendingData.length;
+            document.getElementById('approvedCount').textContent = 156;
+            document.getElementById('rejectedCount').textContent = 8;
+            document.getElementById('totalCount').textContent = 176;
+        }
+
+        // Populate Pending Table
+        function populatePendingTable() {
+            const tbody = document.getElementById('pendingTable');
+            tbody.innerHTML = '';
+            
+            pendingData.forEach(admin => {
+                const statusText = currentLanguage === 'en' ? 'Pending' : 
+                                  currentLanguage === 'rw' ? 'Gitegereje' : 'En Attente';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${admin.name}</td>
+                    <td>${admin.phone}</td>
+                    <td>${admin.email}</td>
+                    <td>${admin.group}</td>
+                    <td>${admin.date}</td>
+                    <td><span class="status status-pending">${statusText}</span></td>
+                    <td>
+                        <div class="d-flex gap-10">
+                            <button class="btn btn-success btn-sm" onclick="approveAdmin(${admin.id})">
+                                <i class="fas fa-check"></i>
+                                <span data-en="Approve" data-rw="Emera" data-fr="Approuver">Approve</span>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectAdmin(${admin.id})">
+                                <i class="fas fa-times"></i>
+                                <span data-en="Reject" data-rw="Hakanira" data-fr="Rejeter">Reject</span>
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="showOTPModal(${admin.id})">
+                                <i class="fas fa-key"></i>
+                                <span data-en="OTP" data-rw="OTP" data-fr="OTP">OTP</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update language for new elements
+            setLanguage(currentLanguage);
+        }
+
+        // Populate Activity Table
+        function populateActivityTable() {
+            const tbody = document.getElementById('activityTable');
+            tbody.innerHTML = '';
+            
+            activityData.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.admin}</td>
+                    <td>${activity.action}</td>
+                    <td>${activity.details}</td>
+                    <td>${activity.time}</td>
+                    <td>${activity.ip}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Admin Actions
+        function approveAdmin(id) {
+            const admin = pendingData.find(a => a.id === id);
+            if (confirm(`Approve ${admin.name} as tontine administrator?`)) {
+                // In real app, this would be an API call
+                alert(`${admin.name} has been approved as administrator.`);
+                refreshData();
+            }
+        }
+
+        function rejectAdmin(id) {
+            const admin = pendingData.find(a => a.id === id);
+            const reason = prompt(`Enter rejection reason for ${admin.name}:`);
+            if (reason) {
+                // In real app, this would be an API call
+                alert(`${admin.name} has been rejected. Reason: ${reason}`);
+                refreshData();
+            }
+        }
+
+        // OTP Modal Functions
+        function showOTPModal(id) {
+            const admin = pendingData.find(a => a.id === id);
+            currentAdmin = admin;
+            
+            document.getElementById('adminName').value = admin.name;
+            document.getElementById('adminPhone').value = admin.phone;
+            document.getElementById('adminEmail').value = admin.email;
+            
+            // Generate OTP
+            const otp = generateOTP();
+            document.getElementById('otpCode').textContent = otp;
+            
+            // Show modal
+            document.getElementById('otpModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('otpModal').style.display = 'none';
+            currentAdmin = null;
+        }
+
+        function generateOTP() {
+            // Generate 6-digit OTP
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function sendOTP(method) {
+            if (!currentAdmin) return;
+            
+            const otp = document.getElementById('otpCode').textContent;
+            let message = '';
+            
+            switch(method) {
+                case 'sms':
+                    message = `SMS sent to ${currentAdmin.phone} with OTP: ${otp}`;
+                    break;
+                case 'email':
+                    message = `Email sent to ${currentAdmin.email} with OTP: ${otp}`;
+                    break;
+                case 'whatsapp':
+                    message = `WhatsApp message sent to ${currentAdmin.phone} with OTP: ${otp}`;
+                    break;
+            }
+            
+            alert(message);
+            
+            // In real app, this would be an API call to send OTP
+            console.log(`OTP ${otp} sent via ${method} to ${currentAdmin.name}`);
+        }
+
+        function copyOTP() {
+            const otp = document.getElementById('otpCode').textContent;
+            navigator.clipboard.writeText(otp).then(() => {
+                alert('OTP copied to clipboard!');
+            });
+        }
+
+        // Utility Functions
+        function refreshData() {
+            // Simulate loading
+            alert('Refreshing data...');
+            updateStats();
+            populatePendingTable();
+            populateActivityTable();
+        }
+
+        function loadMorePending() {
+            // Simulate loading more data
+            alert('Loading more pending approvals...');
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+        /*

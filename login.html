@@ -809,6 +809,9 @@
         </div>
     </footer>
 
+    <!-- API Configuration -->
+    <script src="js/api.js"></script>
+    
     <script>
         // Current language
         let currentLanguage = 'en';
@@ -916,7 +919,7 @@
         }
 
         // Main login function
-        function login() {
+        async function login() {
             // Reset errors
             hideError('emailError');
             hideError('passwordError');
@@ -956,41 +959,35 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + getTranslation('loginBtnLoading', 'Signing in...');
             loginBtn.disabled = true;
             
-            // Simulate API call
-            setTimeout(() => {
+            try {
+                // Call the actual API
+                const response = await AuthAPI.login(email, password);
+                
                 // Reset button
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
                 
-                // For demo purposes, accept specific credentials
-                const demoAccounts = [
-                    { email: 'demo@ikimina.com', password: 'demo123' },
-                    { email: 'test@ikimina.com', password: 'test123' },
-                    { email: 'admin@ikimina.com', password: 'admin123' }
-                ];
+                // Show success
+                showAlert('success');
                 
-                const isValidAccount = demoAccounts.some(account => 
-                    account.email === email && account.password === password
-                );
-                
-                if (isValidAccount) {
-                    // Show success
-                    showAlert('success');
-                    
-                    // Save login state if remember me is checked
-                    if (rememberMe) {
-                        localStorage.setItem('rememberedEmail', email);
-                    }
-                    
-                    // Redirect to dashboard after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 2000);
-                } else {
-                    // Show error
-                    showAlert('error');
+                // Save login state if remember me is checked
+                if (rememberMe) {
+                    localStorage.setItem('rememberedEmail', email);
                 }
-            }, 1500);
+                
+                // Redirect based on user role after 1 second
+                setTimeout(() => {
+                    redirectToDashboard(response.user.role);
+                }, 1000);
+                
+            } catch (error) {
+                // Reset button
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                
+                // Show error
+                showAlert('error', error.message || 'Invalid email or password');
+            }
         }
 
         // Social login functions (demo)

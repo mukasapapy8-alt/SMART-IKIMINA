@@ -455,6 +455,16 @@
             background: var(--primary);
             color: white;
         }
+
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
         
         /* Loan Types */
         .loan-types {
@@ -624,6 +634,360 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Utility Classes */
+        .btn-full-width {
+            width: 100%;
+        }
+
+        .mt-15 {
+            margin-top: 15px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mt-25 {
+            margin-top: 25px;
+        }
+
+        .mt-30 {
+            margin-top: 30px;
+        }
+
+        .mb-15 {
+            margin-bottom: 15px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .p-25 {
+            padding: 25px;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .bg-light {
+            background: var(--light);
+            border-radius: 12px;
+        }
+
+        .card-section {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .contribution-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--success);
+        }
+
+        .contribution-item.pending {
+            border-left-color: var(--warning);
+        }
+
+        .contribution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contribution-amount {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .contribution-method {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+
+        .contribution-date {
+            text-align: right;
+        }
+
+        .contribution-date-text {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 4px 12px;
+            background: rgba(0, 200, 81, 0.15);
+            color: var(--success);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 187, 51, 0.15);
+            color: var(--warning);
+        }
+
+        .info-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }
+
+        .info-box-text {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            margin-top: 30px;
+        }
+
+        .table-title {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Additional Utility Classes */
+        .d-flex {
+            display: flex;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-20 {
+            gap: 20px;
+        }
+
+        .flex-flex {
+            font-size: 0.9rem;
+        }
+
+        .event-item {
+            padding: 12px;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+        }
+
+        .event-item.warning {
+            border-left-color: var(--warning);
+            background: linear-gradient(135deg, rgba(255, 187, 51, 0.1) 0%, rgba(255, 68, 68, 0.1) 100%);
+        }
+
+        .event-item.success {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, rgba(0, 200, 136, 0.1) 0%, rgba(46, 91, 255, 0.1) 100%);
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .event-date {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+
+        .text-description {
+            color: #666;
+        }
+
+        .text-small {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .input-flex {
+            flex: 1;
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+        }
+
+        .form-display {
+            display: block;
+        }
+
+        .form-hidden {
+            display: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            background-color: var(--dark);
+            color: white;
+            padding: 18px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--gray);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .calendar-events {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .events-section {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                left: 0;
+            }
+        }
+
+        /* Calendar and Events Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        #calendar {
+            font-size: 0.9rem;
+        }
+
+        .events-section h4 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Footer Styles */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            background-color: var(--dark);
+            color: white;
+            padding: 18px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 99;
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--gray);
+        }
+
+        .calendar-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-download {
+            background: var(--gray-light);
+            color: var(--dark);
+            border: 1px solid var(--gray-light);
+        }
+
+        .btn-download:hover {
+            background: var(--gray);
+            border-color: var(--gray);
+        }
     </style>
 </head>
 <body>
@@ -749,8 +1113,10 @@
                                 <td><span class="status-badge status-active">Active</span></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-btn view"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn approve"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -761,8 +1127,10 @@
                                 <td><span class="status-badge status-active">Active</span></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-btn view"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn approve"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -773,8 +1141,10 @@
                                 <td><span class="status-badge status-active">Active</span></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-btn view"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn approve"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
+                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -845,7 +1215,7 @@
                         <span>Active: 2</span>
                         <span>Pending: 1</span>
                     </div>
-                    <button class="btn btn-warning" style="margin-top: 15px; width: 100%;">View Rapid Loans</button>
+                    <button class="btn btn-warning btn-full-width mt-15">View Rapid Loans</button>
                 </div>
                 
                 <!-- Under Review Loans -->
@@ -856,7 +1226,7 @@
                         <span>Applications: 3</span>
                         <span>Avg. Amount: $500</span>
                     </div>
-                    <button class="btn btn-primary" style="margin-top: 15px; width: 100%;">Review Applications</button>
+                    <button class="btn btn-primary btn-full-width mt-15">Review Applications</button>
                 </div>
                 
                 <!-- Confirmed Loans -->
@@ -867,12 +1237,12 @@
                         <span>Active: 5</span>
                         <span>Total: $2,500</span>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 15px; width: 100%;">Manage Loans</button>
+                    <button class="btn btn-success btn-full-width mt-15">Manage Loans</button>
                 </div>
             </div>
             
-            <div class="table-container" style="margin-top: 30px;">
-                <h3 style="margin-bottom: 15px;">Recent Loan Applications</h3>
+            <div class="table-container">
+                <h3 class="table-title">Recent Loan Applications</h3>
                 <table>
                     <thead>
                         <tr>
@@ -989,27 +1359,27 @@
         </div>
         
         <!-- Link Creation & Calendar -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div class="grid-2col">
             <!-- Link Creation -->
             <div class="dashboard-section">
                 <div class="section-header">
                     <h2><i class="fas fa-link"></i> Invite New Members</h2>
                 </div>
                 
-                <p style="margin-bottom: 15px; color: #666;">Create a unique link to invite new members to join your tontine group.</p>
+                <p class="mb-15 text-description">Create a unique link to invite new members to join your tontine group.</p>
                 
                 <div class="link-section">
-                    <input type="text" class="link-input" value="https://mysmartekimina.com/join/group-abc123" readonly>
+                    <input type="text" class="link-input" value="https://mysmartekimina.com/join/group-abc123" readonly title="Group invitation link" placeholder="Your invitation link will appear here">
                     <button class="copy-btn" id="copy-link"><i class="fas fa-copy"></i> Copy</button>
                 </div>
                 
-                <div style="margin-top: 20px;">
-                    <button class="btn btn-success" style="width: 100%;"><i class="fas fa-qrcode"></i> Generate QR Code</button>
+                <div class="mt-20">
+                    <button class="btn btn-success btn-full-width"><i class="fas fa-qrcode"></i> Generate QR Code</button>
                 </div>
                 
-                <div style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                <div class="info-box">
                     <h4><i class="fas fa-info-circle"></i> Note</h4>
-                    <p style="font-size: 0.9rem; margin-top: 5px;">New members can also request to join directly without a link. You can approve them in the "Pending Requests" tab.</p>
+                    <p class="info-box-text">New members can also request to join directly without a link. You can approve them in the "Pending Requests" tab.</p>
                 </div>
             </div>
             
@@ -1019,95 +1389,95 @@
                     <h2><i class="fas fa-hand-holding-heart"></i> My Own Contribution</h2>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div class="grid-2col">
                     <!-- Contribution Form -->
-                    <div style="background: var(--light); padding: 25px; border-radius: 12px;">
-                        <h3 style="margin-bottom: 20px; color: var(--dark);">Make a Contribution</h3>
+                    <div class="card-section">
+                        <h3 class="section-title">Make a Contribution</h3>
                         
                         <div class="form-group">
                             <label data-en="Contribution Amount (RWF)" data-rw="Amafaranga y'Uruhare (RWF)" data-fr="Montant de la Contribution (RWF)">Contribution Amount (RWF)</label>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-weight: 600; color: var(--primary); font-size: 1.1rem;">RWF</span>
-                                <input type="number" id="leaderContributionAmount" placeholder="Enter amount" min="1000" step="1000" style="flex: 1; padding: 12px; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 1rem;">
+                            <div class="flex-row">
+                                <span class="info-label">RWF</span>
+                                <input type="number" id="leaderContributionAmount" placeholder="Enter amount" min="1000" step="1000" class="form-input input-flex">
                             </div>
-                            <small style="color: var(--gray); font-size: 0.85rem; margin-top: 5px;" data-en="Minimum: 10,000 RWF" data-rw="Amafaranga make: 10,000 RWF" data-fr="Minimum: 10,000 RWF">Minimum: 10,000 RWF</small>
+                            <small class="text-small" data-en="Minimum: 10,000 RWF" data-rw="Amafaranga make: 10,000 RWF" data-fr="Minimum: 10,000 RWF">Minimum: 10,000 RWF</small>
                         </div>
                         
-                        <div class="form-group" style="margin-top: 20px;">
-                            <label data-en="Payment Method" data-rw="Uburyo bwo Kwishyura" data-fr="Méthode de Paiement">Payment Method</label>
-                            <select id="leaderPaymentMethod" style="width: 100%; padding: 12px; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                        <div class="form-group mt-20">
+                            <label for="leaderPaymentMethod" data-en="Payment Method" data-rw="Uburyo bwo Kwishyura" data-fr="Méthode de Paiement">Payment Method</label>
+                            <select id="leaderPaymentMethod" class="form-input" title="Select payment method">
                                 <option value="mobile" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</option>
                                 <option value="bank" data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</option>
                                 <option value="cash" data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</option>
                             </select>
                         </div>
                         
-                        <div class="form-group" id="leaderMobileNumberField" style="margin-top: 20px; display: block;">
+                        <div class="form-group mt-20 form-display" id="leaderMobileNumberField">
                             <label data-en="Mobile Number" data-rw="Numero ya Telefone" data-fr="Numéro de Mobile">Mobile Number</label>
-                            <input type="tel" id="leaderMobileNumber" placeholder="0781234567" style="width: 100%; padding: 12px; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 1rem;">
+                            <input type="tel" id="leaderMobileNumber" placeholder="0781234567" class="form-input">
                         </div>
                         
-                        <div class="form-group" id="leaderBankDetailsField" style="margin-top: 20px; display: none;">
+                        <div class="form-group mt-20 form-hidden" id="leaderBankDetailsField">
                             <label data-en="Bank Account Details" data-rw="Amakuru ya Konti ya Banki" data-fr="Détails du Compte Bancaire">Bank Account Details</label>
-                            <textarea id="leaderBankDetails" rows="3" placeholder="Account number, bank name, etc." data-placeholder-en="Account number, bank name, etc." data-placeholder-rw="Numero ya konti, izina ry'banki, n'ibindi" data-placeholder-fr="Numéro de compte, nom de banque, etc." style="width: 100%; padding: 12px; border: 2px solid var(--gray-light); border-radius: 8px; font-size: 1rem; font-family: 'Segoe UI', sans-serif;"></textarea>
+                            <textarea id="leaderBankDetails" rows="3" placeholder="Account number, bank name, etc." data-placeholder-en="Account number, bank name, etc." data-placeholder-rw="Numero ya konti, izina ry'banki, n'ibindi" data-placeholder-fr="Numéro de compte, nom de banque, etc." class="form-input"></textarea>
                         </div>
                         
-                        <button class="btn btn-primary" onclick="processLeaderContribution()" style="width: 100%; margin-top: 25px; padding: 14px; font-size: 1rem;" data-en="Pay Now" data-rw="Shyira Noneho" data-fr="Payer Maintenant">Pay Now</button>
+                        <button class="btn btn-primary btn-full-width mt-25" onclick="processLeaderContribution()" data-en="Pay Now" data-rw="Shyira Noneho" data-fr="Payer Maintenant">Pay Now</button>
                     </div>
                     
                     <!-- Contribution History -->
-                    <div style="background: var(--light); padding: 25px; border-radius: 12px;">
-                        <h3 style="margin-bottom: 20px; color: var(--dark);">My Contribution History</h3>
+                    <div class="card-section">
+                        <h3 class="section-title">My Contribution History</h3>
                         
-                        <div style="display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto;">
-                            <div style="padding: 15px; background: white; border-radius: 8px; border-left: 4px solid var(--success);">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="flex-col">
+                            <div class="contribution-item">
+                                <div class="contribution-header">
                                     <div>
-                                        <div style="font-weight: 600; color: var(--dark);">50,000 RWF</div>
-                                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</div>
+                                        <div class="contribution-amount">50,000 RWF</div>
+                                        <div class="contribution-method" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</div>
                                     </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.85rem; color: var(--gray);">Dec 1, 2023</div>
-                                        <span style="display: inline-block; margin-top: 5px; padding: 4px 12px; background: rgba(0, 200, 81, 0.15); color: var(--success); border-radius: 12px; font-size: 0.8rem; font-weight: 600;" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
+                                    <div class="contribution-date">
+                                        <div class="contribution-date-text">Dec 1, 2023</div>
+                                        <span class="status-badge" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div style="padding: 15px; background: white; border-radius: 8px; border-left: 4px solid var(--success);">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="contribution-item">
+                                <div class="contribution-header">
                                     <div>
-                                        <div style="font-weight: 600; color: var(--dark);">50,000 RWF</div>
-                                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;" data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</div>
+                                        <div class="contribution-amount">50,000 RWF</div>
+                                        <div class="contribution-method" data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</div>
                                     </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.85rem; color: var(--gray);">Nov 15, 2023</div>
-                                        <span style="display: inline-block; margin-top: 5px; padding: 4px 12px; background: rgba(0, 200, 81, 0.15); color: var(--success); border-radius: 12px; font-size: 0.8rem; font-weight: 600;" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
+                                    <div class="contribution-date">
+                                        <div class="contribution-date-text">Nov 15, 2023</div>
+                                        <span class="status-badge" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div style="padding: 15px; background: white; border-radius: 8px; border-left: 4px solid var(--success);">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="contribution-item">
+                                <div class="contribution-header">
                                     <div>
-                                        <div style="font-weight: 600; color: var(--dark);">50,000 RWF</div>
-                                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;" data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</div>
+                                        <div class="contribution-amount">50,000 RWF</div>
+                                        <div class="contribution-method" data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</div>
                                     </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.85rem; color: var(--gray);">Nov 1, 2023</div>
-                                        <span style="display: inline-block; margin-top: 5px; padding: 4px 12px; background: rgba(0, 200, 81, 0.15); color: var(--success); border-radius: 12px; font-size: 0.8rem; font-weight: 600;" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
+                                    <div class="contribution-date">
+                                        <div class="contribution-date-text">Nov 1, 2023</div>
+                                        <span class="status-badge" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div style="padding: 15px; background: white; border-radius: 8px; border-left: 4px solid var(--warning);">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="contribution-item pending">
+                                <div class="contribution-header">
                                     <div>
-                                        <div style="font-weight: 600; color: var(--dark);">50,000 RWF</div>
-                                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</div>
+                                        <div class="contribution-amount">50,000 RWF</div>
+                                        <div class="contribution-method" data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</div>
                                     </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.85rem; color: var(--gray);">Today</div>
-                                        <span style="display: inline-block; margin-top: 5px; padding: 4px 12px; background: rgba(255, 187, 51, 0.15); color: var(--warning); border-radius: 12px; font-size: 0.8rem; font-weight: 600;" data-en="Pending" data-rw="Bitegereje" data-fr="En Attente">Pending</span>
+                                    <div class="contribution-date">
+                                        <div class="contribution-date-text">Today</div>
+                                        <span class="status-badge pending" data-en="Pending" data-rw="Bitegereje" data-fr="En Attente">Pending</span>
                                     </div>
                                 </div>
                             </div>
@@ -1120,33 +1490,33 @@
             <div id="calendar-section" class="dashboard-section">
                 <div class="section-header">
                     <h2><i class="fas fa-calendar-alt"></i> Tontine Calendar</h2>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-primary" style="padding: 8px 12px;"><i class="fas fa-plus"></i></button>
-                        <button class="btn btn-secondary" style="padding: 8px 12px; background: var(--gray-light); color: var(--dark); border: 1px solid var(--gray-light);"><i class="fas fa-download"></i></button>
+                    <div class="d-flex gap-8">
+                        <button class="btn btn-primary btn-icon" title="Add event"><i class="fas fa-plus"></i></button>
+                        <button class="btn btn-secondary btn-icon btn-download" title="Download calendar"><i class="fas fa-download"></i></button>
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                <div class="calendar-grid">
                     <div>
-                        <div id="calendar" style="font-size: 0.9rem;"></div>
+                        <div id="calendar"></div>
                     </div>
                     
-                    <div>
-                        <h4 style="margin-bottom: 15px; color: var(--dark);">📅 Upcoming Events</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <div style="padding: 12px; background: linear-gradient(135deg, rgba(46, 91, 255, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--primary); border-radius: 6px;">
-                                <div style="font-weight: 600; color: var(--dark); font-size: 0.95rem;">Monthly Meeting</div>
-                                <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;">Oct 15, 2023</div>
+                    <div class="events-section">
+                        <h4>📅 <span data-en="Upcoming Events" data-rw="Ibirori Bitandukanye" data-fr="Événements à Venir">Upcoming Events</span></h4>
+                        <div class="events-container">
+                            <div class="event-item">
+                                <div class="event-title">Monthly Meeting</div>
+                                <div class="event-date">Oct 15, 2023</div>
                             </div>
                             
-                            <div style="padding: 12px; background: linear-gradient(135deg, rgba(255, 187, 51, 0.1) 0%, rgba(255, 68, 68, 0.1) 100%); border-left: 4px solid var(--warning); border-radius: 6px;">
-                                <div style="font-weight: 600; color: var(--dark); font-size: 0.95rem;">Contribution Deadline</div>
-                                <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;">Oct 20, 2023</div>
+                            <div class="event-item warning">
+                                <div class="event-title">Contribution Deadline</div>
+                                <div class="event-date">Oct 20, 2023</div>
                             </div>
                             
-                            <div style="padding: 12px; background: linear-gradient(135deg, rgba(0, 200, 136, 0.1) 0%, rgba(46, 91, 255, 0.1) 100%); border-left: 4px solid var(--success); border-radius: 6px;">
-                                <div style="font-weight: 600; color: var(--dark); font-size: 0.95rem;">Loan Committee Meeting</div>
-                                <div style="font-size: 0.85rem; color: var(--gray); margin-top: 3px;">Oct 25, 2023</div>
+                            <div class="event-item success">
+                                <div class="event-title">Loan Committee Meeting</div>
+                                <div class="event-date">Oct 25, 2023</div>
                             </div>
                         </div>
                     </div>
@@ -1156,8 +1526,8 @@
     </div>
     
     <!-- Footer -->
-    <footer style="position: fixed; bottom: 0; left: 250px; right: 0; background-color: var(--dark); color: white; padding: 18px 20px; text-align: center; font-size: 0.9rem; border-top: 1px solid rgba(255, 255, 255, 0.1); height: auto; min-height: 65px; display: flex; align-items: center; justify-content: center; z-index: 100;">
-        <p style="margin: 0; color: var(--gray);">
+    <footer>
+        <p>
             <span data-en="© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved." data-rw="© 2025 My Smart ekimina-ikintu ky'isosiyete ya cooloff Ltd. Uburenganzira bwose buzemwa." data-fr="© 2025 My Smart ekimina-un produit de cooloff company ltd. Tous les droits réservés.">© 2025 My Smart ekimina-a product of cooloff company ltd. All rights reserved.</span>
         </p>
     </footer>
@@ -1394,6 +1764,350 @@
             document.getElementById('leaderMobileNumber').value = '';
             document.getElementById('leaderBankDetails').value = '';
         }
+    </script>
+
+    <!-- Edit Member Modal -->
+    <div id="editMemberModal" class="modal">
+        <div class="modal-content modal-content-large">
+            <div class="modal-header">
+                <h2 id="editMemberTitle">Edit Member Information</h2>
+                <button class="modal-close" onclick="closeModal('editMemberModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editMemberForm">
+                    <div class="form-group">
+                        <label for="editMemberName">Full Name</label>
+                        <input type="text" id="editMemberName" class="form-input" required>
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberEmail">Email Address</label>
+                        <input type="email" id="editMemberEmail" class="form-input" required>
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberPhone">Phone Number</label>
+                        <input type="tel" id="editMemberPhone" class="form-input" required>
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberPosition">Position in Group</label>
+                        <input type="text" id="editMemberPosition" class="form-input" placeholder="e.g. Member, Treasurer, Secretary">
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberAddress">Address</label>
+                        <input type="text" id="editMemberAddress" class="form-input">
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberCity">City/District</label>
+                        <input type="text" id="editMemberCity" class="form-input">
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberStatus">Member Status</label>
+                        <select id="editMemberStatus" class="form-input" title="Select member status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-20">
+                        <label for="editMemberNotes">Notes</label>
+                        <textarea id="editMemberNotes" class="form-input textarea-tall"></textarea>
+                    </div>
+
+                    <div class="modal-actions mt-25">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editMemberModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Member Confirmation Modal -->
+    <div id="deleteMemberModal" class="modal">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header">
+                <h2>Confirm Delete Member</h2>
+                <button class="modal-close" onclick="closeModal('deleteMemberModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box info-box-danger">
+                    <p><strong>Warning!</strong> This action cannot be undone.</p>
+                    <p>Are you sure you want to delete <strong id="deleteMemberName">this member</strong> from the group?</p>
+                </div>
+                <p class="warning-text">All their contribution history and related data will be permanently removed.</p>
+
+                <div class="modal-actions mt-25">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('deleteMemberModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteMember()">Delete Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Styles -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e63946;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 20px;
+                max-width: calc(100% - 40px);
+            }
+        }
+
+        /* Modal Content Sizes */
+        .modal-content-large {
+            max-width: 600px;
+        }
+
+        .modal-content-medium {
+            max-width: 400px;
+        }
+
+        /* Textarea Styles */
+        .textarea-tall {
+            height: 80px;
+        }
+
+        /* Warning Box Styles */
+        .info-box-danger {
+            background: #ffe0e0;
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Warning Text */
+        .warning-text {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <!-- Edit and Delete Member Scripts -->
+    <script>
+        let currentMemberId = null;
+        let currentMemberName = null;
+
+        // Open Edit Member Modal
+        function openEditMemberModal(memberName, memberEmail, memberPhone, position = '', address = '', city = '', status = 'active', notes = '') {
+            currentMemberId = memberName; // Using name as ID for demo
+            currentMemberName = memberName;
+            document.getElementById('editMemberName').value = memberName;
+            document.getElementById('editMemberEmail').value = memberEmail;
+            document.getElementById('editMemberPhone').value = memberPhone;
+            document.getElementById('editMemberPosition').value = position;
+            document.getElementById('editMemberAddress').value = address;
+            document.getElementById('editMemberCity').value = city;
+            document.getElementById('editMemberStatus').value = status;
+            document.getElementById('editMemberNotes').value = notes;
+            openModal('editMemberModal');
+        }
+
+        // Open Delete Confirmation Modal
+        function openDeleteMemberModal(memberName) {
+            currentMemberId = memberName;
+            currentMemberName = memberName;
+            document.getElementById('deleteMemberName').textContent = memberName;
+            openModal('deleteMemberModal');
+        }
+
+        // Open Modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+        }
+
+        // Close Modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+        }
+
+        // Handle Edit Member Form Submit
+        document.getElementById('editMemberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('editMemberName').value;
+            const email = document.getElementById('editMemberEmail').value;
+            const phone = document.getElementById('editMemberPhone').value;
+            const position = document.getElementById('editMemberPosition').value;
+            const address = document.getElementById('editMemberAddress').value;
+            const city = document.getElementById('editMemberCity').value;
+            const status = document.getElementById('editMemberStatus').value;
+            const notes = document.getElementById('editMemberNotes').value;
+
+            // Save changes (in real app, send to server)
+            alert(`Member "${name}" information has been updated successfully!\n\nEmail: ${email}\nPhone: ${phone}\nPosition: ${position}\nStatus: ${status}`);
+            
+            // Update table row in UI
+            const rows = document.querySelectorAll('#active-members table tbody tr');
+            rows.forEach(row => {
+                if (row.cells[0].textContent === currentMemberName) {
+                    row.cells[0].textContent = name;
+                }
+            });
+
+            closeModal('editMemberModal');
+        });
+
+        // Confirm Delete Member
+        function confirmDeleteMember() {
+            alert(`Member "${currentMemberName}" has been deleted from the group.\n\nAll associated data has been removed.`);
+            
+            // Remove row from table
+            const rows = document.querySelectorAll('#active-members table tbody tr');
+            rows.forEach(row => {
+                if (row.cells[0].textContent === currentMemberName) {
+                    row.remove();
+                }
+            });
+
+            closeModal('deleteMemberModal');
+        }
+
+        // Attach edit and delete button listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            attachMemberActionListeners();
+        });
+
+        function attachMemberActionListeners() {
+            // Edit buttons
+            document.querySelectorAll('.action-btn.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const memberName = row.cells[0].textContent;
+                    const joinDate = row.cells[1].textContent;
+                    // Email format generated from name
+                    const memberEmail = memberName.toLowerCase().replace(/\s+/g, '.') + '@email.com';
+                    const memberPhone = '+250 78 XXX XXXX';
+                    
+                    openEditMemberModal(memberName, memberEmail, memberPhone, 'Member', '', '', 'active', '');
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.action-btn.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const memberName = row.cells[0].textContent;
+                    openDeleteMemberModal(memberName);
+                });
+            });
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editMemberModal');
+            const deleteModal = document.getElementById('deleteMemberModal');
+            
+            if (event.target === editModal) {
+                closeModal('editMemberModal');
+            }
+            if (event.target === deleteModal) {
+                closeModal('deleteMemberModal');
+            }
+        });
     </script>
 </body>
 </html>
