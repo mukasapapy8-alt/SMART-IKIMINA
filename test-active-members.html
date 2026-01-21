@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Members API Tester</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2E5BFF;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fc;
+            border-radius: 5px;
+            border-left: 4px solid #2E5BFF;
+        }
+        button {
+            background: #2E5BFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #1A3DB0;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #00C851;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        .info {
+            color: #2E5BFF;
+            font-weight: bold;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        .result {
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #2E5BFF;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Active Members API Debugger</h1>
+        <p>This page helps you test the backend API endpoints and see what data is being returned.</p>
+
+        <div class="section">
+            <h3>Step 1: Login Status</h3>
+            <button onclick="checkLoginStatus()">Check Login Status</button>
+            <div id="loginStatus" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>Step 2: Get All Groups</h3>
+            <button onclick="getAllGroups()">Get All Groups</button>
+            <div id="groupsResult" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>Step 3: Get Group Members</h3>
+            <input type="text" id="groupId" placeholder="Enter Group ID">
+            <button onclick="getGroupById()">Get Group by ID</button>
+            <button onclick="getGroupMembers()">Get All Members</button>
+            <button onclick="getActiveMembers()">Get Active Members</button>
+            <div id="membersResult" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>Step 4: View Member Data Structure</h3>
+            <div id="memberStructure" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>Step 5: Test Member Display</h3>
+            <div id="memberTable"></div>
+        </div>
+    </div>
+
+    <!-- Include API files -->
+    <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
+
+    <script>
+        function checkLoginStatus() {
+            const resultDiv = document.getElementById('loginStatus');
+            try {
+                const isLoggedIn = TokenManager.isLoggedIn();
+                const user = TokenManager.getUser();
+                
+                if (isLoggedIn && user) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ User is logged in</p>
+                        <pre>${JSON.stringify(user, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ User is not logged in</p>
+                        <p>Please login first at <a href="login.html">login.html</a></p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function getAllGroups() {
+            const resultDiv = document.getElementById('groupsResult');
+            try {
+                resultDiv.innerHTML = '<p class="info">⏳ Loading groups...</p>';
+                const response = await GroupsAPI.getAll();
+                console.log('Groups response:', response);
+                
+                const groups = response.groups || [];
+                const user = TokenManager.getUser();
+                const leaderGroups = groups.filter(g => g.leader_id === user.id);
+                
+                if (leaderGroups.length > 0) {
+                    const groupId = leaderGroups[0].id;
+                    document.getElementById('groupId').value = groupId;
+                    
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ Found ${groups.length} total groups, ${leaderGroups.length} where you are leader</p>
+                        <p class="info">📋 Your group ID: <strong>${groupId}</strong> (auto-filled above)</p>
+                        <p class="info">Group Name: <strong>${leaderGroups[0].name}</strong></p>
+                        <details>
+                            <summary>View full response</summary>
+                            <pre>${JSON.stringify(response, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ You are not a leader of any group</p>
+                        <details>
+                            <summary>View full response</summary>
+                            <pre>${JSON.stringify(response, null, 2)}</pre>
+                        </details>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error: ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function getGroupById() {
+            const groupId = document.getElementById('groupId').value;
+            const resultDiv = document.getElementById('membersResult');
+            
+            if (!groupId) {
+                alert('Please enter a group ID first');
+                return;
+            }
+
+            try {
+                resultDiv.innerHTML = '<p class="info">⏳ Loading group details...</p>';
+                const response = await GroupsAPI.getById(groupId);
+                console.log('Group by ID response:', response);
+                
+                const group = response.group || response;
+                const members = group.members || [];
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Group Details Retrieved</p>
+                    <p class="info">Group Name: <strong>${group.name}</strong></p>
+                    <p class="info">Members in response: <strong>${members.length}</strong></p>
+                    <details>
+                        <summary>View full response</summary>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    </details>
+                `;
+                
+                if (members.length > 0) {
+                    showMemberStructure(members);
+                    displayMembersTable(members);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error: ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function getGroupMembers() {
+            const groupId = document.getElementById('groupId').value;
+            const resultDiv = document.getElementById('membersResult');
+            
+            if (!groupId) {
+                alert('Please enter a group ID first');
+                return;
+            }
+
+            try {
+                resultDiv.innerHTML = '<p class="info">⏳ Loading all members...</p>';
+                const response = await GroupsAPI.getMembers(groupId);
+                console.log('Members response:', response);
+                
+                const members = response.members || response || [];
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Members Retrieved</p>
+                    <p class="info">Total members: <strong>${members.length}</strong></p>
+                    <details>
+                        <summary>View full response</summary>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    </details>
+                `;
+                
+                if (members.length > 0) {
+                    showMemberStructure(members);
+                    displayMembersTable(members);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error: ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function getActiveMembers() {
+            const groupId = document.getElementById('groupId').value;
+            const resultDiv = document.getElementById('membersResult');
+            
+            if (!groupId) {
+                alert('Please enter a group ID first');
+                return;
+            }
+
+            try {
+                resultDiv.innerHTML = '<p class="info">⏳ Loading active members...</p>';
+                const response = await GroupsAPI.getActiveMembers(groupId);
+                console.log('Active members response:', response);
+                
+                const members = response.members || response || [];
+                const approvedMembers = members.filter(m => m.status === 'approved');
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Active Members Retrieved</p>
+                    <p class="info">Total in response: <strong>${members.length}</strong></p>
+                    <p class="info">Approved members: <strong>${approvedMembers.length}</strong></p>
+                    <details>
+                        <summary>View full response</summary>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    </details>
+                `;
+                
+                if (members.length > 0) {
+                    showMemberStructure(members);
+                    displayMembersTable(approvedMembers);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error: ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        function showMemberStructure(members) {
+            const structureDiv = document.getElementById('memberStructure');
+            const sampleMember = members[0];
+            
+            const userData = sampleMember.user || sampleMember;
+            
+            structureDiv.innerHTML = `
+                <h4>Sample Member Data Structure:</h4>
+                <p class="info">Available top-level keys: <strong>${Object.keys(sampleMember).join(', ')}</strong></p>
+                ${sampleMember.user ? `<p class="info">Nested user object keys: <strong>${Object.keys(sampleMember.user).join(', ')}</strong></p>` : ''}
+                <details>
+                    <summary>View sample member object</summary>
+                    <pre>${JSON.stringify(sampleMember, null, 2)}</pre>
+                </details>
+            `;
+        }
+
+        function displayMembersTable(members) {
+            const tableDiv = document.getElementById('memberTable');
+            
+            if (members.length === 0) {
+                tableDiv.innerHTML = '<p class="error">No members to display</p>';
+                return;
+            }
+
+            let html = `
+                <h4>Member Data Extraction Test (${members.length} members):</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Join Date</th>
+                            <th>Status</th>
+                            <th>Member ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            members.forEach(member => {
+                const userData = member.user || member;
+                
+                const firstName = userData.first_name || userData.firstName || userData.user_first_name || member.first_name || '';
+                const lastName = userData.last_name || userData.lastName || userData.user_last_name || member.last_name || '';
+                const memberName = `${firstName} ${lastName}`.trim() || userData.name || userData.username || 'Unknown User';
+                const memberEmail = userData.email || userData.user_email || member.email || 'No email provided';
+                const memberPhone = userData.phone || userData.phone_number || userData.user_phone || member.phone || 'No phone provided';
+                const memberId = member.user_id || userData.id || member.id || 'unknown';
+                const dateValue = member.created_at || member.joined_at || member.join_date || userData.created_at;
+                const joinDate = dateValue ? new Date(dateValue).toLocaleDateString() : 'N/A';
+                const status = member.status || 'N/A';
+
+                html += `
+                    <tr>
+                        <td>${memberName}</td>
+                        <td>${memberEmail}</td>
+                        <td>${memberPhone}</td>
+                        <td>${joinDate}</td>
+                        <td>${status}</td>
+                        <td>${memberId}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            tableDiv.innerHTML = html;
+        }
+
+        // Auto-check login on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+    </script>
+</body>
+</html>

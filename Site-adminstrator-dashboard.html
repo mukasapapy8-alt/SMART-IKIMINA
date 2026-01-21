@@ -30,6 +30,10 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             color: var(--dark);
             background-color: #ffffff;
@@ -846,12 +850,12 @@
         
         <ul class="sidebar-menu">
             <li><a href="Site-adminstrator-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> <span data-en="Dashboard" data-rw="Ikibaho" data-fr="Tableau de Bord">Dashboard</span></a></li>
-            <li><a href="#"><i class="fas fa-user-check"></i> <span data-en="Admin Approvals" data-rw="Kwemerwa kw'Abayobozi" data-fr="Approbations Admin">Admin Approvals</span></a></li>
+            <li><a href="#admin-approvals"><i class="fas fa-user-check"></i> <span data-en="Admin Approvals" data-rw="Kwemerwa kw'Abayobozi" data-fr="Approbations Admin">Admin Approvals</span></a></li>
             <li><a href="tontine-groups-management.html"><i class="fas fa-users"></i> <span data-en="Tontine Groups" data-rw="Amatsinda y'ekimina" data-fr="Groupes de Tontines">Tontine Groups</span></a></li>
-            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> <span data-en="Financial Reports" data-rw="Raporo z'amafaranga" data-fr="Rapports Financiers">Financial Reports</span></a></li>
-            <li><a href="#"><i class="fas fa-history"></i> <span data-en="Activity Log" data-rw="Inkoranya y'Ibikorwa" data-fr="Journal d'Activité">Activity Log</span></a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> <span data-en="Settings" data-rw="Igenamiterere" data-fr="Paramètres">Settings</span></a></li>
-            <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span data-en="Logout" data-rw="Gusohoka" data-fr="Déconnexion">Logout</span></a></li>
+            <li><a href="#" onclick="alert('Financial Reports feature coming soon!'); return false;"><i class="fas fa-file-invoice-dollar"></i> <span data-en="Financial Reports" data-rw="Raporo z'amafaranga" data-fr="Rapports Financiers">Financial Reports</span></a></li>
+            <li><a href="#activity-log"><i class="fas fa-history"></i> <span data-en="Activity Log" data-rw="Inkoranya y'Ibikorwa" data-fr="Journal d'Activité">Activity Log</span></a></li>
+            <li><a href="#" onclick="alert('Settings feature coming soon!'); return false;"><i class="fas fa-cog"></i> <span data-en="Settings" data-rw="Igenamiterere" data-fr="Paramètres">Settings</span></a></li>
+            <li><a href="#" id="logoutBtn" onclick="logout(); return false;" style="cursor: pointer;"><i class="fas fa-sign-out-alt"></i> <span data-en="Logout" data-rw="Gusohoka" data-fr="Déconnexion">Logout</span></a></li>
         </ul>
     </div>
 
@@ -937,7 +941,7 @@
             </div>
 
             <!-- Pending Approvals Section -->
-            <div class="content-section">
+            <div class="content-section" id="admin-approvals">
                 <div class="section-header">
                     <h2 data-en="Pending Registration Approvals" data-rw="Kwemerwa kw'Iyandikishe Gitegereje" data-fr="Approbations d'Inscription en Attente">Pending Registration Approvals</h2>
                     <button class="btn btn-primary" onclick="refreshData()">
@@ -971,7 +975,7 @@
             </div>
 
             <!-- Recent Activity Section -->
-            <div class="content-section">
+            <div class="content-section" id="activity-log">
                 <div class="section-header">
                     <h2 data-en="Recent Admin Activities" data-rw="Ibikorwa by'Ubuyobozi Bigezeho" data-fr="Activités Récentes des Admins">Recent Admin Activities</h2>
                 </div>
@@ -1053,19 +1057,277 @@
         </div>
     </div>
 
+    <!-- Define logout function FIRST so onclick can find it -->
+    <script>
+        // Logout function - MUST be defined first for onclick attribute
+        function logout() {
+            console.log('Logout function called');
+            try {
+                if (confirm('Are you sure you want to logout?')) {
+                    console.log('User confirmed logout');
+                    
+                    // Clear tokens and user data
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    
+                    console.log('Tokens cleared, redirecting to login');
+                    
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            }
+            return false; // Prevent default action
+        }
+    </script>
+
+    <!-- API Configuration - Load ONCE -->
+    <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
+
     <script>
         // Language Management
         let currentLanguage = 'en';
         let currentAdmin = null;
+        
+        // Pending tontines data - will be loaded from backend
+        let pendingData = [];
+        let usersData = [];
+        let groupsData = [];
+        let statsData = {};
 
-        // Sample Data
-        const pendingData = [
-            { id: 1, name: "Jean Paul N.", phone: "+250788123456", email: "jeanpaul@example.com", group: "Abaharanira Group", date: "2024-01-15", status: "pending" },
-            { id: 2, name: "Marie Claire K.", phone: "+250789654321", email: "marie@example.com", group: "Twizihize Tontine", date: "2024-01-14", status: "pending" },
-            { id: 3, name: "Eric Mutabazi", phone: "+250782345678", email: "eric@example.com", group: "Amizero Cooperative", date: "2024-01-13", status: "pending" },
-            { id: 4, name: "Alice Uwase", phone: "+250783456789", email: "alice@example.com", group: "Duterimbere Association", date: "2024-01-12", status: "pending" },
-            { id: 5, name: "Peter Hakizimana", phone: "+250784567890", email: "peter@example.com", group: "Tubane Hamwe", date: "2024-01-11", status: "pending" }
-        ];
+        // Load admin user data
+        async function loadAdminData() {
+            const user = TokenManager.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return null;
+            }
+
+            // Check if user is site admin
+            if (user.role !== 'site_admin') {
+                alert('Access denied. Only site administrators can access this page.');
+                window.location.href = 'login.html';
+                return null;
+            }
+
+            currentAdmin = user;
+            
+            return user;
+        }
+
+        // Load pending tontines from backend
+        async function loadPendingTontines() {
+            try {
+                const response = await fetch('http://localhost:5000/api/groups/pending', {
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getToken()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch pending tontines');
+                }
+
+                const data = await response.json();
+                pendingData = data.groups || [];
+                
+                console.log('Loaded pending tontines:', pendingData);
+                updatePendingTable();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading pending tontines:', error);
+                pendingData = [];
+                updatePendingTable();
+            }
+        }
+
+        // Load all users from backend
+        async function loadUsers() {
+            try {
+                const response = await fetch('http://localhost:5000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getToken()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const data = await response.json();
+                usersData = data.users || [];
+                
+                console.log('Loaded users:', usersData);
+                updateStats();
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersData = [];
+            }
+        }
+
+        // Load all groups from backend
+        async function loadAllGroups() {
+            try {
+                const response = await fetch('http://localhost:5000/api/groups/all', {
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getToken()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch groups');
+                }
+
+                const data = await response.json();
+                groupsData = data.groups || [];
+                
+                console.log('Loaded groups:', groupsData);
+            } catch (error) {
+                console.error('Error loading groups:', error);
+                groupsData = [];
+            }
+        }
+
+        // Update pending tontines table
+        function updatePendingTable() {
+            const tbody = document.getElementById('pendingTableBody');
+            if (!tbody) return;
+
+            if (pendingData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                            <p>No pending tontines at the moment</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = pendingData.map((tontine, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <strong>${tontine.name}</strong><br>
+                        <small style="color: var(--gray);">${tontine.description || 'No description'}</small>
+                    </td>
+                    <td>${tontine.leader_name || 'Unknown'}</td>
+                    <td>${tontine.max_members || 0}</td>
+                    <td>${new Date(tontine.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-small btn-success" onclick="approveTontine('${tontine.id}', '${tontine.name}')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn-small btn-danger" onclick="rejectTontine('${tontine.id}', '${tontine.name}')">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                        <button class="btn-small" onclick="viewTontineDetails('${tontine.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Approve tontine
+        async function approveTontine(tontineId, tontineName) {
+            if (!confirm(`Are you sure you want to approve "${tontineName}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/groups/${tontineId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getToken()}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to approve tontine');
+                }
+
+                const data = await response.json();
+                alert(`Tontine "${tontineName}" has been approved successfully!`);
+                
+                // Reload data
+                await loadPendingTontines();
+                await loadAllGroups();
+            } catch (error) {
+                console.error('Error approving tontine:', error);
+                alert('Failed to approve tontine: ' + error.message);
+            }
+        }
+
+        // Reject tontine
+        async function rejectTontine(tontineId, tontineName) {
+            const reason = prompt(`Please provide a reason for rejecting "${tontineName}":`);
+            if (!reason) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/groups/${tontineId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to reject tontine');
+                }
+
+                const data = await response.json();
+                alert(`Tontine "${tontineName}" has been rejected.`);
+                
+                // Reload data
+                await loadPendingTontines();
+            } catch (error) {
+                console.error('Error rejecting tontine:', error);
+                alert('Failed to reject tontine: ' + error.message);
+            }
+        }
+
+        // View tontine details
+        function viewTontineDetails(tontineId) {
+            const tontine = pendingData.find(t => t.id === tontineId);
+            if (!tontine) {
+                alert('Tontine not found');
+                return;
+            }
+
+            const details = `
+Tontine Details:
+================
+Name: ${tontine.name}
+Description: ${tontine.description || 'N/A'}
+Leader: ${tontine.leader_name || 'Unknown'}
+Max Members: ${tontine.max_members || 0}
+Contribution: ${tontine.contribution_amount || 0} ${tontine.currency || 'RWF'}
+Meeting Frequency: ${tontine.meeting_frequency || 'N/A'}
+Country: ${tontine.country || 'N/A'}
+Province: ${tontine.province || 'N/A'}
+District: ${tontine.district || 'N/A'}
+Sector: ${tontine.sector || 'N/A'}
+Cell: ${tontine.cell || 'N/A'}
+Village: ${tontine.village || 'N/A'}
+Created: ${new Date(tontine.created_at).toLocaleString()}
+Status: ${tontine.status || 'pending'}
+            `;
+
+            alert(details);
+        }
 
         const activityData = [
             { admin: "Jean Paul N.", action: "Group Created", details: "Created 'Abaharanira Group'", time: "10:30 AM", ip: "196.200.45.12" },
@@ -1075,23 +1337,127 @@
             { admin: "James K.", action: "Settings Updated", details: "Updated meeting schedule", time: "Jan 12, 2024", ip: "196.200.45.16" }
         ];
 
+        // Load pending groups from backend
+        async function loadPendingGroups() {
+            console.log('=== Loading pending groups from backend ===');
+            console.log('Token:', TokenManager.getToken() ? 'EXISTS' : 'MISSING');
+            console.log('User:', TokenManager.getUser());
+            
+            try {
+                console.log('Calling GroupsAPI.getPendingGroups()...');
+                const response = await GroupsAPI.getPendingGroups();
+                console.log('✅ Response received:', response);
+                
+                if (response.groups && Array.isArray(response.groups)) {
+                    console.log(`✅ Found ${response.groups.length} pending groups`);
+                    console.log('Raw groups data:', response.groups);
+                    
+                    pendingData = response.groups.map(group => {
+                        console.log('Processing group:', group.name);
+                        return {
+                            id: group.id,
+                            name: group.name,
+                            leader: group.leader_name || 'Unknown',
+                            phone: group.leader_phone || 'N/A',
+                            email: group.leader_email || 'N/A',
+                            group: group.name,
+                            date: new Date(group.created_at).toLocaleDateString(),
+                            status: group.status || 'pending',
+                            maxMembers: group.max_members,
+                            contributionAmount: group.contribution_amount,
+                            currency: group.currency,
+                            location: `${group.district || ''}, ${group.province || ''}`.trim()
+                        };
+                    });
+                    
+                    console.log('✅ Mapped pending data:', pendingData);
+                    
+                    // Update stats
+                    updateStats();
+                    // Refresh the table
+                    populatePendingTable();
+                } else {
+                    console.warn('⚠️ No groups array in response or empty response');
+                    console.log('Response structure:', response);
+                    pendingData = [];
+                    populatePendingTable();
+                }
+            } catch (error) {
+                console.error('❌ Error loading pending groups:');
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                console.error('Full error:', error);
+                
+                // Show detailed error to user
+                const errorMsg = error.response 
+                    ? `Server error: ${error.response.status} - ${JSON.stringify(error.response.data)}`
+                    : error.message || 'Unknown error';
+                    
+                alert(`Failed to load pending tontines:\n${errorMsg}\n\nPlease check:\n1. Backend server is running\n2. You are logged in as site_admin\n3. Check browser console for details`);
+                
+                pendingData = [];
+                populatePendingTable();
+            }
+            console.log('=== Load pending groups complete ===');
+        }
+
         // Initialize Dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOMContentLoaded - Initializing dashboard');
+            
+            // Check if user is logged in
+            if (!TokenManager.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Check if user is site admin
+            const user = TokenManager.getUser();
+            if (!user || user.role !== 'site_admin') {
+                alert('Access denied. Only site administrators can access this page.');
+                window.location.href = 'user-dashboard.html';
+                return;
+            }
+            
             // Load saved language
             const savedLanguage = localStorage.getItem('adminLanguage') || 'en';
             setLanguage(savedLanguage);
             
+            // Load pending groups from backend
+            await loadPendingGroups();
+            
             // Initialize UI
             updateStats();
-            populatePendingTable();
             populateActivityTable();
             
             // Setup event listeners
             setupEventListeners();
+            
+            console.log('Dashboard initialization complete');
         });
 
         // Setup Event Listeners
         function setupEventListeners() {
+            console.log('Setting up event listeners');
+            
+            // Logout button - with enhanced debugging
+            const logoutBtn = document.getElementById('logoutBtn');
+            console.log('Logout button exists:', !!logoutBtn);
+            console.log('Logout button element:', logoutBtn);
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    console.log('Logout button clicked via event listener');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    logout();
+                    return false;
+                });
+                console.log('Logout button listener added successfully');
+            } else {
+                console.error('Logout button not found!');
+            }
+            
             // Language switcher
             const languageButtons = document.querySelectorAll('.language-btn');
             languageButtons.forEach(button => {
@@ -1106,18 +1472,22 @@
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const sidebar = document.getElementById('sidebar');
             
-            mobileMenuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
+            if (mobileMenuToggle && sidebar) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
 
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', (event) => {
                 if (window.innerWidth <= 992) {
-                    if (!sidebar.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    if (sidebar && !sidebar.contains(event.target) && mobileMenuToggle && !mobileMenuToggle.contains(event.target)) {
                         sidebar.classList.remove('active');
                     }
                 }
             });
+            
+            console.log('Event listeners setup complete');
         }
 
         // Set Language Function
@@ -1161,7 +1531,26 @@
         // Populate Pending Table
         function populatePendingTable() {
             const tbody = document.getElementById('pendingTable');
+            if (!tbody) {
+                console.error('pendingTable element not found!');
+                return;
+            }
+            
             tbody.innerHTML = '';
+            
+            console.log('Populating pending table with', pendingData.length, 'items');
+            
+            if (pendingData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                            <p>No pending tontines at the moment</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
             
             pendingData.forEach(admin => {
                 const statusText = currentLanguage === 'en' ? 'Pending' : 
@@ -1177,15 +1566,15 @@
                     <td><span class="status status-pending">${statusText}</span></td>
                     <td>
                         <div class="d-flex gap-10">
-                            <button class="btn btn-success btn-sm" onclick="approveAdmin(${admin.id})">
+                            <button class="btn btn-success btn-sm" onclick="approveAdmin('${admin.id}')">
                                 <i class="fas fa-check"></i>
                                 <span data-en="Approve" data-rw="Emera" data-fr="Approuver">Approve</span>
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="rejectAdmin(${admin.id})">
+                            <button class="btn btn-danger btn-sm" onclick="rejectAdmin('${admin.id}')">
                                 <i class="fas fa-times"></i>
                                 <span data-en="Reject" data-rw="Hakanira" data-fr="Rejeter">Reject</span>
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="showOTPModal(${admin.id})">
+                            <button class="btn btn-primary btn-sm" onclick="showOTPModal('${admin.id}')">
                                 <i class="fas fa-key"></i>
                                 <span data-en="OTP" data-rw="OTP" data-fr="OTP">OTP</span>
                             </button>
@@ -1202,6 +1591,8 @@
         // Populate Activity Table
         function populateActivityTable() {
             const tbody = document.getElementById('activityTable');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
             
             activityData.forEach(activity => {
@@ -1218,22 +1609,42 @@
         }
 
         // Admin Actions
-        function approveAdmin(id) {
+        async function approveAdmin(id) {
             const admin = pendingData.find(a => a.id === id);
-            if (confirm(`Approve ${admin.name} as tontine administrator?`)) {
-                // In real app, this would be an API call
-                alert(`${admin.name} has been approved as administrator.`);
-                refreshData();
+            if (!admin) {
+                alert('Tontine not found');
+                return;
+            }
+            
+            if (confirm(`Approve ${admin.name} as tontine?`)) {
+                try {
+                    await GroupsAPI.approveGroup(id);
+                    alert(`${admin.name} has been approved successfully!`);
+                    await loadPendingGroups();
+                } catch (error) {
+                    console.error('Error approving tontine:', error);
+                    alert('Failed to approve tontine: ' + (error.message || 'Unknown error'));
+                }
             }
         }
 
-        function rejectAdmin(id) {
+        async function rejectAdmin(id) {
             const admin = pendingData.find(a => a.id === id);
+            if (!admin) {
+                alert('Tontine not found');
+                return;
+            }
+            
             const reason = prompt(`Enter rejection reason for ${admin.name}:`);
             if (reason) {
-                // In real app, this would be an API call
-                alert(`${admin.name} has been rejected. Reason: ${reason}`);
-                refreshData();
+                try {
+                    await GroupsAPI.rejectGroup(id, reason);
+                    alert(`${admin.name} has been rejected.`);
+                    await loadPendingGroups();
+                } catch (error) {
+                    console.error('Error rejecting tontine:', error);
+                    alert('Failed to reject tontine: ' + (error.message || 'Unknown error'));
+                }
             }
         }
 
@@ -1318,4 +1729,3 @@
     </script>
 </body>
 </html>
-        /*

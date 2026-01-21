@@ -20,7 +20,10 @@ const API_CONFIG = {
         // Groups
         GROUPS: '/groups',
         JOIN_GROUP: '/groups/join',
-        CREATE_GROUP: '/groups/create',
+        CREATE_GROUP: '/groups',  // Fixed: backend uses POST /groups, not /groups/create
+        PENDING_GROUPS: '/groups/pending/all',  // Site admin: get all pending groups
+        APPROVE_GROUP: '/groups/:groupId/approve',  // Site admin: approve a group
+        REJECT_GROUP: '/groups/:groupId/reject',  // Site admin: reject a group
         PENDING_REQUESTS: '/groups/:groupId/pending-requests',
         APPROVE_MEMBER: '/groups/approve-member',
         REMOVE_MEMBER: '/groups/remove-member',
@@ -96,8 +99,17 @@ const API = {
             const response = await fetch(url, config);
             const data = await response.json();
             
+            console.log('API Response:', { url, status: response.status, ok: response.ok, data });
+            
+            // Check for 401 (Unauthorized) - token expired or invalid
+            if (response.status === 401) {
+                TokenManager.logout();
+                throw new Error('Session expired. Please login again.');
+            }
+            
             if (!response.ok) {
-                throw new Error(data.error || 'Request failed');
+                const error = data.error || data.message || 'Request failed';
+                throw new Error(error);
             }
             
             return data;
@@ -182,23 +194,57 @@ const GroupsAPI = {
     },
     
     async create(groupData) {
+        console.log('GroupsAPI.create called with:', groupData);
+        console.log('Using endpoint:', API_CONFIG.ENDPOINTS.CREATE_GROUP);
+        console.log('Full URL:', API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.CREATE_GROUP);
         return API.post(API_CONFIG.ENDPOINTS.CREATE_GROUP, groupData);
     },
     
     async joinGroup(groupCode) {
-        return API.post(API_CONFIG.ENDPOINTS.JOIN_GROUP, { groupCode });
+        // Send join request with groupId (can be UUID or group code)
+        console.log('Joining group with ID/Code:', groupCode);
+        return API.post(API_CONFIG.ENDPOINTS.JOIN_GROUP, { groupId: groupCode });
     },
     
     async getPendingRequests(groupId) {
         return API.get(`/groups/${groupId}/pending-requests`);
     },
     
-    async approveMember(groupId, memberId) {
-        return API.post(API_CONFIG.ENDPOINTS.APPROVE_MEMBER, { groupId, memberId });
+    async getMembers(groupId) {
+        // Get all members of a group with full user details
+        return API.get(`/groups/${groupId}/members`);
     },
     
-    async removeMember(groupId, memberId, reason) {
-        return API.post(API_CONFIG.ENDPOINTS.REMOVE_MEMBER, { groupId, memberId, reason });
+    async getActiveMembers(groupId) {
+        // Get only approved/active members of a group
+        return API.get(`/groups/${groupId}/members?status=approved`);
+    },
+    
+    async getPendingGroups() {
+        // Site admin only: get all pending groups awaiting approval
+        return API.get(API_CONFIG.ENDPOINTS.PENDING_GROUPS);
+    },
+    
+    async approveGroup(groupId) {
+        // Site admin only: approve a pending group
+        return API.post(API_CONFIG.ENDPOINTS.APPROVE_GROUP.replace(':groupId', groupId), {});
+    },
+    
+    async rejectGroup(groupId, reason) {
+        // Site admin only: reject a pending group
+        return API.post(API_CONFIG.ENDPOINTS.REJECT_GROUP.replace(':groupId', groupId), { reason });
+    },
+    
+    async approveMember(groupId, userId) {
+        console.log('API.approveMember called with:', { groupId, userId });
+        // Backend expects userId (not memberId) and groupId
+        return API.post(API_CONFIG.ENDPOINTS.APPROVE_MEMBER, { groupId, userId });
+    },
+    
+    async removeMember(groupId, userId, reason) {
+        console.log('API.removeMember called with:', { groupId, userId, reason });
+        // Backend expects userId (not memberId) and groupId
+        return API.post(API_CONFIG.ENDPOINTS.REMOVE_MEMBER, { groupId, userId, reason });
     }
 };
 
@@ -411,8 +457,56 @@ function requireAuth() {
 // Initialize Socket connection if logged in
 document.addEventListener('DOMContentLoaded', () => {
     if (TokenManager.isLoggedIn()) {
-        SocketManager.connect();
+        try {
+            SocketManager.connect();
+        } catch (error) {
+            console.warn('Socket connection failed:', error);
+        }
     }
 });
+
+// Global error handler for API responses
+window.addEventListener('fetch', (event) => {
+    // This is for monitoring fetch requests in development
+    console.log('API Call:', event.request.url);
+});
+
+// Prevent unauthorized access to protected pages
+function requireAuthOnPage() {
+    if (!TokenManager.isLoggedIn()) {
+        // Store the current page in case user wants to redirect back
+        const currentPage = window.location.pathname.split('/').pop();
+        localStorage.setItem('redirectAfterLogin', currentPage);
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+// Initialize page with authentication check
+if (document.currentScript && document.currentScript.src.includes('api.js')) {
+    // Only run if on a protected page (user-dashboard, leader-dashboard, etc.)
+    const protectedPages = ['user-dashboard', 'leader-dashboard', 'Site-adminstrator-dashboard', 'tontine-groups-management'];
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    if (protectedPages.some(page => currentPage.includes(page))) {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuthOnPage()) {
+                return;
+            }
+            
+            // Load user profile if needed
+            try {
+                const user = TokenManager.getUser();
+                if (user) {
+                    // Profile is already loaded from token
+                    console.log('User logged in:', user.email);
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            }
+        });
+    }
+}
 
 console.log('API Config loaded. Base URL:', API_CONFIG.BASE_URL);

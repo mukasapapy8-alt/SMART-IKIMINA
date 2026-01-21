@@ -350,6 +350,7 @@
             box-shadow: var(--shadow);
             padding: 40px;
             animation: fadeIn 0.5s ease;
+            min-height: 400px;
         }
 
         @keyframes fadeIn {
@@ -358,7 +359,16 @@
         }
 
         .step-content.active {
-            display: block;
+            display: block !important;
+        }
+        
+        /* Step 4 specific styling */
+        #step4 {
+            display: none;
+        }
+        
+        #step4.active {
+            display: block !important;
         }
 
         .step-header {
@@ -705,9 +715,30 @@
             padding: 50px;
             max-width: 500px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
             text-align: center;
             transform: translateY(20px);
             transition: transform 0.3s ease;
+        }
+
+        /* Custom scrollbar for modal */
+        .modal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background: var(--gray);
+            border-radius: 10px;
+        }
+
+        .modal::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
 
         .modal-overlay.active .modal {
@@ -800,6 +831,20 @@
 
         .modal-actions-container {
             margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions-container .btn {
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .footer-link {
@@ -907,12 +952,29 @@
             .step-content {
                 padding: 30px 20px;
             }
+
+            .modal {
+                padding: 30px 20px;
+                max-height: 85vh;
+            }
+
+            .modal-actions-container {
+                margin-top: 20px;
+            }
+
+            .modal-actions-container .btn {
+                min-width: 120px;
+                font-size: 0.9rem;
+                padding: 12px 20px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- API Configuration -->
     <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
     
     <!-- Header -->
     <header>
@@ -955,7 +1017,7 @@
             <div class="registration-flow">
                 <!-- Progress Steps -->
                 <div class="progress-steps">
-                    <div class="progress-fill progress-fill-width" id="progressFill"></div>
+                    <div class="progress-fill" id="progressFill"></div>
                     
                     <div class="step-indicator active" id="stepIndicator1">
                         <div class="step-circle">1</div>
@@ -1072,7 +1134,12 @@
                         <p data-en="Choose a tontine group to join" data-rw="Hitamo ikimina cyogukorana nacyo" data-fr="Choisissez un groupe de tontine à rejoindre">Choose a tontine group to join</p>
                     </div>
                     
-                    <p class="section-description">Select a tontine from the available options below:</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <p class="section-description">Select a tontine from the available options below:</p>
+                        <button type="button" onclick="loadApprovedTontines()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
                     
                     <div class="tontine-grid" id="tontineList">
                         <!-- Tontine options will be populated by JavaScript -->
@@ -1108,7 +1175,7 @@
                             <input type="file" id="idDocument" name="idDocument" accept=".png,.jpg,.jpeg,.pdf" class="hidden-file-input" required>
                         </div>
                         <div class="uploaded-files" id="idUploadedFiles"></div>
-                        <div class="error-message" id="idDocumentError">Please upload your ID document/injiza indangamuntu/div>
+                        <div class="error-message" id="idDocumentError">Please upload your ID document/injiza indangamuntu</div>
                         <div class="success-message" id="idDocumentSuccess">✓ ID document uploaded successfully/indangamuntu yemejwe</div>
                     </div>
                     
@@ -1230,8 +1297,18 @@
                 <li>You'll be able to make your first contribution</li>
             </ul>
             
+            <p style="margin-top: 20px; margin-bottom: 15px; font-weight: 600; color: var(--dark);">
+                <i class="fas fa-info-circle" style="color: var(--primary);"></i> 
+                Choose where you'd like to go:
+            </p>
+            
             <div class="modal-actions-container">
-                <a href="ikimina.html" class="btn btn-primary">Return to Homepage</a>
+                <button class="btn btn-primary" onclick="goToLogin()" style="margin-right: 15px;">
+                    <i class="fas fa-sign-in-alt"></i> Go to Login
+                </button>
+                <button class="btn" onclick="goToHome()" style="background: var(--secondary); color: white;">
+                    <i class="fas fa-home"></i> Go to Home
+                </button>
             </div>
         </div>
     </div>
@@ -1294,6 +1371,9 @@
                     }
                 });
             }
+
+            // Initialize the registration form
+            initRegistrationForm();
         });
 
         // Function to set the language
@@ -1337,40 +1417,60 @@
             addressProof: null
         };
 
-        // Sample tontine data
-        const tontines = [
-            {
-                id: "t1",
-                name: "Kigali Business Circle",
-                description: "For entrepreneurs and business owners in Kigali",
-                members: 24,
-                maxMembers: 30,
-                contribution: "50,000 RWF/month",
-                location: "Kigali City"
-            },
-            {
-                id: "t2",
-                name: "Women Empowerment Group",
-                description: "Exclusively for women entrepreneurs",
-                members: 18,
-                maxMembers: 25,
-                contribution: "10,000 RWF/week",
-                location: "Nyarugenge"
-            },
-            {
-                id: "t3",
-                name: "Youth Savings Collective",
-                description: "For young professionals aged 20-35",
-                members: 32,
-                maxMembers: 40,
-                contribution: "Flexible contributions",
-                location: "Gasabo"
-            }
-        ];
+        // Tontines data - will be loaded from backend
+        let tontines = [];
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            populateTontineList();
+        // Load approved tontines from backend
+        async function loadApprovedTontines() {
+            console.log('Loading approved tontines from backend...');
+            try {
+                const response = await GroupsAPI.getAll();
+                console.log('Tontines response:', response);
+                
+                if (response.groups && Array.isArray(response.groups)) {
+                    // Filter only approved groups
+                    const approvedGroups = response.groups.filter(g => g.status === 'active');
+                    console.log(`Found ${approvedGroups.length} approved tontines`);
+                    
+                    tontines = approvedGroups.map(group => ({
+                        id: group.id,
+                        name: group.name,
+                        description: group.description || 'No description provided',
+                        members: group.current_members || 0,
+                        maxMembers: group.max_members || 0,
+                        contribution: `${group.contribution_amount || 0} ${group.currency || 'RWF'}/${group.meeting_frequency || 'month'}`,
+                        location: `${group.district || ''}, ${group.province || ''}`.trim() || 'Location not specified'
+                    }));
+                    
+                    console.log('Mapped tontines:', tontines);
+                    populateTontineList();
+                } else {
+                    console.warn('No groups array in response');
+                    tontines = [];
+                    populateTontineList();
+                }
+            } catch (error) {
+                console.error('Error loading tontines:', error);
+                tontines = [];
+                populateTontineList();
+                
+                // Show error message in the tontine list
+                const list = document.getElementById('tontineList');
+                if (list) {
+                    list.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--danger);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <p>Failed to load tontines: ${error.message}</p>
+                            <p style="font-size: 0.9rem; color: var(--gray);">Please check your internet connection and try again.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Initialize the registration form
+        async function initRegistrationForm() {
+            await loadApprovedTontines(); // Load tontines from backend
             setupFileUploads();
             setupFieldValidation();
             updateProgress();
@@ -1384,8 +1484,6 @@
             const dobInput = document.getElementById('dateOfBirth');
             if (dobInput) {
                 dobInput.max = maxDate;
-                // Optional: set placeholder/default to the max allowed date
-                // dobInput.value = maxDate;
             }
 
             // Close success modal on ESC or when clicking outside modal content
@@ -1398,18 +1496,24 @@
                     if (e.target === successModal) successModal.classList.remove('active');
                 });
             }
-        });
+        }
 
-        // --- START: added implementations to enable the Next buttons and flow ---
+        // Navigation between steps
         function goToStep(step) {
             if (step < 1) step = 1;
             if (step > totalSteps) step = totalSteps;
             currentStep = step;
-
+            
             // Show/hide step contents
             for (let i = 1; i <= totalSteps; i++) {
                 const el = document.getElementById('step' + i);
-                if (el) el.classList.toggle('active', i === currentStep);
+                if (el) {
+                    if (i === currentStep) {
+                        el.classList.add('active');
+                    } else {
+                        el.classList.remove('active');
+                    }
+                }
             }
 
             // Update step indicators
@@ -1424,9 +1528,11 @@
             updateProgress();
 
             // If arriving to review step, fill the review fields
-            if (currentStep === 4) fillReview();
+            if (currentStep === 4) {
+                fillReview();
+            }
 
-            // scroll into view of the registration flow
+            // Scroll to top of the registration flow
             const flow = document.querySelector('.registration-flow');
             if (flow) flow.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -1434,7 +1540,6 @@
         function updateProgress() {
             const fill = document.getElementById('progressFill');
             if (!fill) return;
-            // Keep the legacy behaviour where step 1 -> 25% ... step 4 -> 100%
             const percent = Math.round((currentStep / totalSteps) * 100);
             fill.style.width = percent + '%';
         }
@@ -1442,7 +1547,20 @@
         function populateTontineList() {
             const list = document.getElementById('tontineList');
             if (!list) return;
+            
             list.innerHTML = '';
+            
+            if (tontines.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: var(--gray);">
+                        <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">No approved tontines available</p>
+                        <p style="font-size: 0.9rem;">Check back later or create your own tontine group!</p>
+                    </div>
+                `;
+                return;
+            }
+            
             tontines.forEach(t => {
                 const card = document.createElement('div');
                 card.className = 'tontine-card';
@@ -1468,7 +1586,7 @@
             const hidden = document.getElementById('selectedTontine');
             if (hidden) hidden.value = id;
 
-            // show success and hide error
+            // Show success and hide error
             const err = document.getElementById('tontineError');
             const suc = document.getElementById('tontineSuccess');
             if (err) err.style.display = 'none';
@@ -1549,7 +1667,7 @@
                 });
                 container.appendChild(item);
 
-                // show success message if present
+                // Show success message if present
                 const successId = inputId + 'Success';
                 const errId = inputId + 'Error';
                 const successEl = document.getElementById(successId);
@@ -1589,7 +1707,35 @@
                 }
             });
 
-            // basic email/phone format checks
+            // Validate password fields
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const passwordError = document.getElementById('passwordError');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            
+            if (password && password.value) {
+                if (password.value.length < 6) {
+                    if (passwordError) passwordError.style.display = 'block';
+                    password.classList.add('error');
+                    valid = false;
+                } else {
+                    if (passwordError) passwordError.style.display = 'none';
+                    password.classList.remove('error');
+                }
+            }
+            
+            if (password && confirmPassword && password.value && confirmPassword.value) {
+                if (password.value !== confirmPassword.value) {
+                    if (confirmPasswordError) confirmPasswordError.style.display = 'block';
+                    confirmPassword.classList.add('error');
+                    valid = false;
+                } else {
+                    if (confirmPasswordError) confirmPasswordError.style.display = 'none';
+                    confirmPassword.classList.remove('error');
+                }
+            }
+
+            // Basic email/phone format checks
             const email = document.getElementById('email');
             if (email && email.value) {
                 const ok = /\S+@\S+\.\S+/.test(email.value);
@@ -1635,26 +1781,100 @@
         }
 
         function fillReview() {
-            const fullName = `${(document.getElementById('firstName')?.value || '').trim()} ${(document.getElementById('lastName')?.value || '').trim()}`.trim();
+            // Personal Information
+            const firstName = (document.getElementById('firstName')?.value || '').trim();
+            const lastName = (document.getElementById('lastName')?.value || '').trim();
+            const fullName = `${firstName} ${lastName}`.trim();
+            
             document.getElementById('reviewFullName').textContent = fullName || 'Not provided';
             document.getElementById('reviewIdNumber').textContent = document.getElementById('idNumber')?.value || 'Not provided';
-            document.getElementById('reviewDOB').textContent = document.getElementById('dateOfBirth')?.value || 'Not provided';
+            document.getElementById('reviewDOB').textContent = formatDate(document.getElementById('dateOfBirth')?.value) || 'Not provided';
             document.getElementById('reviewEmail').textContent = document.getElementById('email')?.value || 'Not provided';
             document.getElementById('reviewPhone').textContent = document.getElementById('phone')?.value || 'Not provided';
             
             // Show password as masked
             const password = document.getElementById('password')?.value || '';
-            document.getElementById('reviewPassword').textContent = password ? '•'.repeat(password.length) : 'Not provided';
+            document.getElementById('reviewPassword').textContent = password ? '•'.repeat(password.length) : 'Not set';
             
-            const country = document.getElementById('country')?.value || 'Not provided';
-            document.getElementById('reviewCountry').textContent = country;
+            const country = document.getElementById('country')?.value || '';
+            const countryOption = document.querySelector(`#country option[value="${country}"]`);
+            document.getElementById('reviewCountry').textContent = countryOption ? countryOption.textContent : 'Not provided';
 
+            // Tontine Selection
             const selectedId = document.getElementById('selectedTontine')?.value;
             const tontine = tontines.find(t => t.id === selectedId);
-            document.getElementById('reviewTontine').textContent = tontine ? tontine.name : 'Not selected';
+            if (tontine) {
+                document.getElementById('reviewTontine').innerHTML = `
+                    <strong>${tontine.name}</strong><br>
+                    <small style="color: #666;">${tontine.description}</small><br>
+                    <small style="color: #888;">Members: ${tontine.members}/${tontine.maxMembers} | ${tontine.contribution}</small>
+                `;
+            } else {
+                document.getElementById('reviewTontine').textContent = 'Not selected';
+            }
 
-            document.getElementById('reviewIdDoc').textContent = uploadedFiles.idDocument ? uploadedFiles.idDocument.name : 'Not uploaded';
-            document.getElementById('reviewAddressDoc').textContent = uploadedFiles.addressProof ? uploadedFiles.addressProof.name : 'Not uploaded';
+            // Documents
+            if (uploadedFiles.idDocument) {
+                document.getElementById('reviewIdDoc').innerHTML = `
+                    <i class="fas fa-file-pdf" style="margin-right: 8px; color: var(--primary);"></i>
+                    <strong>${uploadedFiles.idDocument.name}</strong><br>
+                    <small>${(uploadedFiles.idDocument.size / 1024).toFixed(2)} KB</small>
+                `;
+            } else {
+                document.getElementById('reviewIdDoc').textContent = 'Not uploaded';
+            }
+
+            if (uploadedFiles.addressProof) {
+                document.getElementById('reviewAddressDoc').innerHTML = `
+                    <i class="fas fa-file-pdf" style="margin-right: 8px; color: var(--primary);"></i>
+                    <strong>${uploadedFiles.addressProof.name}</strong><br>
+                    <small>${(uploadedFiles.addressProof.size / 1024).toFixed(2)} KB</small>
+                `;
+            } else {
+                document.getElementById('reviewAddressDoc').textContent = 'Optional - Not uploaded';
+            }
+        }
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function setupFieldValidation() {
+            const email = document.getElementById('email');
+            if (email) {
+                email.addEventListener('input', () => {
+                    const ok = /\S+@\S+\.\S+/.test(email.value);
+                    document.getElementById('emailError').style.display = ok ? 'none' : 'none';
+                    document.getElementById('emailSuccess').style.display = ok ? 'block' : 'none';
+                    email.classList.toggle('valid', ok);
+                });
+            }
+            const phone = document.getElementById('phone');
+            if (phone) {
+                phone.addEventListener('input', () => {
+                    const ok = /^\+?\d{7,15}$/.test(phone.value.replace(/[\s()-]/g, ''));
+                    document.getElementById('phoneError').style.display = ok ? 'none' : 'none';
+                    document.getElementById('phoneSuccess').style.display = ok ? 'block' : 'none';
+                    phone.classList.toggle('valid', ok);
+                });
+            }
+        }
+
+        // Function to redirect to login page
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        // Function to redirect to home page
+        function goToHome() {
+            window.location.href = 'ikimina.html';
         }
 
         async function submitRegistration() {
@@ -1682,51 +1902,106 @@
                 return;
             }
 
+            // Validate password confirmation
+            const confirmPassword = document.getElementById('confirmPassword')?.value || '';
+            if (userData.password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                return;
+            }
+
             try {
                 // Show loading state
                 const submitBtn = document.querySelector('.btn-primary[onclick="submitRegistration()"]');
+                const originalText = submitBtn?.textContent;
                 if (submitBtn) {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
                     submitBtn.disabled = true;
                 }
 
-                // Step 1: Register the user
+                // Step 1: Register the user with backend
+                console.log('Registering user with data:', userData);
                 const response = await AuthAPI.register(userData);
+                console.log('Registration response:', response);
 
-                // Step 2: If a tontine was selected, request to join it
+                // Step 2: If a tontine was selected, send request to join it
                 const selectedTontineId = document.getElementById('selectedTontine')?.value;
-                let joinMessage = '';
+                console.log('📋 Selected tontine ID:', selectedTontineId);
                 
-                if (selectedTontineId && response.user?.role !== 'site_admin') {
+                let joinMessage = 'Your registration has been received and is pending approval from the tontine administrator.';
+                let requestSent = false;
+                
+                if (selectedTontineId) {
                     try {
-                        // Request to join the selected tontine group
-                        await GroupsAPI.joinGroup(selectedTontineId);
-                        joinMessage = 'Your request to join the tontine has been sent to the group leader for approval.';
+                        console.log('🔄 Requesting to join tontine:', selectedTontineId);
+                        console.log('User registered:', response.user);
+                        
+                        // Send join request to the backend
+                        const joinResponse = await GroupsAPI.joinGroup(selectedTontineId);
+                        console.log('✅ Join request response:', joinResponse);
+                        
+                        joinMessage = `Your membership request for the tontine has been sent to the group leader for approval.`;
+                        requestSent = true;
                     } catch (joinError) {
-                        console.log('Join request note:', joinError.message);
-                        joinMessage = 'Account created. You can request to join a tontine from your dashboard.';
+                        console.error('❌ Join request error:', joinError);
+                        console.error('Error details:', {
+                            message: joinError.message,
+                            response: joinError.response,
+                            stack: joinError.stack
+                        });
+                        // Even if join fails, registration was successful
+                        joinMessage = 'Your registration is complete. You can request to join a tontine from your dashboard.';
                     }
+                } else {
+                    console.warn('⚠️ No tontine selected during registration');
                 }
 
-                // Update success modal message
+                // Update success modal
+                const modal = document.getElementById('successModal');
                 const modalMessage = document.querySelector('#successModal p');
-                if (modalMessage && joinMessage) {
+                const modalSteps = document.querySelector('.modal-steps-list');
+                
+                if (modalMessage) {
                     modalMessage.textContent = joinMessage;
                 }
 
-                // Show success modal
-                const modal = document.getElementById('successModal');
-                if (modal) modal.classList.add('active');
-
+                // Update application ID
                 const appIdEl = document.getElementById('applicationId');
                 if (appIdEl) {
-                    appIdEl.textContent = response.user?.id?.substring(0, 18) || 'MSI-' + Date.now();
+                    appIdEl.textContent = response.user?.id?.substring(0, 18) || 'APP-' + Date.now();
                 }
 
-                // Redirect after 3 seconds
-                setTimeout(() => {
-                    redirectToDashboard(response.user?.role || 'user');
-                }, 3000);
+                // Update next steps in modal
+                if (modalSteps) {
+                    if (requestSent) {
+                        modalSteps.innerHTML = `
+                            <li><strong>Your Account Created:</strong> Registration successful!</li>
+                            <li><strong>Request Sent to Group Leader:</strong> Your membership request is pending review</li>
+                            <li><strong>Awaiting Approval:</strong> The group leader will review your request</li>
+                            <li><strong>Access Granted:</strong> Once approved, you can access the tontine dashboard</li>
+                            <li><strong>Start Contributing:</strong> Make your first contribution after approval</li>
+                        `;
+                    } else {
+                        modalSteps.innerHTML = `
+                            <li><strong>Your Account Created:</strong> Registration successful!</li>
+                            <li><strong>Login:</strong> Use your credentials to login</li>
+                            <li><strong>Join a Tontine:</strong> Browse and request to join groups</li>
+                            <li><strong>Awaiting Approval:</strong> Group leaders will review requests</li>
+                            <li><strong>Start Participating:</strong> Make contributions and access features</li>
+                        `;
+                    }
+                }
+
+                // Show success modal
+                if (modal) modal.classList.add('active');
+
+                // Reset button
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+
+                // No automatic redirect - user chooses where to go
 
             } catch (error) {
                 // Reset button
@@ -1736,31 +2011,10 @@
                     submitBtn.disabled = false;
                 }
                 
-                alert('Registration failed: ' + (error.message || 'Please try again'));
+                console.error('Registration error:', error);
+                alert('Registration failed: ' + (error.message || 'Server not available. Please check your connection and try again.'));
             }
         }
-
-        function setupFieldValidation() {
-            const email = document.getElementById('email');
-            if (email) {
-                email.addEventListener('input', () => {
-                    const ok = /\S+@\S+\.\S+/.test(email.value);
-                    document.getElementById('emailError').style.display = ok ? 'none' : 'none';
-                    document.getElementById('emailSuccess').style.display = ok ? 'block' : 'none';
-                    email.classList.toggle('valid', ok);
-                });
-            }
-            const phone = document.getElementById('phone');
-            if (phone) {
-                phone.addEventListener('input', () => {
-                    const ok = /^\+?\d{7,15}$/.test(phone.value.replace(/[\s()-]/g, ''));
-                    document.getElementById('phoneError').style.display = ok ? 'none' : 'none';
-                    document.getElementById('phoneSuccess').style.display = ok ? 'block' : 'none';
-                    phone.classList.toggle('valid', ok);
-                });
-            }
-        }
-        // --- END added implementations ---
     </script>
 </body>
 </html>

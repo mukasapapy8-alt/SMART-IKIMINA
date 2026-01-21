@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Logout</title>
+</head>
+<body>
+    <h1>Test Logout Functionality</h1>
+    <button onclick="testLogout()">Test Logout</button>
+    <p id="result"></p>
+
+    <script src="js/api.js"></script>
+    <script>
+        function testLogout() {
+            const result = document.getElementById('result');
+            
+            // Check if TokenManager exists
+            if (typeof TokenManager === 'undefined') {
+                result.textContent = '❌ TokenManager is not defined!';
+                result.style.color = 'red';
+                return;
+            }
+            
+            result.textContent = '✓ TokenManager exists';
+            result.style.color = 'green';
+            
+            // Check if logout function exists
+            if (typeof TokenManager.logout !== 'function') {
+                result.textContent += '\n❌ TokenManager.logout is not a function!';
+                result.style.color = 'red';
+                return;
+            }
+            
+            result.textContent += '\n✓ TokenManager.logout exists';
+            
+            // Try to call logout
+            if (confirm('Test logout?')) {
+                TokenManager.logout();
+            }
+        }
+    </script>
+</body>
+</html>

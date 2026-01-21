@@ -1006,6 +1006,7 @@
             <li><a href="#my-contribution"><i class="fas fa-hand-holding-heart"></i> <span>My Contribution</span></a></li>
             <li><a href="#calendar-section"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></li>
             <li><a href="#settings"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+            <li><a href="#" id="logoutBtn" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
         
         <div class="user-info">
@@ -1099,53 +1100,19 @@
                         <thead>
                             <tr>
                                 <th>Member Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
                                 <th>Join Date</th>
-                                <th>Contributions</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Data will be populated by JavaScript -->
                             <tr>
-                                <td>Jane Smith</td>
-                                <td>2023-01-15</td>
-                                <td>$1,250</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
-                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Robert Johnson</td>
-                                <td>2023-02-10</td>
-                                <td>$950</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
-                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Maria Garcia</td>
-                                <td>2023-03-22</td>
-                                <td>$650</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view" title="View member details"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit" title="Edit member information"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn approve" title="Send message"><i class="fas fa-envelope"></i></button>
-                                        <button class="action-btn delete" title="Delete member"><i class="fas fa-trash"></i></button>
-                                    </div>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                    <p>Loading active members...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -1532,6 +1499,37 @@
         </p>
     </footer>
     
+    <!-- Define logout function FIRST so onclick can find it -->
+    <script>
+        // Logout function - MUST be defined first for onclick attribute
+        function logout() {
+            console.log('Logout function called');
+            try {
+                if (confirm('Are you sure you want to logout?')) {
+                    console.log('User confirmed logout');
+                    
+                    // Clear tokens and user data
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    
+                    console.log('Tokens cleared, redirecting to login');
+                    
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            }
+            return false; // Prevent default action
+        }
+    </script>
+    
+    <!-- API Configuration -->
+    <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script>
         // Language switching function
@@ -1560,8 +1558,673 @@
             localStorage.setItem('preferredLanguage', lang);
         }
 
+        // Load and display user data
+        async function loadUserData() {
+            const user = TokenManager.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Check if user is a group leader
+            if (user.role !== 'group_leader' && user.role !== 'site_admin') {
+                alert('Access denied. Only group leaders can access this dashboard.');
+                window.location.href = 'user-dashboard.html';
+                return;
+            }
+            
+            // Check if user has any approved groups (if they're a group leader)
+            if (user.role === 'group_leader') {
+                try {
+                    const groupsData = await GroupsAPI.getAll();
+                    const approvedGroups = groupsData.groups?.filter(g => g.status === 'active') || [];
+                    
+                    if (approvedGroups.length === 0) {
+                        // No approved groups yet, redirect to pending page
+                        alert('Your tontine is still pending approval from the site administrator. You will be notified when it is approved.');
+                        window.location.href = 'pending-approval.html';
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking group status:', error);
+                    // Continue to load dashboard anyway
+                }
+            }
+            
+            // Update user name in sidebar
+            const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
+            const userNameEl = document.querySelector('.user-details h4');
+            if (userNameEl) {
+                userNameEl.textContent = userName;
+            }
+            
+            // Update user role
+            const userRoleEl = document.querySelector('.user-details p');
+            if (userRoleEl && user.role) {
+                const roleDisplay = user.role === 'site_admin' ? 'Site Administrator' : 
+                                   user.role === 'group_leader' ? 'Tontine Leader' : 'Member';
+                userRoleEl.textContent = roleDisplay;
+            }
+            
+            // Update user avatar initials
+            const initials = getUserInitials(userName);
+            const userAvatar = document.querySelector('.user-avatar i');
+            if (userAvatar) {
+                userAvatar.parentElement.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; font-weight: bold;">${initials}</div>`;
+            }
+        }
+        
+        // Get user initials from name
+        function getUserInitials(name) {
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            } else if (parts.length === 1 && parts[0].length > 0) {
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            return 'U';
+        }
+
+        // Load pending membership requests from backend
+        async function loadPendingRequests() {
+            console.log('=== Loading pending requests from backend ===');
+            
+            try {
+                const user = TokenManager.getUser();
+                if (!user) {
+                    console.error('No user found');
+                    return;
+                }
+                
+                console.log('Current user:', user.email, 'Role:', user.role, 'ID:', user.id);
+                
+                // Get ALL groups to find which one this user leads
+                const groupsResponse = await GroupsAPI.getAll();
+                console.log('✅ All groups response:', groupsResponse);
+                console.log('Groups array:', groupsResponse.groups);
+                
+                if (!groupsResponse.groups || !Array.isArray(groupsResponse.groups)) {
+                    console.error('❌ No groups array in response');
+                    populatePendingRequestsTable([]);
+                    return;
+                }
+                
+                // Find groups where this user is the leader
+                const leaderGroups = groupsResponse.groups.filter(g => {
+                    console.log(`Checking group ${g.name}: leader_id=${g.leader_id}, user.id=${user.id}, status=${g.status}`);
+                    return g.leader_id === user.id;
+                });
+                
+                console.log('✅ Leader groups found:', leaderGroups.length);
+                console.log('Leader groups details:', leaderGroups);
+                
+                if (leaderGroups.length === 0) {
+                    console.log('⚠️ No groups found where user is leader');
+                    populatePendingRequestsTable([]);
+                    return;
+                }
+                
+                const groupId = leaderGroups[0].id;
+                console.log('📋 Using group ID:', groupId, 'Group name:', leaderGroups[0].name);
+                
+                // Fetch pending membership requests for this group
+                const response = await GroupsAPI.getPendingRequests(groupId);
+                console.log('✅ Pending requests API response:', response);
+                
+                if (response.pendingRequests && Array.isArray(response.pendingRequests)) {
+                    console.log(`✅ Found ${response.pendingRequests.length} pending membership requests`);
+                    console.log('Pending requests data:', response.pendingRequests);
+                    
+                    // Update pending requests count in tab button
+                    const tabBtn = document.querySelector('[data-tab="pending-requests"]');
+                    if (tabBtn) {
+                        tabBtn.textContent = `Pending Requests (${response.pendingRequests.length})`;
+                        console.log('✅ Updated tab button count');
+                    }
+                    
+                    // Update stats card
+                    const pendingCountEl = document.querySelector('.stat-card:nth-child(3) h3');
+                    if (pendingCountEl) {
+                        pendingCountEl.textContent = response.pendingRequests.length;
+                        console.log('✅ Updated stats card count');
+                    }
+                    
+                    // Populate the pending requests table
+                    populatePendingRequestsTable(response.pendingRequests);
+                } else {
+                    console.warn('⚠️ No pending requests array in response');
+                    console.log('Response structure:', response);
+                    populatePendingRequestsTable([]);
+                }
+            } catch (error) {
+                console.error('❌ Error loading pending requests:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    response: error.response
+                });
+                populatePendingRequestsTable([]);
+                
+                // Show error in table
+                const tbody = document.querySelector('#pending-requests table tbody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);">
+                                <i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p>Failed to load pending requests: ${error.message}</p>
+                                <p style="font-size: 0.9rem;">Please refresh the page or check your connection.</p>
+                                <button class="btn btn-primary" onclick="loadPendingRequests()" style="margin-top: 15px;">
+                                    <i class="fas fa-sync-alt"></i> Retry
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+            console.log('=== Load pending requests complete ===');
+        }
+
+        // Load active members from backend
+        async function loadActiveMembers() {
+            console.log('=== Loading active members from backend ===');
+            
+            try {
+                const user = TokenManager.getUser();
+                if (!user) {
+                    console.error('No user found');
+                    return;
+                }
+                
+                console.log('Current user:', user.email, 'Role:', user.role, 'ID:', user.id);
+                
+                // Get ALL groups to find which one this user leads
+                const groupsResponse = await GroupsAPI.getAll();
+                console.log('✅ All groups response:', groupsResponse);
+                
+                if (!groupsResponse.groups || !Array.isArray(groupsResponse.groups)) {
+                    console.error('❌ No groups array in response');
+                    populateActiveMembersTable([]);
+                    return;
+                }
+                
+                // Find groups where this user is the leader
+                const leaderGroups = groupsResponse.groups.filter(g => g.leader_id === user.id);
+                
+                console.log('✅ Leader groups found:', leaderGroups.length);
+                
+                if (leaderGroups.length === 0) {
+                    console.log('⚠️ No groups found where user is leader');
+                    populateActiveMembersTable([]);
+                    return;
+                }
+                
+                const groupId = leaderGroups[0].id;
+                console.log('📋 Using group:', leaderGroups[0].name, 'ID:', groupId);
+                
+                // Try multiple approaches to get member details
+                let activeMembers = [];
+                
+                // Approach 1: Try dedicated active members endpoint
+                try {
+                    console.log('Trying getActiveMembers() endpoint...');
+                    const activeMembersResponse = await GroupsAPI.getActiveMembers(groupId);
+                    console.log('✅ Active members response:', activeMembersResponse);
+                    console.log('Response type:', typeof activeMembersResponse);
+                    console.log('Response keys:', Object.keys(activeMembersResponse || {}));
+                    
+                    if (activeMembersResponse.members && Array.isArray(activeMembersResponse.members)) {
+                        activeMembers = activeMembersResponse.members;
+                        console.log(`✅ Found ${activeMembers.length} active members from dedicated endpoint`);
+                        console.log('Sample member:', activeMembers[0]);
+                    } else if (Array.isArray(activeMembersResponse)) {
+                        // Backend might return array directly
+                        activeMembers = activeMembersResponse;
+                        console.log(`✅ Found ${activeMembers.length} active members (direct array) from dedicated endpoint`);
+                        console.log('Sample member:', activeMembers[0]);
+                    } else {
+                        console.log('⚠️ No members array found in response structure');
+                    }
+                } catch (error) {
+                    console.warn('⚠️ getActiveMembers failed:', error.message);
+                    console.warn('Error details:', error);
+                }
+                
+                // Approach 2: Try getMembers endpoint (all members)
+                if (activeMembers.length === 0) {
+                    try {
+                        console.log('Trying getMembers() endpoint...');
+                        const membersResponse = await GroupsAPI.getMembers(groupId);
+                        console.log('✅ Members response:', membersResponse);
+                        console.log('Response type:', typeof membersResponse);
+                        console.log('Response keys:', Object.keys(membersResponse || {}));
+                        
+                        if (membersResponse.members && Array.isArray(membersResponse.members)) {
+                            activeMembers = membersResponse.members.filter(m => m.status === 'approved');
+                            console.log(`✅ Found ${activeMembers.length} active members from getMembers (filtered from ${membersResponse.members.length} total)`);
+                            console.log('Sample member:', activeMembers[0]);
+                        } else if (Array.isArray(membersResponse)) {
+                            // Backend might return array directly
+                            activeMembers = membersResponse.filter(m => m.status === 'approved');
+                            console.log(`✅ Found ${activeMembers.length} active members (direct array) from getMembers`);
+                            console.log('Sample member:', activeMembers[0]);
+                        } else {
+                            console.log('⚠️ No members array found in response structure');
+                        }
+                    } catch (error) {
+                        console.warn('⚠️ getMembers failed:', error.message);
+                        console.warn('Error details:', error);
+                    }
+                }
+                
+                // Approach 3: Try getById for detailed group info
+                if (activeMembers.length === 0) {
+                    try {
+                        console.log('Trying getById() endpoint...');
+                        const detailedGroup = await GroupsAPI.getById(groupId);
+                        console.log('✅ Detailed group data:', detailedGroup);
+                        console.log('Response type:', typeof detailedGroup);
+                        console.log('Response keys:', Object.keys(detailedGroup || {}));
+                        
+                        const group = detailedGroup.group || detailedGroup;
+                        console.log('Group object:', group);
+                        console.log('Group keys:', Object.keys(group || {}));
+                        
+                        if (group.members && Array.isArray(group.members)) {
+                            activeMembers = group.members.filter(m => m.status === 'approved');
+                            console.log(`✅ Found ${activeMembers.length} active members from getById (filtered from ${group.members.length} total)`);
+                            console.log('Sample member:', activeMembers[0]);
+                            console.log('All members statuses:', group.members.map(m => ({id: m.user_id || m.id, status: m.status})));
+                        } else {
+                            console.log('⚠️ No members array found in group object');
+                        }
+                    } catch (error) {
+                        console.warn('⚠️ getById failed:', error.message);
+                        console.warn('Error details:', error);
+                    }
+                }
+                
+                // Approach 4: If no members from any endpoint, try to get from the group data directly
+                if (activeMembers.length === 0 && leaderGroups[0].members) {
+                    console.log('Trying to use members from getAll() response...');
+                    console.log('Group members array:', leaderGroups[0].members);
+                    console.log('Members count:', leaderGroups[0].members.length);
+                    console.log('All members statuses:', leaderGroups[0].members.map(m => ({id: m.user_id || m.id, status: m.status})));
+                    
+                    activeMembers = leaderGroups[0].members.filter(m => m.status === 'approved');
+                    console.log(`✅ Found ${activeMembers.length} active members from getAll (filtered from ${leaderGroups[0].members.length} total)`);
+                    if (activeMembers.length > 0) {
+                        console.log('Sample member:', activeMembers[0]);
+                    }
+                } else if (activeMembers.length === 0) {
+                    console.log('⚠️ No members array in getAll() response either');
+                    console.log('Leader group object:', leaderGroups[0]);
+                }
+                
+                console.log('Final active members data:', activeMembers);
+                
+                // CRITICAL: Double-check that we only have approved members
+                const onlyApproved = activeMembers.filter(m => m.status === 'approved');
+                console.log(`✅ Verified: ${onlyApproved.length} approved members (filtered from ${activeMembers.length})`);
+                
+                // Update stats card for active members
+                const activeMembersCountEl = document.querySelector('.stat-card:nth-child(2) h3');
+                if (activeMembersCountEl) {
+                    activeMembersCountEl.textContent = onlyApproved.length;
+                    console.log('✅ Updated active members stats card to:', onlyApproved.length);
+                }
+                
+                // Populate the active members table (with approved members only)
+                populateActiveMembersTable(onlyApproved);
+                
+            } catch (error) {
+                console.error('❌ Error loading active members:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    response: error.response
+                });
+                populateActiveMembersTable([]);
+            }
+            
+            console.log('=== Load active members complete ===');
+        }
+
+        // Populate active members table
+        function populateActiveMembersTable(members) {
+            const tbody = document.querySelector('#active-members table tbody');
+            if (!tbody) {
+                console.error('Active members table body not found!');
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            console.log('Populating active members table with', members.length, 'members');
+            
+            // CRITICAL: Filter to ensure ONLY approved members are shown
+            const approvedMembers = members.filter(member => {
+                const isApproved = member.status === 'approved';
+                console.log(`Member ${member.user_id}: status=${member.status}, approved=${isApproved}`);
+                return isApproved;
+            });
+            
+            console.log(`✅ Filtered to ${approvedMembers.length} approved members (from ${members.length} total)`);
+            
+            if (approvedMembers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-users" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                            <p style="font-size: 1.1rem; margin-bottom: 5px;">No active members yet</p>
+                            <p style="font-size: 0.9rem;">Approve pending requests to add members to your tontine.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            approvedMembers.forEach(member => {
+                const row = document.createElement('tr');
+                // Log the complete member object to see what data we have
+                console.log('📋 Complete member object:', member);
+                console.log('📋 Available keys:', Object.keys(member));
+                
+                // Extract user data - check if it's nested in a 'user' object
+                const userData = member.user || member;
+                console.log('👤 User data object:', userData);
+                
+                // Handle multiple possible field name variations
+                const firstName = userData.first_name || userData.firstName || userData.user_first_name || member.first_name || '';
+                const lastName = userData.last_name || userData.lastName || userData.user_last_name || member.last_name || '';
+                const memberName = `${firstName} ${lastName}`.trim() || userData.name || userData.username || 'Unknown User';
+                const memberEmail = userData.email || userData.user_email || member.email || 'No email provided';
+                const memberPhone = userData.phone || userData.phone_number || userData.user_phone || member.phone || 'No phone provided';
+                const memberId = member.user_id || userData.id || member.id || 'unknown';
+                
+                // Handle date formatting
+                const dateValue = member.created_at || member.joined_at || member.join_date || userData.created_at;
+                const joinDate = dateValue ? new Date(dateValue).toLocaleDateString() : 'N/A';
+                
+                console.log('✅ Extracted data:', { 
+                    firstName, 
+                    lastName, 
+                    memberName, 
+                    memberEmail, 
+                    memberPhone, 
+                    memberId,
+                    joinDate 
+                });
+                
+                row.innerHTML = `
+                    <td>${memberName}</td>
+                    <td>${memberEmail}</td>
+                    <td>${memberPhone}</td>
+                    <td>${joinDate}</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view" onclick="viewMemberDetails('${memberId}')" title="View member details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn approve" onclick="sendMessage('${memberId}', '${memberName.replace(/'/g, "\\'")}')}" title="Send message">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="removeMember('${memberId}', '${memberName.replace(/'/g, "\\'")}')}" title="Remove member">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Send message to member
+        function sendMessage(memberId, memberName) {
+            const message = prompt(`Send a message to ${memberName}:`);
+            if (message && message.trim()) {
+                alert(`Message sent to ${memberName}!\n\n(Note: This is a placeholder. Message functionality will be implemented with backend integration.)`);
+                console.log('Message to', memberId, ':', message);
+            }
+        }
+
+        // Remove member from group
+        async function removeMember(memberId, memberName) {
+            const reason = prompt(`Enter reason for removing ${memberName} from the group:`);
+            if (!reason) {
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to remove ${memberName} from the group?\n\nReason: ${reason}`)) {
+                return;
+            }
+            
+            try {
+                const user = TokenManager.getUser();
+                const groupsResponse = await GroupsAPI.getAll();
+                const leaderGroups = groupsResponse.groups?.filter(g => g.leader_id === user.id) || [];
+                
+                if (leaderGroups.length === 0) {
+                    alert('No group found where you are the leader');
+                    return;
+                }
+                
+                const groupId = leaderGroups[0].id;
+                
+                console.log('Removing member:', {
+                    userId: memberId,
+                    userName: memberName,
+                    groupId: groupId,
+                    reason: reason
+                });
+                
+                // Call API to remove member
+                const response = await GroupsAPI.removeMember(groupId, memberId, reason);
+                console.log('Remove response:', response);
+                
+                alert(`${memberName} has been removed from the group.`);
+                
+                // Reload active members
+                await loadActiveMembers();
+            } catch (error) {
+                console.error('Error removing member:', error);
+                alert('Failed to remove member: ' + error.message);
+            }
+        }
+
+        // Populate pending requests table
+        function populatePendingRequestsTable(requests) {
+            const tbody = document.querySelector('#pending-requests table tbody');
+            if (!tbody) {
+                console.error('Pending requests table body not found!');
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            console.log('Populating pending requests table with', requests.length, 'requests');
+            
+            if (requests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                            <p style="font-size: 1.1rem; margin-bottom: 5px;">No pending requests</p>
+                            <p style="font-size: 0.9rem;">New membership requests will appear here for your approval.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            requests.forEach(request => {
+                const row = document.createElement('tr');
+                const requestDate = new Date(request.created_at || request.joined_at || Date.now()).toLocaleDateString();
+                
+                // Handle both naming conventions from backend
+                const firstName = request.first_name || request.user_first_name || '';
+                const lastName = request.last_name || request.user_last_name || '';
+                const userName = `${firstName} ${lastName}`.trim() || 'Unknown';
+                const userEmail = request.email || request.user_email || 'N/A';
+                const userPhone = request.phone || request.user_phone || 'No phone';
+                const userId = request.user_id || request.id;
+                
+                console.log('Rendering request:', { firstName, lastName, userName, userEmail, userPhone, userId });
+                
+                row.innerHTML = `
+                    <td>${userName}</td>
+                    <td>${requestDate}</td>
+                    <td>${userEmail}<br><small>${userPhone}</small></td>
+                    <td><span class="status-badge status-pending">Pending</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn approve" onclick="approveMemberRequest('${userId}', '${userName.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="action-btn reject" onclick="rejectMemberRequest('${userId}', '${userName.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            <button class="action-btn view" onclick="viewMemberDetails('${userId}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Approve member request
+        async function approveMemberRequest(userId, userName) {
+            if (!confirm(`Approve ${userName}'s membership request?`)) {
+                return;
+            }
+            
+            try {
+                const user = TokenManager.getUser();
+                console.log('Current user:', user);
+                
+                const groupsResponse = await GroupsAPI.getAll();
+                console.log('All groups:', groupsResponse);
+                
+                const leaderGroups = groupsResponse.groups?.filter(g => 
+                    g.leader_id === user.id
+                ) || [];
+                
+                console.log('Leader groups:', leaderGroups);
+                
+                if (leaderGroups.length === 0) {
+                    alert('No group found where you are the leader');
+                    return;
+                }
+                
+                const groupId = leaderGroups[0].id;
+                
+                console.log('Approving member:', {
+                    userId: userId,
+                    userName: userName,
+                    groupId: groupId,
+                    groupName: leaderGroups[0].name
+                });
+                
+                // Call API to approve member
+                const response = await GroupsAPI.approveMember(groupId, userId);
+                console.log('Approve response:', response);
+                
+                alert(`${userName} has been approved as a member!`);
+                
+                // Reload both pending requests AND active members
+                await loadPendingRequests();
+                await loadActiveMembers();
+            } catch (error) {
+                console.error('Error approving member:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    response: error.response,
+                    stack: error.stack
+                });
+                alert('Failed to approve member: ' + error.message);
+            }
+        }
+
+        // Reject member request
+        async function rejectMemberRequest(userId, userName) {
+            const reason = prompt(`Enter reason for rejecting ${userName}:`);
+            if (!reason) {
+                return;
+            }
+            
+            try {
+                const user = TokenManager.getUser();
+                console.log('Current user:', user);
+                
+                const groupsResponse = await GroupsAPI.getAll();
+                console.log('All groups:', groupsResponse);
+                
+                const leaderGroups = groupsResponse.groups?.filter(g => 
+                    g.leader_id === user.id
+                ) || [];
+                
+                console.log('Leader groups:', leaderGroups);
+                
+                if (leaderGroups.length === 0) {
+                    alert('No group found where you are the leader');
+                    return;
+                }
+                
+                const groupId = leaderGroups[0].id;
+                
+                console.log('Rejecting member:', {
+                    userId: userId,
+                    userName: userName,
+                    groupId: groupId,
+                    groupName: leaderGroups[0].name,
+                    reason: reason
+                });
+                
+                // Call API to reject member
+                const response = await GroupsAPI.removeMember(groupId, userId, reason);
+                console.log('Reject response:', response);
+                
+                alert(`${userName}'s request has been rejected.`);
+                
+                // Reload pending requests
+                await loadPendingRequests();
+            } catch (error) {
+                console.error('Error rejecting member:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    response: error.response,
+                    stack: error.stack
+                });
+                alert('Failed to reject member: ' + error.message);
+            }
+        }
+
+        // View member details
+        function viewMemberDetails(userId) {
+            alert('Member details view coming soon!\n\nUser ID: ' + userId);
+            // TODO: Implement modal with full member details
+        }
+
         // Initialize language on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            if (!TokenManager.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Load user data (includes group approval check)
+            await loadUserData();
+            
+            // Load pending requests and active members
+            await loadPendingRequests();
+            await loadActiveMembers();
+            
             // Load saved language preference
             const savedLang = localStorage.getItem('preferredLanguage') || 'en';
             switchLanguage(savedLang);

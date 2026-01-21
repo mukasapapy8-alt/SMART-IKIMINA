@@ -1252,6 +1252,11 @@
         </div>
     </footer>
 
+    <!-- API Configuration -->
+    <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
+
     <script>
         // Current language
         let currentLanguage = 'en';
@@ -1294,8 +1299,141 @@
             localStorage.setItem('preferredLanguage', lang);
         }
 
+        // Load and display user data
+        function loadUserData() {
+            const user = TokenManager.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update user name in header
+            const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
+            const userNameEl = document.querySelector('.user-name');
+            if (userNameEl) {
+                userNameEl.textContent = userName;
+            }
+            
+            // Update user initials in avatar
+            const initials = getUserInitials(userName);
+            const userAvatar = document.querySelector('.user-avatar');
+            if (userAvatar) {
+                userAvatar.textContent = initials;
+            }
+            
+            // Update welcome message
+            const welcomeHeading = document.querySelector('.welcome-banner h1');
+            if (welcomeHeading) {
+                welcomeHeading.textContent = `Welcome back, ${userName}!`;
+                welcomeHeading.dataset.en = `Welcome back, ${userName}!`;
+                welcomeHeading.dataset.rw = `Murakaza neza, ${userName}!`;
+                welcomeHeading.dataset.fr = `Bon retour, ${userName}!`;
+            }
+            
+            // Update user role if available
+            const userRoleEl = document.querySelector('.user-role');
+            if (userRoleEl && user.role) {
+                const roleDisplay = user.role === 'site_admin' ? 'Administrator' : 
+                                   user.role === 'group_leader' ? 'Group Leader' : 'Member';
+                userRoleEl.textContent = roleDisplay;
+                userRoleEl.dataset.en = roleDisplay;
+            }
+        }
+        
+        // Get user initials from name
+        function getUserInitials(name) {
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            } else if (parts.length === 1 && parts[0].length > 0) {
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            return 'U';
+        }
+
         // Initialize language
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('=== User Dashboard Initializing ===');
+            
+            // Check if user is logged in
+            if (!TokenManager.isLoggedIn()) {
+                console.log('User not logged in, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = TokenManager.getUser();
+            console.log('Logged in user:', user);
+            console.log('User role:', user.role);
+            
+            // Only check membership approval for regular members (not leaders or admins)
+            if (user.role === 'member') {
+                try {
+                    console.log('🔍 Checking membership approval for regular member...');
+                    const groupsResponse = await GroupsAPI.getAll();
+                    console.log('Groups response:', groupsResponse);
+                    
+                    if (!groupsResponse || !groupsResponse.groups || !Array.isArray(groupsResponse.groups)) {
+                        console.error('❌ Invalid groups response');
+                        alert('Unable to verify membership status. Please contact support.');
+                        TokenManager.logout();
+                        return;
+                    }
+                    
+                    // Check if user has at least one approved membership in any group
+                    let hasApprovedMembership = false;
+                    
+                    for (const group of groupsResponse.groups) {
+                        console.log(`Checking group "${group.name}":`, group);
+                        
+                        if (!group.members || !Array.isArray(group.members)) {
+                            console.log(`  - No members array in group ${group.name}`);
+                            continue;
+                        }
+                        
+                        console.log(`  - Members in ${group.name}:`, group.members);
+                        
+                        for (const member of group.members) {
+                            const isCurrentUser = member.user_id === user.id;
+                            const isApproved = member.status === 'approved';
+                            
+                            console.log(`  - Checking member: user_id=${member.user_id}, status=${member.status}, isCurrentUser=${isCurrentUser}, isApproved=${isApproved}`);
+                            
+                            if (isCurrentUser && isApproved) {
+                                hasApprovedMembership = true;
+                                console.log(`  ✅ Found approved membership in group: ${group.name}`);
+                                break;
+                            }
+                        }
+                        
+                        if (hasApprovedMembership) break;
+                    }
+                    
+                    console.log('✅ Has approved membership:', hasApprovedMembership);
+                    
+                    if (!hasApprovedMembership) {
+                        console.log('❌ User does not have any approved memberships');
+                        alert('Access Denied: Your membership request is still pending approval from the group leader. You will be able to access the dashboard once approved.');
+                        TokenManager.logout();
+                        return;
+                    }
+                    
+                    console.log('✅ User has approved membership, loading dashboard');
+                } catch (error) {
+                    console.error('❌ Error checking membership status:', error);
+                    console.error('Error stack:', error.stack);
+                    // DO NOT allow access on error - security first
+                    alert('Unable to verify your membership status. Please try logging in again or contact support.');
+                    TokenManager.logout();
+                    return;
+                }
+            } else {
+                console.log('✅ User is a leader or admin, skipping membership check');
+            }
+            
+            // Load user data from localStorage
+            loadUserData();
+            
             // Load saved language preference
             const savedLang = localStorage.getItem('preferredLanguage') || 'en';
             switchLanguage(savedLang);
@@ -1316,6 +1454,8 @@
             
             // Check for pending notifications
             updateNotificationBadge();
+            
+            console.log('=== User Dashboard Initialized ===');
         });
 
         // Menu switching

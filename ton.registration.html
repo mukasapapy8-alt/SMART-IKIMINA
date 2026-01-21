@@ -866,6 +866,21 @@
                                 <div class="form-group">
                                     <label for="adminEmail" class="required">Email Address</label>
                                     <input type="email" id="adminEmail" name="adminEmail" required oninput="updatePreview()">
+                                    <div class="form-help">This will be your login email</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="adminPassword" class="required">Password</label>
+                                    <input type="password" id="adminPassword" name="adminPassword" required minlength="6">
+                                    <div class="form-help">Minimum 6 characters</div>
+                                </div>
+                                
+                                <div class="form-group half">
+                                    <label for="adminConfirmPassword" class="required">Confirm Password</label>
+                                    <input type="password" id="adminConfirmPassword" name="adminConfirmPassword" required minlength="6">
+                                    <div class="error-message" id="passwordError">Passwords do not match</div>
                                 </div>
                             </div>
                         </div>
@@ -1090,26 +1105,7 @@
     <!-- Success Modal -->
     <div class="modal-overlay" id="successModal">
         <div class="modal">
-            <div class="modal-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            <h3>Tontine Created Successfully!</h3>
-            <p>Your tontine has been registered and is now active. You can start inviting members to join.</p>
-            
-            <div class="modal-code" id="tontineCode">IKI-TN-2023-001</div>
-            
-            <p><strong>Next Steps:</strong></p>
-            <ul class="modal-next-steps">
-                <li>Share the tontine code with potential members</li>
-                <li>Set up your first meeting in the dashboard</li>
-                <li>Configure payment collection methods</li>
-                <li>Review and approve member applications</li>
-            </ul>
-            
-            <div class="modal-actions">
-                <a href="leader-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                <a href="ikimina.html" class="btn btn-secondary">Return to Home</a>
-            </div>
+            <!-- Content will be updated by JavaScript -->
         </div>
     </div>
 
@@ -1131,6 +1127,11 @@
             </div>
         </div>
     </footer>
+
+    <!-- API Configuration -->
+    <script src="js/api.js"></script>
+    <script src="js/integration-helper.js"></script>
+    <script src="js/app-init.js"></script>
 
     <script>
         // Form State
@@ -1395,27 +1396,164 @@
             return isValid;
         }
 
-        function submitTontineForm() {
+        async function submitTontineForm() {
             if (!validateForm()) {
                 alert('Please fix the errors in the form before submitting.');
                 return;
             }
             
-            // Generate a random tontine code
-            const tontineCode = 'IKI-TN-' + new Date().getFullYear() + '-' + Math.floor(100 + Math.random() * 900);
-            document.getElementById('tontineCode').textContent = tontineCode;
+            // Validate password match
+            const password = document.getElementById('adminPassword').value;
+            const confirmPassword = document.getElementById('adminConfirmPassword').value;
             
-            // Show success modal
-            document.getElementById('successModal').classList.add('active');
+            if (password !== confirmPassword) {
+                document.getElementById('passwordError').style.display = 'block';
+                document.getElementById('adminConfirmPassword').classList.add('error');
+                alert('Passwords do not match. Please check and try again.');
+                return;
+            }
             
-            // Here you would normally send the data to your server
-            console.log('Tontine Registration Data:', formData);
-            console.log('Generated Tontine Code:', tontineCode);
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
             
-            // Simulate API call
-            setTimeout(() => {
-                // In a real application, you would redirect to dashboard or show confirmation
-            }, 1000);
+            try {
+                // Show loading state on submit button
+                const submitBtn = document.querySelector('button[onclick="submitTontineForm()"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating Account & Tontine...';
+                
+                // Step 1: Create user account (who will be the group leader)
+                const userData = {
+                    firstName: document.getElementById('adminFirstName').value.trim(),
+                    lastName: document.getElementById('adminLastName').value.trim(),
+                    email: document.getElementById('adminEmail').value.trim(),
+                    password: password,
+                    phone: document.getElementById('adminPhone').value.trim(),
+                    idNumber: document.getElementById('adminId').value.trim()
+                };
+                
+                console.log('Step 1: Registering user as group leader...');
+                const registerResponse = await AuthAPI.register(userData);
+                console.log('User registered successfully:', registerResponse);
+                
+                // User is now logged in automatically (AuthAPI.register saves token)
+                
+                // Step 2: Create the tontine with the logged-in user as leader
+                const tontineData = {
+                    name: formData.tontineName,
+                    description: formData.description,
+                    maxMembers: formData.maxMembers,
+                    contributionAmount: formData.minContribution,
+                    currency: 'RWF',
+                    meetingFrequency: formData.payoutFrequency,
+                    country: formData.country,
+                    province: formData.province,
+                    district: formData.district,
+                    sector: formData.sector,
+                    cell: formData.cell,
+                    village: formData.village
+                };
+                
+                console.log('Step 2: Creating tontine...');
+                console.log('Tontine Data:', tontineData);
+                console.log('Using endpoint:', 'POST /api/groups');
+                const tontineResponse = await GroupsAPI.create(tontineData);
+                console.log('Tontine created successfully:', tontineResponse);
+                
+                // Success! Get the group code
+                const groupCode = tontineResponse.group?.groupCode || tontineResponse.group?.admin_code || 'IKI-TN-' + new Date().getFullYear() + '-' + Math.floor(100 + Math.random() * 900);
+                
+                // Update modal message to reflect actual workflow
+                const modalContent = document.querySelector('#successModal .modal');
+                if (!modalContent) {
+                    console.error('Modal content element not found!');
+                    alert('Success! Account and tontine created. Group Code: ' + groupCode + '\n\nRedirecting to leader dashboard...');
+                    setTimeout(() => {
+                        window.location.href = 'leader-dashboard.html';
+                    }, 2000);
+                    return;
+                }
+                
+                const newHTML = `
+                    <div class="modal-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3>Account & Tontine Created Successfully!</h3>
+                    <p>Your account has been created and your tontine has been registered. You are now the Group Leader!</p>
+                    
+                    <div class="modal-code">${groupCode}</div>
+                    <p class="modal-code-label">Your Tontine Code</p>
+                    
+                    <p><strong>What happens next:</strong></p>
+                    <ul class="modal-next-steps">
+                        <li>✓ Account Created: You can now login as ${userData.email}</li>
+                        <li>✓ Tontine Registered: "${formData.tontineName}" has been created</li>
+                        <li>⏳ Awaiting Approval: Site administrator will review your tontine</li>
+                        <li>� You are the Group Leader: Manage members and contributions</li>
+                        <li>�📧 You'll receive an email notification when approved</li>
+                        <li>🚀 Once approved, you can start inviting members with code: ${groupCode}</li>
+                    </ul>
+                    
+                    <div class="modal-actions">
+                        <a href="pending-approval.html?code=${groupCode}&name=${encodeURIComponent(formData.tontineName)}&email=${encodeURIComponent(userData.email)}" class="btn btn-primary">View Approval Status</a>
+                        <a href="ikimina.html" class="btn btn-secondary">Return to Home</a>
+                    </div>
+                `;
+                modalContent.innerHTML = newHTML;
+                
+                // Show success modal
+                const successModal = document.getElementById('successModal');
+                if (successModal) {
+                    successModal.classList.add('active');
+                } else {
+                    console.error('Success modal element not found!');
+                }
+                
+                // Log for debugging
+                console.log('Account and Tontine created successfully!');
+                console.log('User:', userData.email);
+                console.log('Tontine Code:', groupCode);
+                console.log('Status: Pending site admin approval');
+                console.log('User Role: group_leader');
+                
+                // Redirect to pending approval page after 5 seconds
+                setTimeout(() => {
+                    window.location.href = `pending-approval.html?code=${groupCode}&name=${encodeURIComponent(formData.tontineName)}&email=${encodeURIComponent(userData.email)}`;
+                }, 5000);
+                
+            } catch (error) {
+                console.error('Error creating account/tontine:', error);
+                console.error('Error stack:', error.stack);
+                
+                // Show error in alert with specific message
+                let errorMessage = error.message || 'Unknown error occurred';
+                
+                if (errorMessage.includes('Email already exists') || errorMessage.includes('already registered')) {
+                    errorMessage = 'This email address is already registered. Please use a different email or login to your existing account.';
+                } else if (errorMessage.includes('ID number') && errorMessage.includes('already')) {
+                    errorMessage = 'This ID number is already registered. Please use a different ID number or contact support.';
+                } else if (errorMessage.includes('Cannot set properties of null')) {
+                    // This is a UI error, not a backend error - tontine might have been created
+                    errorMessage = 'Account and tontine were created successfully, but there was a display error. Please login to access your leader dashboard.';
+                    alert(errorMessage);
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    return;
+                }
+                
+                alert('Failed to create account and tontine: ' + errorMessage);
+                
+                // Re-enable submit button
+                const submitBtn = document.querySelector('button[onclick="submitTontineForm()"]');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Tontine';
+                }
+            }
         }
 
         // Close modal when clicking outside
