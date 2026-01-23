@@ -1333,7 +1333,12 @@
         <div id="payment-requests" class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-credit-card"></i> <span data-en="Payment Requests" data-rw="Ibiryano Byo Kwishyura" data-fr="Demandes de Paiement">Payment Requests</span></h2>
-                <span class="status-badge pending" id="paymentRequestCount" style="font-size: 0.9rem; padding: 5px 10px;">0</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span class="status-badge pending" id="paymentRequestCount" style="font-size: 0.9rem; padding: 5px 10px;">0</span>
+                    <button class="btn btn-secondary" onclick="loadPaymentRequests()" style="padding: 8px 12px; font-size: 0.9rem;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
             </div>
             
             <div class="table-container">
@@ -3302,8 +3307,26 @@
         }
         
         function loadPaymentRequests() {
-            const groupId = window.currentGroupId; // Get from session
-            if (!groupId) return;
+            // Try to get groupId from multiple sources
+            let groupId = window.currentGroupId || currentGroupId;
+            
+            // If still no groupId, try to get it from the user's profile
+            if (!groupId) {
+                const user = TokenManager.getUser();
+                if (user && user.primary_group_id) {
+                    groupId = user.primary_group_id;
+                    window.currentGroupId = groupId;
+                }
+            }
+            
+            if (!groupId) {
+                console.warn('No group ID available');
+                const tbody = document.getElementById('paymentRequestsTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Unable to load payment requests. No group associated with your account.</p></td></tr>';
+                return;
+            }
+            
+            console.log('Loading payment requests for group:', groupId);
             
             fetch('http://localhost:5000/api/payments/requests?groupId=' + groupId + '&status=pending', {
                 headers: {
@@ -3311,7 +3334,15 @@
                 }
             })
             .then(response => {
-                if (!response.ok) throw new Error('Failed to load payment requests');
+                console.log('Payment requests response:', response.status);
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || err.message || 'Failed to load payment requests');
+                    });
+                }
                 return response.json();
             })
             .then(data => {
@@ -3349,7 +3380,8 @@
             .catch(error => {
                 console.error('Error loading payment requests:', error);
                 const tbody = document.getElementById('paymentRequestsTableBody');
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">Error loading payment requests</td></tr>';
+                const errorMsg = error.message || 'Error loading payment requests';
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>${errorMsg}</p><p style="font-size: 0.85rem; margin-top: 10px;">Check browser console for details.</p></td></tr>`;
             });
         }
         
