@@ -1272,7 +1272,7 @@
         <div id="transactions" class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-exchange-alt"></i> Recent Transactions</h2>
-                <button class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <button class="btn btn-primary" onclick="loadTransactions()"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
             
             <div class="table-container">
@@ -1286,34 +1286,12 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="transactionsTableBody">
                         <tr>
-                            <td>2023-10-05</td>
-                            <td>Jane Smith</td>
-                            <td>Contribution</td>
-                            <td>$50</td>
-                            <td><span class="status-badge status-active">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2023-10-04</td>
-                            <td>Robert Johnson</td>
-                            <td>Loan Repayment</td>
-                            <td>$75</td>
-                            <td><span class="status-badge status-active">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2023-10-03</td>
-                            <td>You (Leader)</td>
-                            <td>Contribution</td>
-                            <td>$50</td>
-                            <td><span class="status-badge status-active">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2023-10-02</td>
-                            <td>Maria Garcia</td>
-                            <td>Loan Disbursement</td>
-                            <td>$200</td>
-                            <td><span class="status-badge status-active">Completed</span></td>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p>Loading transactions...</p>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -3263,7 +3241,8 @@
             .then(data => {
                 alert('Payment request approved successfully!');
                 closeModal('paymentApprovalModal');
-                loadPaymentRequests(); // Refresh the list
+                loadPaymentRequests(); // Refresh the payment requests list
+                loadTransactions(); // Refresh the transactions list
             })
             .catch(error => {
                 alert('Error approving payment: ' + error.message);
@@ -3306,7 +3285,113 @@
             });
         }
         
-        function loadPaymentRequests() {
+        // Load recent transactions
+        function loadTransactions() {
+            let groupId = window.currentGroupId || currentGroupId;
+            
+            if (!groupId) {
+                console.log('No groupId for transactions, attempting to fetch from API...');
+                
+                const user = TokenManager.getUser();
+                if (!user) {
+                    const tbody = document.getElementById('transactionsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--warning);">Please log in to view transactions.</td></tr>';
+                    return;
+                }
+                
+                // Fetch all groups to find ones where user is leader
+                fetch('http://localhost:5000/api/groups', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch groups');
+                    return response.json();
+                })
+                .then(data => {
+                    const groups = data.groups || data || [];
+                    const leaderGroups = groups.filter(g => g.leader_id === user.id);
+                    
+                    if (leaderGroups.length === 0) {
+                        const tbody = document.getElementById('transactionsTableBody');
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--warning);">You are not leading any group.</td></tr>';
+                        return;
+                    }
+                    
+                    currentGroupId = leaderGroups[0].id;
+                    window.currentGroupId = leaderGroups[0].id;
+                    
+                    loadTransactionsForGroup(currentGroupId);
+                })
+                .catch(error => {
+                    console.error('Error fetching groups:', error);
+                    const tbody = document.getElementById('transactionsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);">Error loading transactions</td></tr>';
+                });
+                
+                return;
+            }
+            
+            loadTransactionsForGroup(groupId);
+        }
+        
+        function loadTransactionsForGroup(groupId) {
+            console.log('Loading transactions for group:', groupId);
+            
+            // Fetch contributions for this group
+            fetch('http://localhost:5000/api/contributions?groupId=' + groupId, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load transactions');
+                return response.json();
+            })
+            .then(data => {
+                const tbody = document.getElementById('transactionsTableBody');
+                console.log('Transactions data:', data);
+                
+                if (!data || (Array.isArray(data) && data.length === 0) || (data.contributions && data.contributions.length === 0)) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
+                    return;
+                }
+                
+                const transactions = Array.isArray(data) ? data : (data.contributions || []);
+                
+                // Sort by date, newest first
+                transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                // Show only last 10 transactions
+                const recentTransactions = transactions.slice(0, 10);
+                
+                tbody.innerHTML = recentTransactions.map(transaction => {
+                    const date = new Date(transaction.created_at).toLocaleDateString();
+                    const amount = transaction.amount.toLocaleString() + ' RWF';
+                    const statusBadge = transaction.status === 'approved' 
+                        ? '<span class="status-badge status-active">Completed</span>'
+                        : '<span class="status-badge status-pending">Pending</span>';
+                    
+                    return `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${transaction.first_name || 'User'} ${transaction.last_name || ''}</td>
+                            <td>${transaction.payment_method ? transaction.payment_method.charAt(0).toUpperCase() + transaction.payment_method.slice(1) : 'Contribution'}</td>
+                            <td>${amount}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                console.error('Error loading transactions:', error);
+                const tbody = document.getElementById('transactionsTableBody');
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);">Error: ${error.message}</td></tr>`;
+            });
+        }
+        
+        
             // Try to get groupId from multiple sources
             let groupId = window.currentGroupId || currentGroupId;
             
@@ -3425,10 +3510,11 @@
             });
         }
         
-        // Load payment requests on page load
+        // Load payment requests and transactions on page load
         document.addEventListener('DOMContentLoaded', function() {
             attachMemberActionListeners();
             loadPaymentRequests();
+            loadTransactions();
         });
     </script>
 </body>
