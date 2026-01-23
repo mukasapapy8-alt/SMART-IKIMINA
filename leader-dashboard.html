@@ -1329,6 +1329,38 @@
             </div>
         </div>
         
+        <!-- Payment Requests Section -->
+        <div id="payment-requests" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-credit-card"></i> <span data-en="Payment Requests" data-rw="Ibiryano Byo Kwishyura" data-fr="Demandes de Paiement">Payment Requests</span></h2>
+                <span class="status-badge pending" id="paymentRequestCount" style="font-size: 0.9rem; padding: 5px 10px;">0</span>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-en="Member" data-rw="Uyoboke" data-fr="Membre">Member</th>
+                            <th data-en="Amount" data-rw="Amafaranga" data-fr="Montant">Amount</th>
+                            <th data-en="Method" data-rw="Uburyo" data-fr="Méthode">Method</th>
+                            <th data-en="Receipt" data-rw="Resi" data-fr="Reçu">Receipt</th>
+                            <th data-en="Submitted" data-rw="Ohereza" data-fr="Soumis">Submitted</th>
+                            <th data-en="Status" data-rw="Ubwoko" data-fr="Statut">Status</th>
+                            <th data-en="Actions" data-rw="Imibare" data-fr="Actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentRequestsTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p data-en="Loading payment requests..." data-rw="Gutanga ibiryano..." data-fr="Chargement des demandes de paiement...">Loading payment requests...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
         <!-- Link Creation & Calendar -->
         <div class="grid-2col">
             <!-- Link Creation -->
@@ -2798,6 +2830,54 @@
             </div>
         </div>
     </div>
+    
+    <!-- Payment Approval Modal -->
+    <div id="paymentApprovalModal" class="modal">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Payment Request Approval</h2>
+                <button class="modal-close" onclick="closeModal('paymentApprovalModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item" style="margin-bottom: 15px;">
+                    <label>Member Name:</label>
+                    <span id="paymentMemberName" style="font-weight: 600; color: var(--primary);">-</span>
+                </div>
+                
+                <div class="detail-item" style="margin-bottom: 15px;">
+                    <label>Payment Amount:</label>
+                    <span id="paymentAmount" style="font-size: 1.3rem; font-weight: 600; color: var(--success);">-</span>
+                </div>
+                
+                <div class="detail-item" style="margin-bottom: 15px;">
+                    <label>Payment Method:</label>
+                    <span id="paymentMethod" style="font-weight: 600;">-</span>
+                </div>
+                
+                <div class="detail-item" style="margin-bottom: 20px;">
+                    <label>Receipt:</label>
+                    <a href="#" id="paymentReceiptLink" style="color: var(--primary); text-decoration: underline;">View Receipt</a>
+                </div>
+                
+                <div style="background: var(--gray-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                        <i class="fas fa-info-circle"></i>
+                        Once approved, this payment will be recorded as a contribution for the member.
+                    </p>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('paymentApprovalModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectPayment()" style="flex: 1;">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="approvePayment()" style="flex: 1;">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Styles -->
     <style>
@@ -3100,6 +3180,7 @@
         window.addEventListener('click', function(event) {
             const editModal = document.getElementById('editMemberModal');
             const deleteModal = document.getElementById('deleteMemberModal');
+            const paymentModal = document.getElementById('paymentApprovalModal');
             
             if (event.target === editModal) {
                 closeModal('editMemberModal');
@@ -3107,6 +3188,175 @@
             if (event.target === deleteModal) {
                 closeModal('deleteMemberModal');
             }
+            if (event.target === paymentModal) {
+                closeModal('paymentApprovalModal');
+            }
+        });
+        
+        // Payment Request Functions
+        let currentPaymentId = null;
+        let currentPaymentAmount = null;
+        
+        function openPaymentApprovalModal(paymentId, memberName, amount, method, receiptUrl) {
+            currentPaymentId = paymentId;
+            currentPaymentAmount = amount;
+            document.getElementById('paymentMemberName').textContent = memberName;
+            document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' RWF';
+            document.getElementById('paymentMethod').textContent = method;
+            
+            // Set up the receipt link if available
+            const receiptLink = document.getElementById('paymentReceiptLink');
+            if (receiptUrl && receiptUrl.startsWith('data:')) {
+                receiptLink.onclick = function() {
+                    openReceiptPreview(receiptUrl);
+                };
+                receiptLink.style.cursor = 'pointer';
+            }
+            
+            openModal('paymentApprovalModal');
+        }
+        
+        function openReceiptPreview(receiptUrl) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+            modal.onclick = function() { this.remove(); };
+            
+            const content = document.createElement('div');
+            content.style.cssText = 'background: white; padding: 20px; border-radius: 8px; max-width: 90%; max-height: 90%; overflow: auto;';
+            
+            if (receiptUrl.startsWith('data:image')) {
+                const img = document.createElement('img');
+                img.src = receiptUrl;
+                img.style.maxWidth = '100%';
+                content.appendChild(img);
+            } else {
+                content.innerHTML = '<p>Receipt file: ' + receiptUrl + '</p>';
+            }
+            
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+        }
+        
+        function approvePayment() {
+            if (!currentPaymentId) return;
+            
+            const approveBtn = document.querySelector('#paymentApprovalModal .btn-success');
+            approveBtn.disabled = true;
+            approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+            
+            fetch('http://localhost:5000/api/payments/requests/' + currentPaymentId + '/approve', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to approve payment');
+                return response.json();
+            })
+            .then(data => {
+                alert('Payment request approved successfully!');
+                closeModal('paymentApprovalModal');
+                loadPaymentRequests(); // Refresh the list
+            })
+            .catch(error => {
+                alert('Error approving payment: ' + error.message);
+                approveBtn.disabled = false;
+                approveBtn.innerHTML = '<i class="fas fa-check"></i> Approve';
+            });
+        }
+        
+        function rejectPayment() {
+            if (!currentPaymentId) return;
+            
+            const reason = prompt('Enter reason for rejection:');
+            if (!reason) return;
+            
+            const rejectBtn = document.querySelector('#paymentApprovalModal .btn-danger');
+            rejectBtn.disabled = true;
+            rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
+            
+            fetch('http://localhost:5000/api/payments/requests/' + currentPaymentId + '/reject', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reason: reason })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to reject payment');
+                return response.json();
+            })
+            .then(data => {
+                alert('Payment request rejected.');
+                closeModal('paymentApprovalModal');
+                loadPaymentRequests(); // Refresh the list
+            })
+            .catch(error => {
+                alert('Error rejecting payment: ' + error.message);
+                rejectBtn.disabled = false;
+                rejectBtn.innerHTML = '<i class="fas fa-times"></i> Reject';
+            });
+        }
+        
+        function loadPaymentRequests() {
+            const groupId = window.currentGroupId; // Get from session
+            if (!groupId) return;
+            
+            fetch('http://localhost:5000/api/payments/requests?groupId=' + groupId + '&status=pending', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load payment requests');
+                return response.json();
+            })
+            .then(data => {
+                const tbody = document.getElementById('paymentRequestsTableBody');
+                const count = document.getElementById('paymentRequestCount');
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-check-circle" style="font-size: 36px; margin-bottom: 10px; color: var(--success);"></i><p>No pending payment requests</p></td></tr>';
+                    count.textContent = '0';
+                    return;
+                }
+                
+                count.textContent = data.length;
+                tbody.innerHTML = data.map(payment => {
+                    const methodEmoji = { mobile: '📱', bank: '🏦', cash: '💵' }[payment.payment_method] || '💳';
+                    const statusBadge = `<span class="status-badge status-pending">Pending</span>`;
+                    
+                    return `
+                        <tr>
+                            <td>${payment.first_name} ${payment.last_name}</td>
+                            <td>${payment.amount.toLocaleString()} RWF</td>
+                            <td>${methodEmoji} ${payment.payment_method}</td>
+                            <td><a href="#" onclick="openReceiptPreview('${payment.receipt_url}'); return false;" style="color: var(--primary);">View</a></td>
+                            <td>${new Date(payment.created_at).toLocaleDateString()}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="action-btn approve" onclick="openPaymentApprovalModal('${payment.id}', '${payment.first_name} ${payment.last_name}', ${payment.amount}, '${payment.payment_method}', '${payment.receipt_url}'); return false;">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                console.error('Error loading payment requests:', error);
+                const tbody = document.getElementById('paymentRequestsTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">Error loading payment requests</td></tr>';
+            });
+        }
+        
+        // Load payment requests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            attachMemberActionListeners();
+            loadPaymentRequests();
         });
     </script>
 </body>

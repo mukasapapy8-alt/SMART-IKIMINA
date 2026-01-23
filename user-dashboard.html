@@ -1835,79 +1835,95 @@
             payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + getTranslation('sending', 'Sending...');
             payBtn.disabled = true;
             
-            // Prepare FormData for file upload
-            const formData = new FormData();
-            formData.append('amount', amount);
-            formData.append('method', method);
-            formData.append('receipt', receipt);
-            formData.append('groupId', groupId);
+            // Read receipt file as base64
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const receiptBase64 = e.target.result;
+                
+                // Prepare JSON payload
+                const payload = {
+                    amount: parseFloat(amount),
+                    method: method,
+                    groupId: groupId,
+                    receiptUrl: receiptBase64,
+                    receiptFileName: receipt.name,
+                    receiptMimeType: receipt.type,
+                    receiptSize: receipt.size
+                };
+                
+                // Add mobile/bank details if provided
+                const mobileNumber = document.getElementById('mobileNumber')?.value;
+                const bankDetails = document.getElementById('bankDetails')?.value;
+                if (mobileNumber) payload.mobileNumber = mobileNumber;
+                if (bankDetails) payload.bankDetails = bankDetails;
+                
+                // Send payment request to backend
+                fetch('http://localhost:5000/api/payments/request', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response:', response);
+                    
+                    if (response.status === 404) {
+                        throw new Error('Payment endpoint not yet implemented on backend. Please contact your administrator. (404 Not Found)');
+                    }
+                    if (response.status === 401) {
+                        throw new Error('Unauthorized. Your session may have expired. Please log in again.');
+                    }
+                    if (response.status === 403) {
+                        throw new Error('Forbidden. You do not have permission to submit payment requests.');
+                    }
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || err.message || `Server error: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Payment request submitted:', data);
+                    
+                    // Reset button
+                    payBtn.innerHTML = originalText;
+                    payBtn.disabled = false;
+                    
+                    // Close modal and clear form
+                    closePaymentModal();
+                    clearPaymentForm();
+                    
+                    // Show success message
+                    alert(getTranslation('paymentRequestSent', 'Payment request sent to leader for approval. We will notify you once it is verified.'));
+                    
+                    // Reload page to show updated data
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error submitting payment request:', error);
+                    
+                    // Reset button
+                    payBtn.innerHTML = originalText;
+                    payBtn.disabled = false;
+                    
+                    // Provide more detailed error message
+                    let errorMessage = error.message;
+                    if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Unable to connect to server. Please check your internet connection and try again.';
+                    }
+                    
+                    alert(getTranslation('errorSubmittingPayment', 'Error: ' + errorMessage));
+                });
+            };
             
-            // Add mobile/bank details if provided
-            const mobileNumber = document.getElementById('mobileNumber')?.value;
-            const bankDetails = document.getElementById('bankDetails')?.value;
-            if (mobileNumber) formData.append('mobileNumber', mobileNumber);
-            if (bankDetails) formData.append('bankDetails', bankDetails);
-            
-            // Send payment request to backend
-            fetch('http://localhost:5000/api/payments/request', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                },
-                body: formData
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response:', response);
-                
-                if (response.status === 404) {
-                    throw new Error('Payment endpoint not yet implemented on backend. Please contact your administrator. (404 Not Found)');
-                }
-                if (response.status === 401) {
-                    throw new Error('Unauthorized. Your session may have expired. Please log in again.');
-                }
-                if (response.status === 403) {
-                    throw new Error('Forbidden. You do not have permission to submit payment requests.');
-                }
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Payment request submitted:', data);
-                
-                // Reset button
-                payBtn.innerHTML = originalText;
-                payBtn.disabled = false;
-                
-                // Close modal and clear form
-                closePaymentModal();
-                clearPaymentForm();
-                
-                // Show success message
-                alert(getTranslation('paymentRequestSent', 'Payment request sent to leader for approval. We will notify you once it is verified.'));
-                
-                // Reload page to show updated data
-                setTimeout(() => {
-                    location.reload();
-                }, 500);
-            })
-            .catch(error => {
-                console.error('Error submitting payment request:', error);
-                
-                // Reset button
-                payBtn.innerHTML = originalText;
-                payBtn.disabled = false;
-                
-                // Provide more detailed error message
-                let errorMessage = error.message;
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Unable to connect to server. Please check your internet connection and try again.';
-                }
-                
-                alert(getTranslation('errorSubmittingPayment', 'Error: ' + errorMessage));
-            });
+            // Start reading the file
+            reader.readAsDataURL(receipt);
         }
 
         function clearReceiptUpload() {
@@ -1921,10 +1937,15 @@
 
         function clearPaymentForm() {
             // Reset all form fields
-            document.getElementById('paymentAmount').value = '';
-            document.getElementById('paymentMethod').value = '';
-            document.getElementById('paymentMobile').value = '';
-            document.getElementById('paymentBank').value = '';
+            const amountField = document.getElementById('paymentAmount');
+            const methodField = document.getElementById('paymentMethod');
+            const mobileField = document.getElementById('mobileNumber');
+            const bankField = document.getElementById('bankDetails');
+            
+            if (amountField) amountField.value = '50000';
+            if (methodField) methodField.value = '';
+            if (mobileField) mobileField.value = '';
+            if (bankField) bankField.value = '';
             
             // Clear receipt
             clearReceiptUpload();
