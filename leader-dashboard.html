@@ -3310,22 +3310,62 @@
             // Try to get groupId from multiple sources
             let groupId = window.currentGroupId || currentGroupId;
             
-            // If still no groupId, try to get it from the user's profile
+            // If still no groupId, fetch it from the user's led groups
             if (!groupId) {
+                console.log('No groupId found locally, fetching from API...');
+                
                 const user = TokenManager.getUser();
-                if (user && user.primary_group_id) {
-                    groupId = user.primary_group_id;
-                    window.currentGroupId = groupId;
+                if (!user) {
+                    console.warn('No user found');
+                    const tbody = document.getElementById('paymentRequestsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Please log in to view payment requests.</p></td></tr>';
+                    return;
                 }
-            }
-            
-            if (!groupId) {
-                console.warn('No group ID available');
-                const tbody = document.getElementById('paymentRequestsTableBody');
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Unable to load payment requests. No group associated with your account.</p></td></tr>';
+                
+                // Fetch all groups to find ones where user is leader
+                fetch('http://localhost:5000/api/groups', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch groups');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Groups API response:', data);
+                    
+                    const groups = data.groups || data || [];
+                    const leaderGroups = groups.filter(g => g.leader_id === user.id);
+                    
+                    console.log('Leader groups found:', leaderGroups.length);
+                    
+                    if (leaderGroups.length === 0) {
+                        const tbody = document.getElementById('paymentRequestsTableBody');
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>You are not leading any group.</p></td></tr>';
+                        return;
+                    }
+                    
+                    currentGroupId = leaderGroups[0].id;
+                    window.currentGroupId = leaderGroups[0].id;
+                    console.log('Set groupId to:', currentGroupId);
+                    
+                    // Now load payment requests with the group ID
+                    loadPaymentRequestsForGroup(currentGroupId);
+                })
+                .catch(error => {
+                    console.error('Error fetching groups:', error);
+                    const tbody = document.getElementById('paymentRequestsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Error: ' + error.message + '</p></td></tr>';
+                });
+                
                 return;
             }
             
+            loadPaymentRequestsForGroup(groupId);
+        }
+        
+        function loadPaymentRequestsForGroup(groupId) {
             console.log('Loading payment requests for group:', groupId);
             
             fetch('http://localhost:5000/api/payments/requests?groupId=' + groupId + '&status=pending', {
