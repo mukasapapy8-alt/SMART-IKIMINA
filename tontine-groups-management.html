@@ -1016,74 +1016,64 @@
         let currentLanguage = 'en';
         let currentGroupId = null;
 
-        // Sample Data - Tontine Groups
-        const groupsData = [
-            {
-                id: 1,
-                name: "Abaharanira Group",
-                admin: "Jean Paul N.",
-                adminPhone: "+250788123456",
-                description: "Community investment group focused on agriculture",
-                region: "kigali",
-                members: 15,
-                status: "active",
-                founded: "2022-03-15",
-                meetingFrequency: "monthly",
-                contributionAmount: 50000,
-                membersList: [
-                    { name: "Jean Paul N.", phone: "+250788123456", status: "Active", joined: "2022-03-15" },
-                    { name: "Marie Claire K.", phone: "+250789654321", status: "Active", joined: "2022-03-20" },
-                    { name: "Eric Mutabazi", phone: "+250782345678", status: "Active", joined: "2022-04-10" }
-                ]
-            },
-            {
-                id: 2,
-                name: "Twizihize Tontine",
-                admin: "Sarah Uwambaje",
-                adminPhone: "+250783456789",
-                description: "Women's savings and credit group",
-                region: "muhanga",
-                members: 22,
-                status: "active",
-                founded: "2021-06-20",
-                meetingFrequency: "bi-weekly",
-                contributionAmount: 75000,
-                membersList: [
-                    { name: "Sarah Uwambaje", phone: "+250783456789", status: "Active", joined: "2021-06-20" },
-                    { name: "Alice Nyirahabimana", phone: "+250784567890", status: "Active", joined: "2021-07-05" }
-                ]
-            },
-            {
-                id: 3,
-                name: "Amizero Cooperative",
-                admin: "David Mubiligi",
-                adminPhone: "+250781234567",
-                description: "Business and trade development group",
-                region: "gisenyi",
-                members: 18,
-                status: "active",
-                founded: "2020-01-10",
-                meetingFrequency: "monthly",
-                contributionAmount: 100000,
-                membersList: [
-                    { name: "David Mubiligi", phone: "+250781234567", status: "Active", joined: "2020-01-10" }
-                ]
-            },
-            {
-                id: 4,
-                name: "Duterimbere Association",
-                admin: "Fatima Habiba",
-                adminPhone: "+250789876543",
-                description: "Youth development and skills training",
-                region: "kigali",
-                members: 12,
-                status: "pending",
-                founded: "2024-01-05",
-                meetingFrequency: "weekly",
-                contributionAmount: 25000,
-                membersList: []
+        // Groups data - will be loaded from backend
+        let groupsData = [];
+
+        // Load groups from backend
+        async function loadGroupsFromBackend() {
+            console.log('=== Loading groups from backend ===');
+            
+            try {
+                // Check if user is logged in
+                if (!TokenManager.isLoggedIn()) {
+                    console.error('User not logged in');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const user = TokenManager.getUser();
+                console.log('Current user:', user);
+
+                // Fetch all groups
+                const response = await GroupsAPI.getAll();
+                console.log('Groups API response:', response);
+
+                if (response.groups && Array.isArray(response.groups)) {
+                    // Map backend data to frontend format
+                    groupsData = response.groups.map(group => ({
+                        id: group.id,
+                        name: group.name,
+                        admin: group.leader_name || 'Unknown',
+                        adminPhone: group.leader_phone || 'N/A',
+                        description: group.description || 'No description provided',
+                        region: group.district || group.province || 'N/A',
+                        members: group.member_count || 0,
+                        status: group.status || 'pending',
+                        founded: group.created_at ? new Date(group.created_at).toISOString().split('T')[0] : 'N/A',
+                        meetingFrequency: group.meeting_frequency || 'monthly',
+                        contributionAmount: group.contribution_amount || 0,
+                        currency: group.currency || 'RWF',
+                        maxMembers: group.max_members || 'N/A',
+                        membersList: [] // Will be loaded separately when viewing details
+                    }));
+
+                    console.log('✅ Loaded', groupsData.length, 'groups from backend');
+                    console.log('Mapped groups data:', groupsData);
+
+                    // Populate the UI
+                    populateGroups();
+                } else {
+                    console.warn('⚠️ No groups found in response');
+                    groupsData = [];
+                    populateGroups(); // Show empty state
+                }
+            } catch (error) {
+                console.error('❌ Error loading groups:', error);
+                alert('Failed to load tontine groups: ' + error.message);
+                groupsData = [];
+                populateGroups(); // Show empty state
             }
-        ];
+        }
 
         // Logout function
         function logout() {
@@ -1108,10 +1098,13 @@
         }
 
         // Initialize Dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const savedLanguage = localStorage.getItem('adminLanguage') || 'en';
             setLanguage(savedLanguage);
-            populateGroups();
+            
+            // Load groups from backend
+            await loadGroupsFromBackend();
+            
             setupEventListeners();
         });
 
@@ -1127,6 +1120,20 @@
                     return false;
                 });
             }
+            
+            // Prevent default behavior for placeholder menu items
+            const placeholderLinks = document.querySelectorAll('.sidebar-menu a[href="#"]');
+            placeholderLinks.forEach(link => {
+                // Skip logout button as it's already handled
+                if (link.id !== 'logoutBtn') {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const linkText = this.querySelector('span').textContent;
+                        alert(`${linkText} feature is coming soon!`);
+                        return false;
+                    });
+                }
+            });
             
             const languageButtons = document.querySelectorAll('.language-btn');
             languageButtons.forEach(button => {
@@ -1187,10 +1194,36 @@
             grid.innerHTML = '';
             table.innerHTML = '';
             
+            // Check if there are groups to display
+            if (groupsData.length === 0) {
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; grid-column: 1/-1;">
+                        <i class="fas fa-users" style="font-size: 64px; color: var(--gray); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--gray); margin-bottom: 10px;">No Tontine Groups Found</h3>
+                        <p style="color: var(--gray);">There are no tontine groups in the system yet.</p>
+                    </div>
+                `;
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                            No tontine groups to display
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
             groupsData.forEach(group => {
                 // Grid Card
                 const statusClass = `status-${group.status}`;
                 const statusText = group.status.charAt(0).toUpperCase() + group.status.slice(1);
+                
+                // Extract admin/leader name
+                const adminName = group.leader_name || group.admin || 'Unknown';
+                const memberCount = group.member_count || group.members || 0;
+                const groupRegion = group.province || group.region || 'N/A';
+                const foundedDate = group.created_at ? new Date(group.created_at).toLocaleDateString() : (group.founded || 'N/A');
+                const contribution = group.contribution_amount || group.contributionAmount || 0;
                 
                 const card = document.createElement('div');
                 card.className = 'group-card';
@@ -1202,30 +1235,30 @@
                     <div class="group-info">
                         <div class="info-row">
                             <span class="info-label">Admin:</span>
-                            <span class="info-value">${group.admin}</span>
+                            <span class="info-value">${adminName}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Members:</span>
-                            <span class="info-value">${group.members}</span>
+                            <span class="info-value">${memberCount}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Region:</span>
-                            <span class="info-value">${group.region.toUpperCase()}</span>
+                            <span class="info-value">${groupRegion}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Founded:</span>
-                            <span class="info-value">${group.founded}</span>
+                            <span class="info-value">${foundedDate}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Contribution:</span>
-                            <span class="info-value">RWF ${group.contributionAmount.toLocaleString()}</span>
+                            <span class="info-value">RWF ${Number(contribution).toLocaleString()}</span>
                         </div>
                     </div>
                     <div class="group-actions">
-                        <button class="btn btn-success btn-sm" onclick="viewMembers(${group.id})">
+                        <button class="btn btn-success btn-sm" onclick="viewMembers('${group.id}')">
                             <i class="fas fa-users"></i> Members
                         </button>
-                        <button class="btn btn-primary btn-sm" onclick="editGroup(${group.id})">
+                        <button class="btn btn-primary btn-sm" onclick="editGroup('${group.id}')">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1236,19 +1269,19 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${group.name}</strong></td>
-                    <td>${group.admin}</td>
-                    <td>${group.members}</td>
+                    <td>${adminName}</td>
+                    <td>${memberCount}</td>
                     <td><span class="btn btn-sm ${statusClass}" style="padding: 6px 12px; display: inline-block;">${statusText}</span></td>
-                    <td>${group.founded}</td>
+                    <td>${foundedDate}</td>
                     <td>
                         <div class="d-flex gap-10">
-                            <button class="btn btn-success btn-sm" onclick="viewMembers(${group.id})">
+                            <button class="btn btn-success btn-sm" onclick="viewMembers('${group.id}')" title="View Members">
                                 <i class="fas fa-users"></i>
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="editGroup(${group.id})">
+                            <button class="btn btn-primary btn-sm" onclick="editGroup('${group.id}')" title="Edit Group">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteGroup(${group.id})">
+                            <button class="btn btn-danger btn-sm" onclick="deleteGroup('${group.id}')" title="Delete Group">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -1264,15 +1297,17 @@
             const group = groupsData.find(g => g.id === id);
             
             if (group) {
-                document.getElementById('groupName').value = group.name;
-                document.getElementById('groupAdmin').value = group.admin;
-                document.getElementById('groupDescription').value = group.description;
-                document.getElementById('groupRegion').value = group.region;
-                document.getElementById('meetingFrequency').value = group.meetingFrequency;
-                document.getElementById('contributionAmount').value = group.contributionAmount;
-                document.getElementById('groupStatus').value = group.status;
+                document.getElementById('groupName').value = group.name || '';
+                document.getElementById('groupAdmin').value = group.leader_name || group.admin || '';
+                document.getElementById('groupDescription').value = group.description || '';
+                document.getElementById('groupRegion').value = group.province || group.region || '';
+                document.getElementById('meetingFrequency').value = group.meeting_frequency || group.meetingFrequency || '';
+                document.getElementById('contributionAmount').value = group.contribution_amount || group.contributionAmount || '';
+                document.getElementById('groupStatus').value = group.status || '';
                 
                 document.getElementById('editGroupModal').classList.add('active');
+            } else {
+                alert('Group not found');
             }
         }
 
@@ -1295,23 +1330,51 @@
         }
 
         // View Members
-        function viewMembers(id) {
+        async function viewMembers(id) {
             const group = groupsData.find(g => g.id === id);
             
             if (group) {
                 const membersList = document.getElementById('membersList');
-                membersList.innerHTML = '';
+                membersList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading members...</td></tr>';
                 
-                group.membersList.forEach(member => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${member.name}</td>
-                        <td>${member.phone}</td>
-                        <td><span class="btn btn-sm" style="padding: 6px 12px; display: inline-block; background: #2ED573; color: white;">${member.status}</span></td>
-                        <td>${member.joined}</td>
-                    `;
-                    membersList.appendChild(row);
-                });
+                try {
+                    // Load members from backend
+                    const response = await GroupsAPI.getMembers(id);
+                    console.log('Members response:', response);
+                    
+                    const members = response.members || response || [];
+                    
+                    // Filter for approved members only
+                    const approvedMembers = members.filter(m => m.status === 'approved');
+                    
+                    membersList.innerHTML = '';
+                    
+                    if (approvedMembers.length === 0) {
+                        membersList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--gray);">No members found in this group</td></tr>';
+                    } else {
+                        approvedMembers.forEach(member => {
+                            const userData = member.user || member;
+                            const firstName = userData.first_name || userData.firstName || '';
+                            const lastName = userData.last_name || userData.lastName || '';
+                            const memberName = `${firstName} ${lastName}`.trim() || userData.name || 'Unknown';
+                            const memberPhone = userData.phone || userData.phone_number || member.phone || 'N/A';
+                            const joinDate = member.created_at ? new Date(member.created_at).toLocaleDateString() : 'N/A';
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${memberName}</td>
+                                <td>${memberPhone}</td>
+                                <td><span class="btn btn-sm" style="padding: 6px 12px; display: inline-block; background: #2ED573; color: white;">Active</span></td>
+                                <td>${joinDate}</td>
+                            `;
+                            membersList.appendChild(row);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading members:', error);
+                    membersList.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--danger);">Error loading members: ${error.message}</td></tr>`;
+                }
+
                 
                 document.getElementById('viewMembersModal').classList.add('active');
             }

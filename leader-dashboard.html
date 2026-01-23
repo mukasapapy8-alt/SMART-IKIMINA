@@ -1004,6 +1004,7 @@
             <li><a href="#loans"><i class="fas fa-hand-holding-usd"></i> <span>Loans</span></a></li>
             <li><a href="#transactions"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
             <li><a href="#my-contribution"><i class="fas fa-hand-holding-heart"></i> <span>My Contribution</span></a></li>
+            <li><a href="user-dashboard.html"><i class="fas fa-user-circle"></i> <span>My Member Dashboard</span></a></li>
             <li><a href="#calendar-section"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></li>
             <li><a href="#settings"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
             <li><a href="#" id="logoutBtn" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -1024,6 +1025,9 @@
         <div id="dashboard" class="header">
             <h1>My Smart ekimina</h1>
             <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.location.href='user-dashboard.html'" style="margin-right: 10px;">
+                    <i class="fas fa-user"></i> My Member Dashboard
+                </button>
                 <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report</button>
             </div>
         </div>
@@ -1532,8 +1536,9 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script>
-        // Language switching function
+        // Global variables
         let currentLanguage = 'en';
+        let currentGroupId = null;  // Store the current user's group ID
 
         function switchLanguage(lang) {
             currentLanguage = lang;
@@ -1569,7 +1574,7 @@
             // Check if user is a group leader
             if (user.role !== 'group_leader' && user.role !== 'site_admin') {
                 alert('Access denied. Only group leaders can access this dashboard.');
-                window.location.href = 'user-dashboard.html';
+                window.location.href = 'login.html';
                 return;
             }
             
@@ -1667,6 +1672,9 @@
                 const groupId = leaderGroups[0].id;
                 console.log('📋 Using group ID:', groupId, 'Group name:', leaderGroups[0].name);
                 
+                // Store group ID globally for other functions to use
+                currentGroupId = groupId;
+                
                 // Fetch pending membership requests for this group
                 const response = await GroupsAPI.getPendingRequests(groupId);
                 console.log('✅ Pending requests API response:', response);
@@ -1762,6 +1770,9 @@
                 const groupId = leaderGroups[0].id;
                 console.log('📋 Using group:', leaderGroups[0].name, 'ID:', groupId);
                 
+                // Store group ID globally for other functions to use
+                currentGroupId = groupId;
+                
                 // Try multiple approaches to get member details
                 let activeMembers = [];
                 
@@ -1799,15 +1810,35 @@
                         console.log('Response type:', typeof membersResponse);
                         console.log('Response keys:', Object.keys(membersResponse || {}));
                         
+                        let allMembers = [];
                         if (membersResponse.members && Array.isArray(membersResponse.members)) {
-                            activeMembers = membersResponse.members.filter(m => m.status === 'approved');
-                            console.log(`✅ Found ${activeMembers.length} active members from getMembers (filtered from ${membersResponse.members.length} total)`);
-                            console.log('Sample member:', activeMembers[0]);
+                            allMembers = membersResponse.members;
                         } else if (Array.isArray(membersResponse)) {
-                            // Backend might return array directly
-                            activeMembers = membersResponse.filter(m => m.status === 'approved');
-                            console.log(`✅ Found ${activeMembers.length} active members (direct array) from getMembers`);
-                            console.log('Sample member:', activeMembers[0]);
+                            allMembers = membersResponse;
+                        }
+                        
+                        if (allMembers.length > 0) {
+                            console.log('All members data:', allMembers);
+                            console.log('Member statuses:', allMembers.map(m => ({
+                                id: m.user_id || m.id,
+                                status: m.status,
+                                name: m.user?.first_name || m.first_name || m.name || 'Unknown'
+                            })));
+                            
+                            // Filter for approved members
+                            activeMembers = allMembers.filter(m => m.status === 'approved');
+                            console.log(`✅ Found ${activeMembers.length} approved members from getMembers (filtered from ${allMembers.length} total)`);
+                            
+                            // If no approved found, show all non-pending members (some backends might not use 'approved' status)
+                            if (activeMembers.length === 0) {
+                                console.log('⚠️ No "approved" status found, trying alternative statuses...');
+                                activeMembers = allMembers.filter(m => m.status !== 'pending' && m.status !== 'rejected');
+                                console.log(`✅ Found ${activeMembers.length} members using alternative status filter`);
+                            }
+                            
+                            if (activeMembers.length > 0) {
+                                console.log('Sample member:', activeMembers[0]);
+                            }
                         } else {
                             console.log('⚠️ No members array found in response structure');
                         }
@@ -1831,10 +1862,21 @@
                         console.log('Group keys:', Object.keys(group || {}));
                         
                         if (group.members && Array.isArray(group.members)) {
+                            console.log('Members statuses:', group.members.map(m => ({id: m.user_id || m.id, status: m.status})));
+                            
                             activeMembers = group.members.filter(m => m.status === 'approved');
-                            console.log(`✅ Found ${activeMembers.length} active members from getById (filtered from ${group.members.length} total)`);
-                            console.log('Sample member:', activeMembers[0]);
-                            console.log('All members statuses:', group.members.map(m => ({id: m.user_id || m.id, status: m.status})));
+                            console.log(`✅ Found ${activeMembers.length} approved members from getById (filtered from ${group.members.length} total)`);
+                            
+                            // If no approved found, try alternative statuses
+                            if (activeMembers.length === 0) {
+                                console.log('⚠️ No "approved" status found, trying alternative statuses...');
+                                activeMembers = group.members.filter(m => m.status !== 'pending' && m.status !== 'rejected');
+                                console.log(`✅ Found ${activeMembers.length} members using alternative status filter`);
+                            }
+                            
+                            if (activeMembers.length > 0) {
+                                console.log('Sample member:', activeMembers[0]);
+                            }
                         } else {
                             console.log('⚠️ No members array found in group object');
                         }
@@ -1852,7 +1894,15 @@
                     console.log('All members statuses:', leaderGroups[0].members.map(m => ({id: m.user_id || m.id, status: m.status})));
                     
                     activeMembers = leaderGroups[0].members.filter(m => m.status === 'approved');
-                    console.log(`✅ Found ${activeMembers.length} active members from getAll (filtered from ${leaderGroups[0].members.length} total)`);
+                    console.log(`✅ Found ${activeMembers.length} approved members from getAll (filtered from ${leaderGroups[0].members.length} total)`);
+                    
+                    // If no approved found, try alternative statuses
+                    if (activeMembers.length === 0) {
+                        console.log('⚠️ No "approved" status found, trying alternative statuses...');
+                        activeMembers = leaderGroups[0].members.filter(m => m.status !== 'pending' && m.status !== 'rejected');
+                        console.log(`✅ Found ${activeMembers.length} members using alternative status filter`);
+                    }
+                    
                     if (activeMembers.length > 0) {
                         console.log('Sample member:', activeMembers[0]);
                     }
@@ -1864,8 +1914,26 @@
                 console.log('Final active members data:', activeMembers);
                 
                 // CRITICAL: Double-check that we only have approved members
-                const onlyApproved = activeMembers.filter(m => m.status === 'approved');
-                console.log(`✅ Verified: ${onlyApproved.length} approved members (filtered from ${activeMembers.length})`);
+                let onlyApproved = activeMembers.filter(m => m.status === 'approved');
+                
+                // If no approved members found with that status, try alternative approach
+                if (onlyApproved.length === 0 && activeMembers.length > 0) {
+                    console.log('⚠️ No members with "approved" status, checking available statuses...');
+                    console.log('Available member statuses:', [...new Set(activeMembers.map(m => m.status))]);
+                    
+                    // Show all non-pending, non-rejected members
+                    onlyApproved = activeMembers.filter(m => m.status !== 'pending' && m.status !== 'rejected');
+                    console.log(`✅ Using alternative filter: found ${onlyApproved.length} members`);
+                }
+                
+                console.log(`✅ Final verified: ${onlyApproved.length} approved members (from ${activeMembers.length})`);
+                if (onlyApproved.length === 0 && activeMembers.length > 0) {
+                    console.log('📊 DEBUG: All members that could not be filtered:');
+                    activeMembers.forEach(m => {
+                        console.log(`  - ${m.user_id || m.id}: status="${m.status}"`);
+                    });
+                }
+                
                 
                 // Update stats card for active members
                 const activeMembersCountEl = document.querySelector('.stat-card:nth-child(2) h3');
@@ -1901,15 +1969,13 @@
             tbody.innerHTML = '';
             
             console.log('Populating active members table with', members.length, 'members');
+            console.log('Members to display:', members.map(m => ({ id: m.user_id || m.id, status: m.status, name: m.user_first_name || m.first_name || m.name })));
             
-            // CRITICAL: Filter to ensure ONLY approved members are shown
-            const approvedMembers = members.filter(member => {
-                const isApproved = member.status === 'approved';
-                console.log(`Member ${member.user_id}: status=${member.status}, approved=${isApproved}`);
-                return isApproved;
-            });
+            // Members are already filtered for approval status by loadActiveMembers()
+            // Just display them directly without re-filtering
+            const approvedMembers = members;
             
-            console.log(`✅ Filtered to ${approvedMembers.length} approved members (from ${members.length} total)`);
+            console.log(`✅ Will display ${approvedMembers.length} members in table`);
             
             if (approvedMembers.length === 0) {
                 tbody.innerHTML = `
@@ -2204,10 +2270,131 @@
             }
         }
 
-        // View member details
-        function viewMemberDetails(userId) {
-            alert('Member details view coming soon!\n\nUser ID: ' + userId);
-            // TODO: Implement modal with full member details
+        // View member details - Make it globally accessible
+        window.viewMemberDetails = function(userId) {
+            console.log('🔍 Viewing member details for userId:', userId);
+            
+            // Use the globally stored group ID
+            const groupId = currentGroupId;
+            
+            if (!groupId) {
+                console.error('❌ No group ID available. Please wait for the page to load completely.');
+                alert('Error: Group information not loaded yet. Please wait a moment and try again.');
+                return;
+            }
+
+            // Get member data from the active members we already loaded
+            const activeMembersTable = document.querySelector('#active-members table tbody');
+            
+            if (!activeMembersTable) {
+                console.error('❌ Active members table not found in DOM');
+                // Fetch from API instead
+                fetchMemberDetailsFromAPI(userId, groupId);
+                return;
+            }
+            
+            const rows = activeMembersTable.querySelectorAll('tr');
+            
+            let memberData = null;
+            
+            // Try to find member from current table data
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 4) {
+                    const name = cells[0].textContent;
+                    const email = cells[1].textContent;
+                    const phone = cells[2].textContent;
+                    const joinDate = cells[3].textContent;
+                    
+                    // Create member data object
+                    if (!memberData) {
+                        memberData = {
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            joinDate: joinDate,
+                            userId: userId,
+                            status: 'Active'
+                        };
+                    }
+                }
+            });
+            
+            // If we couldn't find it in the table, fetch from API
+            if (!memberData) {
+                // Fetch member details from backend
+                fetchMemberDetailsFromAPI(userId, groupId);
+                return;
+            }
+            
+            // Populate modal with member data
+            populateMemberDetailsModal(memberData);
+            
+            // Open the modal
+            openModal('memberDetailsModal');
+        }
+
+        async function fetchMemberDetailsFromAPI(userId, groupId) {
+            try {
+                console.log('📡 Fetching member details from API...');
+                
+                // Try to get member details from the group members endpoint
+                const response = await GroupsAPI.getMembers(groupId);
+                console.log('API Response:', response);
+                
+                const members = response.members || response || [];
+                const member = members.find(m => {
+                    const memberId = m.user_id || m.id || (m.user && m.user.id);
+                    return memberId === userId;
+                });
+                
+                if (member) {
+                    const userData = member.user || member;
+                    const memberData = {
+                        name: `${userData.first_name || userData.firstName || ''} ${userData.last_name || userData.lastName || ''}`.trim() || userData.name || 'Unknown User',
+                        email: userData.email || 'No email provided',
+                        phone: userData.phone || userData.phone_number || 'No phone provided',
+                        joinDate: member.created_at ? new Date(member.created_at).toLocaleDateString() : 'N/A',
+                        userId: userId,
+                        status: member.status === 'approved' ? 'Active' : member.status || 'Unknown'
+                    };
+                    
+                    populateMemberDetailsModal(memberData);
+                    openModal('memberDetailsModal');
+                } else {
+                    alert('Member details not found');
+                }
+            } catch (error) {
+                console.error('Error fetching member details:', error);
+                alert('Error loading member details: ' + error.message);
+            }
+        }
+
+        window.populateMemberDetailsModal = function(memberData) {
+            // Populate personal information
+            document.getElementById('detailName').textContent = memberData.name || 'N/A';
+            document.getElementById('detailEmail').textContent = memberData.email || 'N/A';
+            document.getElementById('detailPhone').textContent = memberData.phone || 'N/A';
+            document.getElementById('detailJoinDate').textContent = memberData.joinDate || 'N/A';
+            
+            // Populate membership status
+            const statusSpan = document.getElementById('detailStatus');
+            statusSpan.textContent = memberData.status || 'Unknown';
+            statusSpan.className = 'status-badge status-' + (memberData.status === 'Active' ? 'active' : 'pending');
+            
+            document.getElementById('detailUserId').textContent = memberData.userId || 'N/A';
+            
+            // Store current member for sending messages
+            window.currentViewedMember = memberData;
+            
+            console.log('✅ Member details populated:', memberData);
+        }
+
+        window.sendMessageToMember = function() {
+            if (window.currentViewedMember) {
+                closeModal('memberDetailsModal');
+                sendMessage(window.currentViewedMember.userId, window.currentViewedMember.name);
+            }
         }
 
         // Initialize language on page load
@@ -2235,6 +2422,9 @@
                     switchLanguage(this.dataset.lang);
                 });
             });
+            
+            // Verify viewMemberDetails function is accessible
+            console.log('✅ viewMemberDetails function available:', typeof window.viewMemberDetails === 'function');
             
             // Initialize calendar
             const calendarEl = document.getElementById('calendar');
@@ -2283,6 +2473,28 @@
                 button.classList.add('active');
                 document.getElementById(tabId).classList.add('active');
             });
+        });
+        
+        // Event delegation for dynamically created action buttons
+        document.addEventListener('click', function(e) {
+            // Check if clicked element is the view button or its child icon
+            const viewBtn = e.target.closest('.action-btn.view');
+            if (viewBtn && viewBtn.onclick) {
+                // The inline onclick will handle it
+                return;
+            }
+            
+            // Backup: If inline onclick doesn't work, extract userId from onclick attribute
+            if (viewBtn) {
+                const onclickAttr = viewBtn.getAttribute('onclick');
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/viewMemberDetails\('([^']+)'\)/);
+                    if (match && match[1]) {
+                        console.log('📌 Event delegation: Calling viewMemberDetails for', match[1]);
+                        window.viewMemberDetails(match[1]);
+                    }
+                }
+            }
         });
         
         // Copy link functionality
@@ -2513,6 +2725,80 @@
         </div>
     </div>
 
+    <!-- Member Details Modal -->
+    <div id="memberDetailsModal" class="modal">
+        <div class="modal-content modal-content-large">
+            <div class="modal-header">
+                <h2>Member Details</h2>
+                <button class="modal-close" onclick="closeModal('memberDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="memberDetailsContent">
+                    <div class="member-details-section">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <label>Full Name:</label>
+                                <span id="detailName">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Email:</label>
+                                <span id="detailEmail">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Phone:</label>
+                                <span id="detailPhone">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Member Since:</label>
+                                <span id="detailJoinDate">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="member-details-section mt-20">
+                        <h3><i class="fas fa-chart-line"></i> Membership Status</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <label>Status:</label>
+                                <span id="detailStatus">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>User ID:</label>
+                                <span id="detailUserId">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="member-details-section mt-20">
+                        <h3><i class="fas fa-wallet"></i> Contribution Summary</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <label>Total Contributions:</label>
+                                <span id="detailTotalContributions">RWF 0</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Last Contribution:</label>
+                                <span id="detailLastContribution">Never</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Payment Status:</label>
+                                <span id="detailPaymentStatus">Up to date</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions mt-25">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('memberDetailsModal')">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="sendMessageToMember()">
+                        <i class="fas fa-envelope"></i> Send Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Styles -->
     <style>
         .modal {
@@ -2645,6 +2931,57 @@
             margin-top: 15px;
             color: #666;
             font-size: 0.9rem;
+        }
+
+        /* Member Details Modal Styles */
+        .member-details-section {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .member-details-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .member-details-section h3 i {
+            font-size: 1rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-item label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .detail-item span {
+            font-size: 1rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 

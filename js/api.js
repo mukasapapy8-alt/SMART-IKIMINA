@@ -39,6 +39,14 @@ const API_CONFIG = {
         APPROVE_LOAN: '/loans/approve',
         MY_LOANS: '/loans/my-loans',
         
+        // Payments (To be implemented by backend)
+        PAYMENT_REQUEST: '/payments/request',
+        PAYMENT_REQUESTS: '/payments/requests',
+        APPROVE_PAYMENT: '/payments/requests/:paymentId/approve',
+        REJECT_PAYMENT: '/payments/requests/:paymentId/reject',
+        RECORD_PAYMENT: '/payments/requests/:paymentId/record',
+        GET_RECEIPT: '/payments/receipts/:fileId',
+        
         // Notifications
         NOTIFICATIONS: '/notifications',
         UNREAD_NOTIFICATIONS: '/notifications/unread',
