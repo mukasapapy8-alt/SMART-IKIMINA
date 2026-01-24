@@ -3346,10 +3346,25 @@
                 }
             })
             .then(response => {
-                if (!response.ok) throw new Error('Failed to load transactions');
+                console.log('Contributions response status:', response.status);
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (response.status === 404) {
+                    const tbody = document.getElementById('transactionsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
+                    return null;
+                }
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || err.message || `HTTP ${response.status}`);
+                    });
+                }
                 return response.json();
             })
             .then(data => {
+                if (data === null) return; // 404 case already handled
+                
                 const tbody = document.getElementById('transactionsTableBody');
                 console.log('Transactions data:', data);
                 
@@ -3359,6 +3374,11 @@
                 }
                 
                 const transactions = Array.isArray(data) ? data : (data.contributions || []);
+                
+                if (transactions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
+                    return;
+                }
                 
                 // Sort by date, newest first
                 transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -3387,7 +3407,7 @@
             .catch(error => {
                 console.error('Error loading transactions:', error);
                 const tbody = document.getElementById('transactionsTableBody');
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);">Error: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Error: ${error.message}</p><p style="font-size: 0.85rem; margin-top: 10px;">Check console for details</p></td></tr>`;
             });
         }
         
