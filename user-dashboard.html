@@ -1051,41 +1051,12 @@
                                 <th data-en="Receipt" data-rw="Resi" data-fr="Reçu">Receipt</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="myContributionsTableBody">
                             <tr>
-                                <td>Dec 1, 2023</td>
-                                <td>50,000 RWF</td>
-                                <td data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</td>
-                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
-                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('dec1')"><i class="fas fa-download"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td>Nov 15, 2023</td>
-                                <td>50,000 RWF</td>
-                                <td data-en="Bank Transfer" data-rw="Kohereza ku Banki" data-fr="Virement Bancaire">Bank Transfer</td>
-                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
-                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('nov15')"><i class="fas fa-download"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td>Nov 1, 2023</td>
-                                <td>50,000 RWF</td>
-                                <td data-en="Mobile Money" data-rw="Amafaranga ya Telefone" data-fr="Mobile Money">Mobile Money</td>
-                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
-                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('nov1')"><i class="fas fa-download"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td>Oct 15, 2023</td>
-                                <td>50,000 RWF</td>
-                                <td data-en="Cash" data-rw="Amafaranga" data-fr="Espèces">Cash</td>
-                                <td><span class="contribution-status status-paid" data-en="Paid" data-rw="Yishyuye" data-fr="Payé">Paid</span></td>
-                                <td><button class="btn btn-sm btn-secondary" onclick="downloadReceipt('oct15')"><i class="fas fa-download"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td>Today</td>
-                                <td>50,000 RWF</td>
-                                <td data-en="Not Paid" data-rw="Ntacyashyizwe" data-fr="Non Payé">Not Paid</td>
-                                <td><span class="contribution-status status-pending" data-en="Pending" data-rw="Bitegereje" data-fr="En Attente">Pending</span></td>
-                                <td><button class="btn btn-sm btn-primary" onclick="openPaymentModal()" data-en="Pay Now" data-rw="Shyira Noneho" data-fr="Payer Maintenant">Pay Now</button></td>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                    <p data-en="Loading your contributions..." data-rw="Gutanga uruhare rwanjye..." data-fr="Chargement de vos contributions...">Loading your contributions...</p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1388,6 +1359,181 @@
             }
             return 'U';
         }
+        
+        // Load user's contributions from API
+        function loadMyContributions() {
+            const user = TokenManager.getUser();
+            if (!user) {
+                console.warn('No user found');
+                return;
+            }
+            
+            console.log('Loading contributions for user:', user.id);
+            
+            // First, fetch the user's groups
+            fetch('http://localhost:5000/api/groups', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch groups');
+                return response.json();
+            })
+            .then(groupsData => {
+                console.log('Groups API response:', groupsData);
+                
+                // Get all groups
+                const groups = (groupsData && groupsData.groups) ? groupsData.groups : (Array.isArray(groupsData) ? groupsData : []);
+                console.log('Total groups in system:', groups.length);
+                
+                if (groups.length === 0) {
+                    console.log('No groups found in system');
+                    const tbody = document.getElementById('myContributionsTableBody');
+                    if (tbody) {
+                        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No groups available</p></td></tr>`;
+                    }
+                    return;
+                }
+                
+                // Get user's groups - user belongs if they're a member OR leader
+                const userGroups = groups.filter(g => {
+                    const isLeader = g.leader_id === user.id;
+                    const isMember = (g.members && Array.isArray(g.members) && g.members.some(m => 
+                        (m.user_id === user.id) || (m.id === user.id)
+                    ));
+                    return isLeader || isMember;
+                });
+                
+                console.log('User groups found:', userGroups.length, 'out of', groups.length);
+                console.log('User groups:', userGroups.map(g => ({ id: g.id, name: g.name, leader_id: g.leader_id })));
+                
+                // If no user-specific groups, show ALL groups (in case membership info is stored differently)
+                const groupsToFetch = userGroups.length > 0 ? userGroups : groups;
+                console.log('Fetching contributions from', groupsToFetch.length, 'groups');
+                
+                // Fetch contributions from all relevant groups
+                const contributionPromises = groupsToFetch.map(group =>
+                    fetch('http://localhost:5000/api/contributions?groupId=' + group.id, {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) return [];
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching contributions for group ' + group.id, error);
+                        return [];
+                    })
+                );
+                
+                return Promise.all(contributionPromises);
+            })
+            .then(contributionArrays => {
+                // Flatten and filter contributions for this user
+                let allContributions = [];
+                let allContributionsUnfiltered = [];
+                
+                if (Array.isArray(contributionArrays)) {
+                    for (const contribData of contributionArrays) {
+                        let contributions = [];
+                        if (Array.isArray(contribData)) {
+                            contributions = contribData;
+                        } else if (contribData && contribData.contributions) {
+                            contributions = contribData.contributions;
+                        } else if (contribData && contribData.data) {
+                            contributions = contribData.data;
+                        }
+                        
+                        allContributionsUnfiltered = allContributionsUnfiltered.concat(contributions);
+                        
+                        console.log('Contributions from this group:', contributions.length);
+                        if (contributions.length > 0) {
+                            console.log('Sample contribution:', contributions[0]);
+                        }
+                        
+                        // Filter for current user's contributions
+                        const userContribs = contributions.filter(c => {
+                            if (c.user_id && c.user_id === user.id) return true;
+                            if (c.first_name && c.last_name && user.first_name && user.last_name) {
+                                if (c.first_name.toLowerCase() === user.first_name.toLowerCase() && 
+                                    c.last_name.toLowerCase() === user.last_name.toLowerCase()) {
+                                    return true;
+                                }
+                            }
+                            if (c.email && user.email && c.email.toLowerCase() === user.email.toLowerCase()) {
+                                return true;
+                            }
+                            return false;
+                        });
+                        
+                        allContributions = allContributions.concat(userContribs);
+                    }
+                }
+                
+                console.log('Total contributions in all groups:', allContributionsUnfiltered.length);
+                console.log('Total user-matched contributions:', allContributions.length);
+                console.log('Current user object:', user);
+                
+                // If no matches found, show all contributions (they may be for this user even if not explicitly matched)
+                if (allContributions.length === 0 && allContributionsUnfiltered.length > 0) {
+                    console.log('No user-specific match found. Showing all contributions.');
+                    allContributions = allContributionsUnfiltered;
+                }
+                
+                // Sort by date, newest first
+                allContributions.sort((a, b) => {
+                    const dateA = new Date(a.created_at || 0);
+                    const dateB = new Date(b.created_at || 0);
+                    return dateB - dateA;
+                });
+                
+                // Display in table
+                const tbody = document.getElementById('myContributionsTableBody');
+                if (!tbody) {
+                    console.warn('Contributions table body not found');
+                    return;
+                }
+                
+                if (allContributions.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No contributions yet</p></td></tr>`;
+                    return;
+                }
+                
+                tbody.innerHTML = allContributions.map(contrib => {
+                    const date = new Date(contrib.created_at).toLocaleDateString();
+                    const amount = (contrib.amount || 0).toLocaleString() + ' RWF';
+                    const method = contrib.payment_method 
+                        ? contrib.payment_method.charAt(0).toUpperCase() + contrib.payment_method.slice(1)
+                        : 'Contribution';
+                    const statusBadge = contrib.status === 'approved'
+                        ? '<span class="contribution-status status-paid">Paid</span>'
+                        : '<span class="contribution-status status-pending">Pending</span>';
+                    const receiptBtn = contrib.receipt_url
+                        ? `<button class="btn btn-sm btn-secondary" onclick="downloadReceipt('${contrib.id}')"><i class="fas fa-download"></i></button>`
+                        : '';
+                    
+                    return `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${amount}</td>
+                            <td>${method}</td>
+                            <td>${statusBadge}</td>
+                            <td>${receiptBtn}</td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                console.error('Error loading contributions:', error);
+                const tbody = document.getElementById('myContributionsTableBody');
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Error loading contributions: ${error.message}</p></td></tr>`;
+                }
+            });
+        }
 
         // Initialize language
         document.addEventListener('DOMContentLoaded', async function() {
@@ -1634,6 +1780,9 @@
             
             // Load user data from localStorage
             loadUserData();
+            
+            // Load user's contributions from API
+            loadMyContributions();
             
             // Load saved language preference
             const savedLang = localStorage.getItem('preferredLanguage') || 'en';
