@@ -428,6 +428,11 @@
             color: var(--danger);
         }
         
+        .status-info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 5px;
@@ -1174,7 +1179,10 @@
         <div id="loans" class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-hand-holding-usd"></i> Loan Requests & Status</h2>
-                <button class="btn btn-primary"><i class="fas fa-plus"></i> New Loan</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> New Loan</button>
+                    <button class="btn btn-secondary" onclick="openLoanSettingsModal()"><i class="fas fa-cog"></i> Loan Settings</button>
+                </div>
             </div>
             
             <div class="loan-types">
@@ -1209,6 +1217,17 @@
                         <span>Total: $2,500</span>
                     </div>
                     <button class="btn btn-success btn-full-width mt-15">Manage Loans</button>
+                </div>
+                
+                <!-- Long Loans (Tontine Cycle) -->
+                <div class="loan-card">
+                    <h4>Long Loans <span class="status-badge status-info">Full Cycle</span></h4>
+                    <p>Extended loans that must be repaid within the tontine cycle period. Maximum flexibility within cycle duration.</p>
+                    <div class="loan-stats">
+                        <span>Active: 0</span>
+                        <span>Total: $0</span>
+                    </div>
+                    <button class="btn btn-info btn-full-width mt-15">View Long Loans</button>
                 </div>
             </div>
             
@@ -2862,6 +2881,64 @@
         </div>
     </div>
 
+    <!-- Loan Settings Modal -->
+    <div id="loanSettingsModal" class="modal">
+        <div class="modal-content" style="width: 90%; max-width: 500px;">
+            <div class="modal-header">
+                <h2>Loan Settings</h2>
+                <span class="close-btn" onclick="closeModal('loanSettingsModal')">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <form id="loanSettingsForm">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="maxRapidLoan" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                            <i class="fas fa-bolt"></i> Maximum Rapid Loan Amount (RWF)
+                        </label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
+                            Set the maximum amount members can borrow as rapid loans (repayable within 30 days)
+                        </p>
+                        <input type="number" id="maxRapidLoan" name="maxRapidLoan" placeholder="e.g., 50000" min="0" style="width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="maxLongLoan" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                            <i class="fas fa-hourglass"></i> Maximum Long Loan Amount (RWF)
+                        </label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
+                            Set the maximum amount for long-term loans (repayable within tontine cycle)
+                        </p>
+                        <input type="number" id="maxLongLoan" name="maxLongLoan" placeholder="e.g., 150000" min="0" style="width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="loanInterestRate" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                            <i class="fas fa-percent"></i> Loan Interest Rate (%)
+                        </label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
+                            Set the monthly interest rate on all loans
+                        </p>
+                        <input type="number" id="loanInterestRate" name="loanInterestRate" placeholder="e.g., 2.5" min="0" step="0.1" style="width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px;">
+                    </div>
+                    
+                    <div style="background: var(--gray-light); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; color: var(--dark);">Loan Types Info:</h4>
+                        <ul style="margin: 10px 0; font-size: 0.9rem; color: #666;">
+                            <li><strong>Rapid Loans:</strong> Short-term, must be repaid within 30 days of approval</li>
+                            <li><strong>Long Loans:</strong> Extended term, must be repaid within the current tontine cycle</li>
+                        </ul>
+                    </div>
+                </form>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('loanSettingsModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveLoanSettings()" style="flex: 1;">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Styles -->
     <style>
         .modal {
@@ -3127,6 +3204,51 @@
             });
 
             closeModal('deleteMemberModal');
+        }
+
+        // Loan Settings Functions
+        function openLoanSettingsModal() {
+            const user = TokenManager.getUser();
+            let groupId = window.currentGroupId || currentGroupId;
+            
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            // Load existing settings if any
+            const settings = JSON.parse(localStorage.getItem('loanSettings_' + groupId) || '{}');
+            document.getElementById('maxRapidLoan').value = settings.maxRapidLoan || '';
+            document.getElementById('maxLongLoan').value = settings.maxLongLoan || '';
+            document.getElementById('loanInterestRate').value = settings.loanInterestRate || '';
+            
+            openModal('loanSettingsModal');
+        }
+
+        function saveLoanSettings() {
+            const user = TokenManager.getUser();
+            let groupId = window.currentGroupId || currentGroupId;
+            
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            const settings = {
+                maxRapidLoan: parseFloat(document.getElementById('maxRapidLoan').value) || 0,
+                maxLongLoan: parseFloat(document.getElementById('maxLongLoan').value) || 0,
+                loanInterestRate: parseFloat(document.getElementById('loanInterestRate').value) || 0,
+                groupId: groupId,
+                updatedBy: user.id,
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage for now (in production, send to backend)
+            localStorage.setItem('loanSettings_' + groupId, JSON.stringify(settings));
+            
+            console.log('Loan settings saved:', settings);
+            alert('Loan settings saved successfully!');
+            closeModal('loanSettingsModal');
         }
 
         // Attach edit and delete button listeners
