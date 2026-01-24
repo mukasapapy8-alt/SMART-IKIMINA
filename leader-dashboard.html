@@ -1301,9 +1301,9 @@
             <div class="contribution-info">
                 <div>
                     <h4>Your Total Contribution</h4>
-                    <p>Last contribution: 2023-10-03</p>
+                    <p id="lastContributionText">Last contribution: Loading...</p>
                 </div>
-                <div class="contribution-amount">$1,200</div>
+                <div class="contribution-amount" id="totalContributionAmount">--</div>
             </div>
         </div>
         
@@ -3243,6 +3243,7 @@
                 closeModal('paymentApprovalModal');
                 loadPaymentRequests(); // Refresh the payment requests list
                 loadTransactions(); // Refresh the transactions list
+                loadLeaderContribution(); // Refresh the leader's contribution
             })
             .catch(error => {
                 alert('Error approving payment: ' + error.message);
@@ -3285,9 +3286,151 @@
             });
         }
         
+        // Load leader's total contribution
+        function loadLeaderContribution() {
+            const user = TokenManager.getUser();
+            if (!user) {
+                console.warn('No user found for contribution');
+                return;
+            }
+            
+            let groupId = window.currentGroupId || currentGroupId;
+            
+            // If still no groupId, fetch it from the user's led groups
+            if (!groupId) {
+                console.log('No groupId for contribution, fetching from API...');
+                
+                // Fetch all groups to find ones where user is leader
+                fetch('http://localhost:5000/api/groups', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch groups');
+                    return response.json();
+                })
+                .then(data => {
+                    const groups = data.groups || data || [];
+                    const leaderGroups = groups.filter(g => g.leader_id === user.id);
+                    
+                    if (leaderGroups.length === 0) {
+                        console.log('No groups found for user');
+                        return;
+                    }
+                    
+                    currentGroupId = leaderGroups[0].id;
+                    window.currentGroupId = leaderGroups[0].id;
+                    console.log('Set groupId for contribution to:', currentGroupId);
+                    
+                    // Now load the contribution with the group ID
+                    loadLeaderContributionForGroup(currentGroupId, user);
+                })
+                .catch(error => {
+                    console.error('Error fetching groups:', error);
+                    document.getElementById('totalContributionAmount').textContent = 'Error';
+                    document.getElementById('lastContributionText').textContent = 'Last contribution: Error loading';
+                });
+                
+                return;
+            }
+            
+            loadLeaderContributionForGroup(groupId, user);
+        }
+        
+        function loadLeaderContributionForGroup(groupId, user) {
+            console.log('Loading leader contribution for group:', groupId, 'user:', user.id);
+            
+            fetch('http://localhost:5000/api/contributions?groupId=' + groupId, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load contribution');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Leader contribution data:', data);
+                
+                // Handle different response formats
+                let contributions = [];
+                if (Array.isArray(data)) {
+                    contributions = data;
+                } else if (data && data.contributions) {
+                    contributions = data.contributions;
+                } else if (data && data.data) {
+                    contributions = data.data;
+                }
+                
+                console.log('Total contributions found:', contributions.length);
+                console.log('Current user:', user);
+                
+                // Filter for current user's contributions - try multiple matching strategies
+                let userContributions = contributions.filter(c => {
+                    // Try matching by user_id
+                    if (c.user_id === user.id) return true;
+                    // Try matching by name
+                    if (c.first_name && c.last_name && user.first_name && user.last_name) {
+                        if (c.first_name.toLowerCase() === user.first_name.toLowerCase() && 
+                            c.last_name.toLowerCase() === user.last_name.toLowerCase()) {
+                            return true;
+                        }
+                    }
+                    // Try matching by email
+                    if (c.email && user.email && c.email.toLowerCase() === user.email.toLowerCase()) {
+                        return true;
+                    }
+                    return false;
+                });
+                
+                // If no exact match found, show all contributions (for debugging)
+                if (userContributions.length === 0) {
+                    console.log('No user-specific contributions found, showing all contributions for group');
+                    userContributions = contributions;
+                }
+                
+                console.log('User contributions found:', userContributions.length, userContributions);
+                
+                if (userContributions.length === 0) {
+                    document.getElementById('totalContributionAmount').textContent = '0 RWF';
+                    document.getElementById('lastContributionText').textContent = 'Last contribution: No contributions yet';
+                    return;
+                }
+                
+                // Calculate total
+                const total = userContributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+                console.log('Total amount calculated:', total);
+                
+                // Get latest contribution date
+                const latestContribution = userContributions.sort((a, b) => 
+                    new Date(b.created_at || 0) - new Date(a.created_at || 0)
+                )[0];
+                
+                const lastDate = latestContribution.created_at 
+                    ? new Date(latestContribution.created_at).toLocaleDateString() 
+                    : 'Unknown';
+                
+                console.log('Last contribution date:', lastDate);
+                
+                document.getElementById('totalContributionAmount').textContent = total.toLocaleString() + ' RWF';
+                document.getElementById('lastContributionText').textContent = 'Last contribution: ' + lastDate;
+            })
+            .catch(error => {
+                console.error('Error loading leader contribution:', error);
+                document.getElementById('totalContributionAmount').textContent = 'Error';
+                document.getElementById('lastContributionText').textContent = 'Last contribution: Error loading';
+            });
+        }
+        
         // Load recent transactions
         function loadTransactions() {
+            // Show loading state
+            const tbody = document.getElementById('transactionsTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i><p>Loading transactions...</p></td></tr>';
+            
             let groupId = window.currentGroupId || currentGroupId;
+            console.log('loadTransactions - Initial groupId:', groupId);
             
             if (!groupId) {
                 console.log('No groupId for transactions, attempting to fetch from API...');
@@ -3339,70 +3482,137 @@
         function loadTransactionsForGroup(groupId) {
             console.log('Loading transactions for group:', groupId);
             
-            // Fetch contributions for this group
-            fetch('http://localhost:5000/api/contributions?groupId=' + groupId, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-                }
-            })
-            .then(response => {
-                console.log('Contributions response status:', response.status);
-                if (response.status === 401) {
+            // Fetch both contributions AND approved payments
+            Promise.all([
+                // Fetch contributions
+                fetch('http://localhost:5000/api/contributions?groupId=' + groupId, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                }),
+                // Also fetch approved payments
+                fetch('http://localhost:5000/api/payments/requests?groupId=' + groupId + '&status=approved', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+            ])
+            .then(async responses => {
+                const [contribResponse, paymentResponse] = responses;
+                console.log('Contributions response status:', contribResponse.status);
+                console.log('Approved payments response status:', paymentResponse.status);
+                
+                let contributions = [];
+                let approvedPayments = [];
+                
+                // Handle contributions
+                if (contribResponse.status === 401) {
                     throw new Error('Unauthorized. Please log in again.');
                 }
-                if (response.status === 404) {
-                    const tbody = document.getElementById('transactionsTableBody');
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
-                    return null;
+                if (contribResponse.ok) {
+                    const contribData = await contribResponse.json();
+                    if (Array.isArray(contribData)) {
+                        contributions = contribData;
+                    } else if (contribData && contribData.contributions) {
+                        contributions = contribData.contributions;
+                    } else if (contribData && contribData.data) {
+                        contributions = contribData.data;
+                    }
+                    console.log('Contributions fetched:', contributions.length);
                 }
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.error || err.message || `HTTP ${response.status}`);
-                    });
+                
+                // Handle approved payments
+                if (paymentResponse.ok) {
+                    const paymentData = await paymentResponse.json();
+                    if (Array.isArray(paymentData)) {
+                        approvedPayments = paymentData;
+                    } else if (paymentData && paymentData.payments) {
+                        approvedPayments = paymentData.payments;
+                    } else if (paymentData && paymentData.data) {
+                        approvedPayments = paymentData.data;
+                    }
+                    console.log('Approved payments fetched:', approvedPayments.length);
                 }
-                return response.json();
+                
+                return { contributions, approvedPayments };
             })
-            .then(data => {
-                if (data === null) return; // 404 case already handled
-                
+            .then(({ contributions, approvedPayments }) => {
                 const tbody = document.getElementById('transactionsTableBody');
-                console.log('Transactions data:', data);
                 
-                if (!data || (Array.isArray(data) && data.length === 0) || (data.contributions && data.contributions.length === 0)) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
-                    return;
+                // Merge contributions and approved payments
+                let allTransactions = [];
+                
+                // Add contributions
+                if (contributions && contributions.length > 0) {
+                    allTransactions = allTransactions.concat(contributions);
                 }
                 
-                const transactions = Array.isArray(data) ? data : (data.contributions || []);
+                // Add approved payments (they should have become contributions, but show them anyway)
+                if (approvedPayments && approvedPayments.length > 0) {
+                    allTransactions = allTransactions.concat(approvedPayments.map(p => ({
+                        id: p.id,
+                        amount: p.amount,
+                        payment_method: p.payment_method,
+                        first_name: p.first_name,
+                        last_name: p.last_name,
+                        created_at: p.created_at || p.approved_at,
+                        status: 'approved'
+                    })));
+                }
                 
-                if (transactions.length === 0) {
+                console.log('Total transactions (merged):', allTransactions.length);
+                
+                if (!allTransactions || allTransactions.length === 0) {
+                    console.log('No transactions found, showing empty state');
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No transactions yet</p></td></tr>';
                     return;
                 }
                 
                 // Sort by date, newest first
-                transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                allTransactions.sort((a, b) => {
+                    const dateA = new Date(a.created_at || 0);
+                    const dateB = new Date(b.created_at || 0);
+                    return dateB - dateA;
+                });
+                
+                // Remove duplicates (same payment might appear in both lists)
+                const uniqueTransactions = [];
+                const seenIds = new Set();
+                for (const t of allTransactions) {
+                    if (!seenIds.has(t.id)) {
+                        uniqueTransactions.push(t);
+                        seenIds.add(t.id);
+                    }
+                }
                 
                 // Show only last 10 transactions
-                const recentTransactions = transactions.slice(0, 10);
+                const recentTransactions = uniqueTransactions.slice(0, 10);
                 
                 tbody.innerHTML = recentTransactions.map(transaction => {
-                    const date = new Date(transaction.created_at).toLocaleDateString();
-                    const amount = transaction.amount.toLocaleString() + ' RWF';
+                    const date = new Date(transaction.created_at || Date.now()).toLocaleDateString();
+                    const amount = (transaction.amount || 0).toLocaleString() + ' RWF';
                     const statusBadge = transaction.status === 'approved' 
                         ? '<span class="status-badge status-active">Completed</span>'
                         : '<span class="status-badge status-pending">Pending</span>';
+                    const memberName = `${transaction.first_name || transaction.member_name || 'User'} ${transaction.last_name || ''}`.trim();
+                    const paymentMethod = transaction.payment_method 
+                        ? transaction.payment_method.charAt(0).toUpperCase() + transaction.payment_method.slice(1) 
+                        : 'Contribution';
                     
                     return `
                         <tr>
                             <td>${date}</td>
-                            <td>${transaction.first_name || 'User'} ${transaction.last_name || ''}</td>
-                            <td>${transaction.payment_method ? transaction.payment_method.charAt(0).toUpperCase() + transaction.payment_method.slice(1) : 'Contribution'}</td>
+                            <td>${memberName}</td>
+                            <td>${paymentMethod}</td>
                             <td>${amount}</td>
                             <td>${statusBadge}</td>
                         </tr>
                     `;
                 }).join('');
+                console.log('Rendered', recentTransactions.length, 'transactions');
+                
+                // Load leader's contribution after transactions are loaded
+                loadLeaderContribution();
             })
             .catch(error => {
                 console.error('Error loading transactions:', error);
@@ -3411,9 +3621,13 @@
             });
         }
         
-        
-            // Try to get groupId from multiple sources
+        function loadPaymentRequests() {
+            // Show loading state
+            const tbody = document.getElementById('paymentRequestsTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i><p>Loading payment requests...</p></td></tr>';
+            
             let groupId = window.currentGroupId || currentGroupId;
+            console.log('loadPaymentRequests - Initial groupId:', groupId);
             
             // If still no groupId, fetch it from the user's led groups
             if (!groupId) {
@@ -3534,7 +3748,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             attachMemberActionListeners();
             loadPaymentRequests();
-            loadTransactions();
+            loadTransactions(); // This now calls loadLeaderContribution at the end
         });
     </script>
 </body>
