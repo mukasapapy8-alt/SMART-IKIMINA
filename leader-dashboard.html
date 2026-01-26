@@ -4835,10 +4835,130 @@
             });
         }
         
+        // Load Loan Repayment Receipts
+        function loadLoanRepayments() {
+            // Show loading state
+            const tbody = document.getElementById('paymentReceiptsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i><p>Loading loan repayments...</p></td></tr>';
+            
+            let groupId = window.currentGroupId || currentGroupId;
+            console.log('loadLoanRepayments - Initial groupId:', groupId);
+            
+            // If still no groupId, fetch it from the user's led groups
+            if (!groupId) {
+                console.log('No groupId found locally, fetching from API...');
+                
+                const user = TokenManager.getUser();
+                if (!user) {
+                    console.warn('No user found');
+                    const tbody = document.getElementById('paymentReceiptsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Please log in to view loan repayments.</p></td></tr>';
+                    return;
+                }
+                
+                // Fetch all groups to find ones where user is leader
+                fetch('http://localhost:5000/api/groups', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch groups');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Groups API response:', data);
+                    
+                    const groups = data.groups || data || [];
+                    const leaderGroups = groups.filter(g => g.leader_id === user.id);
+                    
+                    console.log('Leader groups found:', leaderGroups.length);
+                    
+                    if (leaderGroups.length === 0) {
+                        const tbody = document.getElementById('paymentReceiptsTableBody');
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--warning);"><i class="fas fa-exclamation-triangle" style="font-size: 36px; margin-bottom: 10px;"></i><p>You are not leading any group.</p></td></tr>';
+                        return;
+                    }
+                    
+                    currentGroupId = leaderGroups[0].id;
+                    window.currentGroupId = leaderGroups[0].id;
+                    console.log('Set groupId to:', currentGroupId);
+                    
+                    // Now load loan repayments with the group ID
+                    loadLoanRepaymentsByGroup(currentGroupId);
+                })
+                .catch(error => {
+                    console.error('Error fetching groups:', error);
+                    const tbody = document.getElementById('paymentReceiptsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>Error: ' + error.message + '</p></td></tr>';
+                });
+                
+                return;
+            }
+            
+            loadLoanRepaymentsByGroup(groupId);
+        }
+        
+        function loadLoanRepaymentsByGroup(groupId) {
+            console.log('Loading loan repayments for group:', groupId);
+            
+            fetch('http://localhost:5000/api/loans/repayments?groupId=' + groupId + '&status=pending', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                console.log('Loan repayments response:', response.status);
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || err.message || 'Failed to load loan repayments');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tbody = document.getElementById('paymentReceiptsTableBody');
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-check-circle" style="font-size: 36px; margin-bottom: 10px; color: var(--success);"></i><p>No pending loan repayments</p></td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(repayment => {
+                    const statusBadge = `<span class="status-badge status-pending">Pending</span>`;
+                    
+                    return `
+                        <tr>
+                            <td>${repayment.first_name} ${repayment.last_name}</td>
+                            <td>${repayment.loan_amount.toLocaleString()} RWF</td>
+                            <td>${new Date(repayment.payment_date).toLocaleDateString()}</td>
+                            <td>${statusBadge}</td>
+                            <td>${new Date(repayment.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="action-btn approve" onclick="openLoanRepaymentApprovalModal('${repayment.id}', '${repayment.first_name} ${repayment.last_name}', ${repayment.loan_amount}, '${repayment.receipt_url}'); return false;">
+                                    <i class="fas fa-check"></i> Review
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                console.error('Error loading loan repayments:', error);
+                const tbody = document.getElementById('paymentReceiptsTableBody');
+                const errorMsg = error.message || 'Error loading loan repayments';
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>${errorMsg}</p><p style="font-size: 0.85rem; margin-top: 10px;">Check browser console for details.</p></td></tr>`;
+            });
+        }
+
         // Load payment requests and transactions on page load
         document.addEventListener('DOMContentLoaded', function() {
             attachMemberActionListeners();
             loadPaymentRequests();
+            loadLoanRepayments();
             loadTransactions(); // This now calls loadLeaderContribution at the end
         });
     </script>

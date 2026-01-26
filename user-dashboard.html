@@ -3408,6 +3408,127 @@
             }
         }
 
+        // Submit Payment Receipt (Contribution Payment)
+        async function submitPaymentReceipt() {
+            try {
+                const loanId = document.getElementById('paymentReceiptLoanId').value;
+                const paymentDate = document.getElementById('paymentReceiptDate').value;
+                const receiptFile = document.getElementById('paymentReceiptFile').files[0];
+
+                console.log('Submit payment receipt - Payment Date:', paymentDate, 'File:', receiptFile);
+
+                if (!paymentDate) {
+                    alert('Please select a payment date');
+                    return;
+                }
+
+                if (!receiptFile) {
+                    alert('Please select a receipt file');
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                const maxFileSize = 5 * 1024 * 1024; // 5MB
+                if (receiptFile.size > maxFileSize) {
+                    alert('File is too large. Maximum size is 5MB.');
+                    return;
+                }
+
+                // Validate file type
+                const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!allowedMimeTypes.includes(receiptFile.type)) {
+                    alert('Invalid file type. Only JPG, PNG, and PDF files are allowed.');
+                    return;
+                }
+
+                const submitBtn = document.querySelector('#paymentReceiptModal .btn-primary');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                
+                // Read the file and convert to base64
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const fileData = e.target.result;
+                        
+                        const requestUrl = `${API_CONFIG.BASE_URL}/payments/submit-receipt`;
+                        console.log('Submitting to URL:', requestUrl);
+                        
+                        // Submit the payment receipt
+                        const response = await fetch(requestUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                payment_date: paymentDate,
+                                receipt_file: fileData,
+                                receipt_filename: receiptFile.name
+                            })
+                        });
+
+                        console.log('Response status:', response.status);
+                        const responseText = await response.text();
+                        console.log('Response text:', responseText);
+
+                        if (!response.ok) {
+                            let errorMessage = 'Failed to submit payment receipt';
+                            try {
+                                const errorData = JSON.parse(responseText);
+                                errorMessage = errorData.message || errorMessage;
+                            } catch (e) {
+                                errorMessage = responseText || errorMessage;
+                            }
+                            throw new Error(errorMessage);
+                        }
+
+                        alert('Payment receipt submitted successfully! The leader will review it.');
+                        closePaymentReceiptModal();
+
+                    } catch (error) {
+                        console.error('Error submitting payment receipt:', error);
+                        alert('Error: ' + error.message);
+                    } finally {
+                        const submitBtn = document.querySelector('#paymentReceiptModal .btn-primary');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Receipt';
+                        }
+                    }
+                };
+                
+                reader.onerror = function() {
+                    alert('Error reading file. Please try again.');
+                    const submitBtn = document.querySelector('#paymentReceiptModal .btn-primary');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Receipt';
+                    }
+                };
+                
+                reader.readAsDataURL(receiptFile);
+
+            } catch (error) {
+                console.error('Error in payment receipt submission:', error);
+                alert('Error: ' + error.message);
+                const submitBtn = document.querySelector('#paymentReceiptModal .btn-primary');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Receipt';
+                }
+            }
+        }
+
+        function closePaymentReceiptModal() {
+            document.getElementById('paymentReceiptModal').classList.remove('active');
+            document.getElementById('paymentReceiptForm').reset();
+        }
+
         // Quick Loan Modal Functions
         function openQuickLoanModal() {
             const user = TokenManager.getUser();
