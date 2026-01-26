@@ -1191,10 +1191,10 @@
                     <h4>Rapid Loans <span class="status-badge status-overdue">30 Days</span></h4>
                     <p>Short-term loans with quick approval for urgent needs. Must be repaid within 30 days.</p>
                     <div class="loan-stats">
-                        <span>Active: 2</span>
-                        <span>Pending: 1</span>
+                        <span id="rapidLoansActive">Active: 0</span>
+                        <span id="rapidLoansPending">Pending: 0</span>
                     </div>
-                    <button class="btn btn-warning btn-full-width mt-15">View Rapid Loans</button>
+                    <button class="btn btn-warning btn-full-width mt-15" onclick="loadRapidLoans()">View Rapid Loans</button>
                 </div>
                 
                 <!-- Long Loans (Tontine Cycle) -->
@@ -1202,10 +1202,10 @@
                     <h4>Long Loans <span class="status-badge status-info">Full Cycle</span></h4>
                     <p>Extended loans that must be repaid within the tontine cycle period. Maximum flexibility within cycle duration.</p>
                     <div class="loan-stats">
-                        <span>Active: 0</span>
-                        <span>Total: $0</span>
+                        <span id="longLoansActive">Active: 0</span>
+                        <span id="longLoansTotal">Total: 0 RWF</span>
                     </div>
-                    <button class="btn btn-info btn-full-width mt-15" style="background-color: #2196F3; border-color: #2196F3; color: white;">View Long Loans</button>
+                    <button class="btn btn-info btn-full-width mt-15" style="background-color: #2196F3; border-color: #2196F3; color: white;" onclick="loadLongLoans()">View Long Loans</button>
                 </div>
                 
                 <!-- Confirmed Loans -->
@@ -1213,10 +1213,10 @@
                     <h4>Confirmed Loans <span class="status-badge status-active">Active</span></h4>
                     <p>Approved and active loans with repayment schedules.</p>
                     <div class="loan-stats">
-                        <span>Active: 5</span>
-                        <span>Total: $2,500</span>
+                        <span id="confirmedLoansCount">Active: 0</span>
+                        <span id="confirmedLoansTotal">Total: 0 RWF</span>
                     </div>
-                    <button class="btn btn-success btn-full-width mt-15">Manage Loans</button>
+                    <button class="btn btn-success btn-full-width mt-15" onclick="loadConfirmedLoans()">Manage Loans</button>
                 </div>
                 
                 <!-- Under Review Loans -->
@@ -1224,65 +1224,71 @@
                     <h4>Under Review <span class="status-badge status-review">Review</span></h4>
                     <p>Loan applications currently being evaluated by the committee.</p>
                     <div class="loan-stats">
-                        <span>Applications: 3</span>
-                        <span>Avg. Amount: $500</span>
+                        <span id="reviewLoansCount">Applications: 0</span>
+                        <span id="reviewLoansAvg">Avg. Amount: 0 RWF</span>
                     </div>
-                    <button class="btn btn-primary btn-full-width mt-15">Review Applications</button>
+                    <button class="btn btn-primary btn-full-width mt-15" onclick="loadUnderReviewLoans()">Review Applications</button>
                 </div>
             </div>
             
             <div class="table-container">
-                <h3 class="table-title">Recent Loan Applications</h3>
+                <h3 class="table-title">Paid Loans</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>Member</th>
                             <th>Loan Type</th>
                             <th>Amount</th>
-                            <th>Request Date</th>
+                            <th>Payment Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="paidLoansTableBody">
                         <tr>
-                            <td>Jane Smith</td>
-                            <td>Rapid Loan</td>
-                            <td>$300</td>
-                            <td>2023-10-05</td>
-                            <td><span class="status-badge status-review">Under Review</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="action-btn approve">Approve</button>
-                                    <button class="action-btn reject">Reject</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Robert Johnson</td>
-                            <td>Emergency</td>
-                            <td>$500</td>
-                            <td>2023-10-03</td>
-                            <td><span class="status-badge status-active">Confirmed</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="action-btn view">View</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Maria Garcia</td>
-                            <td>Rapid Loan</td>
-                            <td>$200</td>
-                            <td>2023-10-01</td>
-                            <td><span class="status-badge status-overdue">Due in 5 days</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="action-btn view">Remind</button>
-                                </div>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p>Loading paid loans...</p>
                             </td>
                         </tr>
                     </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tontine Contribution Summary -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Tontine Contribution Summary</h2>
+                <button class="btn btn-primary" onclick="loadContributionSummary()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Total Contribution (RWF)</th>
+                            <th>Total Loans (RWF)</th>
+                            <th>Net Contribution (RWF)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contributionSummaryTableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p>Loading contribution summary...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot id="contributionSummaryFooter">
+                        <tr style="background: var(--gray-light); font-weight: bold; border-top: 2px solid #ddd;">
+                            <td style="padding: 15px;">TOTAL</td>
+                            <td id="totalContribution" style="padding: 15px; text-align: right;">0 RWF</td>
+                            <td id="totalLoans" style="padding: 15px; text-align: right;">0 RWF</td>
+                            <td id="totalNetContribution" style="padding: 15px; text-align: right;">0 RWF</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -1356,6 +1362,37 @@
                             <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">
                                 <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
                                 <p data-en="Loading payment requests..." data-rw="Gutanga ibiryano..." data-fr="Chargement des demandes de paiement...">Loading payment requests...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Loan Payment Receipts Section -->
+        <div id="loan-repayments" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-file-invoice-dollar"></i> Loan Repayment Approvals</h2>
+                <p style="color: var(--gray); margin-top: 5px;">Review and approve loan payment receipts submitted by members</p>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Loan Amount</th>
+                            <th>Payment Date</th>
+                            <th>Receipt Status</th>
+                            <th>Submission Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentReceiptsTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 36px; margin-bottom: 10px;"></i>
+                                <p>Loading payment receipts...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1708,6 +1745,9 @@
                 
                 // Store group ID globally for other functions to use
                 currentGroupId = groupId;
+                
+                // Also store in localStorage for persistence
+                localStorage.setItem('userGroup', groupId);
                 
                 // Fetch pending membership requests for this group
                 const response = await GroupsAPI.getPendingRequests(groupId);
@@ -2446,6 +2486,12 @@
             await loadPendingRequests();
             await loadActiveMembers();
             
+            // Give time for userGroup to be set in localStorage, then load tables
+            setTimeout(() => {
+                loadPaidLoans();
+                loadContributionSummary();
+            }, 500);
+            
             // Load saved language preference
             const savedLang = localStorage.getItem('preferredLanguage') || 'en';
             switchLanguage(savedLang);
@@ -2939,6 +2985,75 @@
         </div>
     </div>
 
+    <!-- Loan Approval Receipt Modal -->
+    <div id="loanApprovalReceiptModal" class="modal">
+        <div class="modal-content" style="width: 95%; max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Upload Approval Receipt</h2>
+                <span class="close-btn" onclick="closeLoanApprovalReceiptModal()">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <p style="color: var(--gray); margin-bottom: 20px;">
+                    <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                    Please upload a receipt showing the payment/transfer was sent to the member before approving the loan request.
+                </p>
+                
+                <form id="loanApprovalReceiptForm">
+                    <input type="hidden" id="loanApprovalLoanId">
+                    <input type="hidden" id="loanApprovalLoanType">
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; margin-bottom: 8px; display: block;">Loan Amount</label>
+                        <input type="number" id="loanApprovalAmount" disabled style="width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; background-color: var(--gray-light); cursor: not-allowed;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; margin-bottom: 8px; display: block;">Transaction Date</label>
+                        <input type="date" id="loanApprovalTransactionDate" required style="width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px;">
+                    </div>
+                    
+                    <div class="form-group" style="border: 2px dashed var(--primary); border-radius: 8px; padding: 20px; background: var(--gray-light); margin-bottom: 15px;">
+                        <label style="font-weight: 600; margin-bottom: 10px; display: block;">
+                            <i class="fas fa-upload" style="margin-right: 8px;"></i>
+                            Upload Receipt (Screenshot/PDF)
+                        </label>
+                        <input type="file" id="loanApprovalReceiptFile" accept=".jpg,.jpeg,.png,.pdf" required style="display: block; width: 100%; margin-top: 10px;">
+                        <small style="color: var(--gray); font-size: 0.85rem; margin-top: 8px; display: block;">
+                            <i class="fas fa-check-circle" style="color: var(--success); margin-right: 5px;"></i>
+                            Accepted: JPG, PNG, PDF (Max 5MB)
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeLoanApprovalReceiptModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitLoanApprovalReceipt()">
+                    <i class="fas fa-check"></i> Approve with Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loans List Modal -->
+    <div id="loansListModal" class="modal">
+        <div class="modal-content" style="width: 95%; max-width: 900px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> <span id="loansListTitle">Loans List</span></h2>
+                <span class="close-btn" onclick="closeModal('loansListModal')">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div id="loansListContent">
+                    <p style="text-align: center; color: #666;">Loading loans...</p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('loansListModal')" style="flex: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Styles -->
     <style>
         .modal {
@@ -2980,6 +3095,38 @@
             margin: 0;
             font-size: 1.3rem;
             color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 5px 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            background-color: var(--gray-light);
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .close-btn:active {
+            background-color: #e8eef7;
+            transform: rotate(90deg) scale(0.95);
         }
 
         .modal-close {
@@ -3008,6 +3155,53 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            padding: 20px;
+            background-color: var(--gray-light);
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .modal-actions .btn {
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .modal-actions .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-actions .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .modal-actions .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .modal-actions .btn-primary {
+            background: var(--gradient);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .modal-actions .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(46, 91, 255, 0.3);
         }
 
         .btn-danger {
@@ -3250,6 +3444,781 @@
             alert('Loan settings saved successfully!');
             closeModal('loanSettingsModal');
         }
+
+        // Loan Loading Functions
+        function loadRapidLoans() {
+            const groupId = window.currentGroupId || currentGroupId;
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            document.getElementById('loansListTitle').innerHTML = '<i class="fas fa-bolt"></i> Rapid Loans';
+            document.getElementById('loansListContent').innerHTML = '<p style="text-align: center; color: #666;">Loading rapid loans...</p>';
+            openModal('loansListModal');
+
+            console.log('Loading Rapid Loans for groupId:', groupId);
+            fetch(`${API_CONFIG.BASE_URL}/loans/group/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log('Rapid Loans Response status:', response.status);
+                if (!response.ok) throw new Error('Failed to load rapid loans');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Rapid Loans - Raw Data:', data);
+                const allLoans = Array.isArray(data) ? data : (data.data || []);
+                console.log('Rapid Loans - All Loans:', allLoans);
+                // Filter for rapid loans - database returns loan_type (snake_case)
+                const loans = allLoans.filter(l => {
+                    const type = (l.loan_type || '').toLowerCase();
+                    console.log('Rapid: Checking loan type field:', l.loan_type, 'Filtered:', type);
+                    return type === 'rapid';
+                });
+                console.log('Rapid Loans - Filtered to:', loans.length, 'loans');
+                const activeLoan = loans.filter(l => l.status === 'approved').length;
+                const pendingLoans = loans.filter(l => l.status === 'pending').length;
+                const totalActive = loans.filter(l => l.status === 'approved').reduce((sum, l) => sum + (l.amount || 0), 0);
+                
+                // Update stats
+                document.getElementById('rapidLoansActive').textContent = `Active: ${activeLoan}`;
+                document.getElementById('rapidLoansPending').textContent = `Pending: ${pendingLoans}`;
+                
+                // Display table
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--gray-light);">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Member</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Amount (RWF)</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Status</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Requested Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Due Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                if (loans.length === 0) {
+                    html += `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No rapid loans found</td></tr>`;
+                } else {
+                    loans.forEach(loan => {
+                        const memberName = loan.first_name && loan.last_name ? `${loan.first_name} ${loan.last_name}` : 'Unknown';
+                        const statusBadge = `<span style="padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background: ${loan.status === 'approved' ? '#d4edda' : '#fff3cd'}; color: ${loan.status === 'approved' ? '#155724' : '#856404'};"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 4px;"></i>${loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}</span>`;
+                        const requestedDate = new Date(loan.requested_date).toLocaleDateString();
+                        const dueDate = new Date(loan.due_date).toLocaleDateString();
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">${memberName}</td>
+                                <td style="padding: 12px; font-weight: 600;">${(loan.amount || 0).toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px;">${statusBadge}</td>
+                                <td style="padding: 12px;">${requestedDate}</td>
+                                <td style="padding: 12px;">${dueDate}</td>
+                                <td style="padding: 12px;">
+                                    ${loan.status === 'pending' ? `<button class="action-btn approve" onclick="openLoanApprovalReceiptModal('${loan.id}', 'rapid', ${loan.amount}); return false;"><i class="fas fa-check"></i> Approve</button>` : '<span style="color: #999;">Approved</span>'}
+                                </td>
+                            </tr>`;
+                    });
+                }
+                
+                html += `</tbody></table>`;
+                document.getElementById('loansListContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading rapid loans:', error);
+                document.getElementById('loansListContent').innerHTML = `<p style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-circle"></i> Error loading rapid loans: ${error.message}</p>`;
+            });
+        }
+
+        function loadLongLoans() {
+            const groupId = window.currentGroupId || currentGroupId;
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            document.getElementById('loansListTitle').innerHTML = '<i class="fas fa-hourglass"></i> Long Loans';
+            document.getElementById('loansListContent').innerHTML = '<p style="text-align: center; color: #666;">Loading long loans...</p>';
+            openModal('loansListModal');
+
+            console.log('Loading Long Loans for groupId:', groupId);
+            fetch(`${API_CONFIG.BASE_URL}/loans/group/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log('Long Loans Response status:', response.status);
+                if (!response.ok) throw new Error('Failed to load long loans');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Long Loans - Raw Data:', data);
+                const allLoans = Array.isArray(data) ? data : (data.data || []);
+                console.log('Long Loans - All Loans:', allLoans);
+                // Filter for long loans - database returns loan_type (snake_case)
+                const loans = allLoans.filter(l => {
+                    const type = (l.loan_type || '').toLowerCase();
+                    return type === 'long';
+                });
+                console.log('Long Loans - Filtered to:', loans.length, 'loans');
+                const activeLoan = loans.filter(l => l.status === 'approved').length;
+                const totalAmount = loans.filter(l => l.status === 'approved').reduce((sum, l) => sum + (l.amount || 0), 0);
+                
+                // Update stats
+                document.getElementById('longLoansActive').textContent = `Active: ${activeLoan}`;
+                document.getElementById('longLoansTotal').textContent = `Total: ${totalAmount.toLocaleString('en-RW')} RWF`;
+                
+                // Display table
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--gray-light);">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Member</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Amount (RWF)</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Status</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Requested Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Due Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                if (loans.length === 0) {
+                    html += `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No long loans found</td></tr>`;
+                } else {
+                    loans.forEach(loan => {
+                        const memberName = loan.first_name && loan.last_name ? `${loan.first_name} ${loan.last_name}` : 'Unknown';
+                        const statusBadge = `<span style="padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background: ${loan.status === 'approved' ? '#d4edda' : '#fff3cd'}; color: ${loan.status === 'approved' ? '#155724' : '#856404'};"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 4px;"></i>${loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}</span>`;
+                        const requestedDate = new Date(loan.requested_date).toLocaleDateString();
+                        const dueDate = new Date(loan.due_date).toLocaleDateString();
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">${memberName}</td>
+                                <td style="padding: 12px; font-weight: 600;">${(loan.amount || 0).toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px;">${statusBadge}</td>
+                                <td style="padding: 12px;">${requestedDate}</td>
+                                <td style="padding: 12px;">${dueDate}</td>
+                                <td style="padding: 12px;">
+                                    ${loan.status === 'pending' ? `<button class="action-btn approve" onclick="openLoanApprovalReceiptModal('${loan.id}', 'long', ${loan.amount}); return false;"><i class="fas fa-check"></i> Approve</button>` : '<span style="color: #999;">Approved</span>'}
+                                </td>
+                            </tr>`;
+                    });
+                }
+                
+                html += `</tbody></table>`;
+                document.getElementById('loansListContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading long loans:', error);
+                document.getElementById('loansListContent').innerHTML = `<p style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-circle"></i> Error loading long loans: ${error.message}</p>`;
+            });
+        }
+
+        function loadConfirmedLoans() {
+            const groupId = window.currentGroupId || currentGroupId;
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            document.getElementById('loansListTitle').innerHTML = '<i class="fas fa-check-circle"></i> Confirmed Loans';
+            document.getElementById('loansListContent').innerHTML = '<p style="text-align: center; color: #666;">Loading confirmed loans...</p>';
+            openModal('loansListModal');
+
+            fetch(`${API_CONFIG.BASE_URL}/loans/group/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load confirmed loans');
+                return response.json();
+            })
+            .then(data => {
+                const allLoans = Array.isArray(data) ? data : (data.data || []);
+                // Filter for approved loans only
+                const loans = allLoans.filter(l => l.status === 'approved');
+                const totalAmount = loans.reduce((sum, l) => sum + (l.amount || 0), 0);
+                
+                // Update stats
+                document.getElementById('confirmedLoansCount').textContent = `Active: ${loans.length}`;
+                document.getElementById('confirmedLoansTotal').textContent = `Total: ${totalAmount.toLocaleString('en-RW')} RWF`;
+                
+                // Display table
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--gray-light);">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Member</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Type</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Amount (RWF)</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Due Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Status</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                if (loans.length === 0) {
+                    html += `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No confirmed loans found</td></tr>`;
+                } else {
+                    loans.forEach(loan => {
+                        const memberName = loan.first_name && loan.last_name ? `${loan.first_name} ${loan.last_name}` : 'Unknown';
+                        const loanType = (loan.loan_type || '').toUpperCase();
+                        const dueDate = new Date(loan.due_date).toLocaleDateString();
+                        const isRepaid = loan.is_repaid || loan.repaid_date;
+                        const repaidStatus = isRepaid ? '<span style="color: #27ae60; font-weight: 600;"><i class="fas fa-check"></i> Repaid</span>' : '<span style="color: #e74c3c; font-weight: 600;"><i class="fas fa-clock"></i> Active</span>';
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">${memberName}</td>
+                                <td style="padding: 12px;"><span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">${loanType}</span></td>
+                                <td style="padding: 12px; font-weight: 600;">${(loan.amount || 0).toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px;">${dueDate}</td>
+                                <td style="padding: 12px;">${repaidStatus}</td>
+                                <td style="padding: 12px;">
+                                    ${!isRepaid ? `<button class="action-btn approve" onclick="markLoanAsRepaid('${loan.id}'); return false;"><i class="fas fa-check"></i> Mark Repaid</button>` : '<span style="color: #999;">Completed</span>'}
+                                </td>
+                            </tr>`;
+                    });
+                }
+                
+                html += `</tbody></table>`;
+                document.getElementById('loansListContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading confirmed loans:', error);
+                document.getElementById('loansListContent').innerHTML = `<p style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-circle"></i> Error loading confirmed loans: ${error.message}</p>`;
+            });
+        }
+
+        function loadUnderReviewLoans() {
+            const groupId = window.currentGroupId || currentGroupId;
+            if (!groupId) {
+                alert('Please load a group first');
+                return;
+            }
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            document.getElementById('loansListTitle').innerHTML = '<i class="fas fa-hourglass-half"></i> Loans Under Review';
+            document.getElementById('loansListContent').innerHTML = '<p style="text-align: center; color: #666;">Loading loans under review...</p>';
+            openModal('loansListModal');
+
+            console.log('Loading loans for groupId:', groupId);
+            console.log('API URL:', `${API_CONFIG.BASE_URL}/loans/group/${groupId}`);
+
+            fetch(`${API_CONFIG.BASE_URL}/loans/group/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) throw new Error('Failed to load loans under review');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Under Review - Raw Data:', data);
+                const allLoans = Array.isArray(data) ? data : (data.data || []);
+                console.log('Under Review - All Loans:', allLoans);
+                if (allLoans.length > 0) {
+                    console.log('Under Review - First loan fields:', Object.keys(allLoans[0]));
+                }
+                // Filter for pending loans only
+                const loans = allLoans.filter(l => l.status === 'pending');
+                console.log('Under Review - Filtered Pending Loans:', loans);
+                const avgAmount = loans.length > 0 ? loans.reduce((sum, l) => sum + (l.amount || 0), 0) / loans.length : 0;
+                
+                // Update stats
+                document.getElementById('reviewLoansCount').textContent = `Applications: ${loans.length}`;
+                document.getElementById('reviewLoansAvg').textContent = `Avg. Amount: ${avgAmount.toLocaleString('en-RW', { maximumFractionDigits: 0 })} RWF`;
+                
+                // Display table
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--gray-light);">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Member</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Loan Type</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Amount (RWF)</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Duration</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Requested Date</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                if (loans.length === 0) {
+                    html += `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No loans under review</td></tr>`;
+                } else {
+                    loans.forEach(loan => {
+                        const memberName = loan.first_name && loan.last_name ? `${loan.first_name} ${loan.last_name}` : 'Unknown';
+                        const loanType = loan.loan_type || 'unknown';
+                        const loanTypeDisplay = loanType === 'rapid' ? '<span style="color: #ff6b6b;"><i class="fas fa-bolt"></i> Rapid (30 days)</span>' : '<span style="color: #4ecdc4;"><i class="fas fa-hourglass"></i> Long (Cycle)</span>';
+                        const durationDays = loan.duration_days || 30;
+                        const requestedDate = new Date(loan.requested_date).toLocaleDateString();
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">${memberName}</td>
+                                <td style="padding: 12px;">${loanTypeDisplay}</td>
+                                <td style="padding: 12px; font-weight: 600;">${(loan.amount || 0).toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px;">${durationDays} days</td>
+                                <td style="padding: 12px;">${requestedDate}</td>
+                                <td style="padding: 12px;">
+                                    <button class="action-btn approve" onclick="openLoanApprovalReceiptModal('${loan.id}', '${loanType}', ${loan.amount}); return false;" style="margin-right: 5px;"><i class="fas fa-check"></i> Approve</button>
+                                    <button class="action-btn delete" onclick="rejectLoan('${loan.id}'); return false;"><i class="fas fa-times"></i> Reject</button>
+                                </td>
+                            </tr>`;
+                    });
+                }
+                
+                html += `</tbody></table>`;
+                document.getElementById('loansListContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading loans under review:', error);
+                document.getElementById('loansListContent').innerHTML = `<p style="text-align: center; color: var(--danger);"><i class="fas fa-exclamation-circle"></i> Error loading loans: ${error.message}</p>`;
+            });
+        }
+
+        // Open receipt upload modal for loan approval
+        function openLoanApprovalReceiptModal(loanId, loanType, loanAmount) {
+            document.getElementById('loanApprovalLoanId').value = loanId;
+            document.getElementById('loanApprovalLoanType').value = loanType;
+            document.getElementById('loanApprovalAmount').value = loanAmount;
+            document.getElementById('loanApprovalReceiptModal').classList.add('active');
+        }
+
+        function closeLoanApprovalReceiptModal() {
+            document.getElementById('loanApprovalReceiptModal').classList.remove('active');
+            document.getElementById('loanApprovalReceiptForm').reset();
+        }
+
+        // Submit receipt and then approve loan
+        async function submitLoanApprovalReceipt() {
+            try {
+                const loanId = document.getElementById('loanApprovalLoanId').value;
+                const loanType = document.getElementById('loanApprovalLoanType').value;
+                const transactionDate = document.getElementById('loanApprovalTransactionDate').value;
+                const receiptFile = document.getElementById('loanApprovalReceiptFile').files[0];
+
+                if (!transactionDate) {
+                    alert('Please select a transaction date');
+                    return;
+                }
+
+                if (!receiptFile) {
+                    alert('Please upload a receipt file');
+                    return;
+                }
+
+                // Find the submit button properly
+                const submitBtn = document.querySelector('#loanApprovalReceiptModal .btn-primary');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+
+                const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                
+                // Read the file and convert to base64
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const fileData = e.target.result;
+                        
+                        // Approve the loan with receipt information
+                        const approveResponse = await fetch(`${API_CONFIG.BASE_URL}/loans/${loanId}/approve`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                approvedAt: new Date().toISOString(),
+                                transaction_date: transactionDate,
+                                receipt_file: fileData,
+                                receipt_filename: receiptFile.name,
+                                receipt_uploaded: true
+                            })
+                        });
+
+                        if (!approveResponse.ok) {
+                            const errorData = await approveResponse.json();
+                            throw new Error(errorData.message || 'Failed to approve loan');
+                        }
+
+                        alert('Loan approved successfully and receipt recorded!');
+                        closeLoanApprovalReceiptModal();
+                        
+                        // Reload the appropriate loans list
+                        if (loanType === 'rapid') loadRapidLoans();
+                        else if (loanType === 'long') loadLongLoans();
+                        else loadUnderReviewLoans();
+
+                    } catch (error) {
+                        console.error('Error in loan approval:', error);
+                        alert('Error: ' + error.message);
+                    } finally {
+                        // Always reset the button state
+                        const submitBtn = document.querySelector('#loanApprovalReceiptModal .btn-primary');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-check"></i> Approve with Receipt';
+                        }
+                    }
+                };
+                
+                // Handle file read errors
+                reader.onerror = function() {
+                    alert('Error reading file. Please try again.');
+                    const submitBtn = document.querySelector('#loanApprovalReceiptModal .btn-primary');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-check"></i> Approve with Receipt';
+                    }
+                };
+                
+                reader.readAsDataURL(receiptFile);
+
+            } catch (error) {
+                console.error('Error in loan approval:', error);
+                alert('Error: ' + error.message);
+                const submitBtn = document.querySelector('#loanApprovalReceiptModal .btn-primary');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Approve with Receipt';
+                }
+            }
+        }
+
+        function approveLoan(loanId, loanType) {
+            if (!confirm('Are you sure you want to approve this loan?')) return;
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            fetch(`${API_CONFIG.BASE_URL}/loans/${loanId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ approvedAt: new Date().toISOString() })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to approve loan');
+                return response.json();
+            })
+            .then(data => {
+                alert('Loan approved successfully!');
+                // Reload the appropriate loans list
+                if (loanType === 'rapid') loadRapidLoans();
+                else if (loanType === 'long') loadLongLoans();
+                else loadUnderReviewLoans();
+            })
+            .catch(error => {
+                console.error('Error approving loan:', error);
+                alert(`Error approving loan: ${error.message}`);
+            });
+        }
+
+        function rejectLoan(loanId) {
+            if (!confirm('Are you sure you want to reject this loan?')) return;
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            fetch(`${API_CONFIG.BASE_URL}/loans/${loanId}/reject`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rejectedAt: new Date().toISOString() })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to reject loan');
+                return response.json();
+            })
+            .then(data => {
+                alert('Loan rejected successfully!');
+                loadUnderReviewLoans();
+            })
+            .catch(error => {
+                console.error('Error rejecting loan:', error);
+                alert(`Error rejecting loan: ${error.message}`);
+            });
+        }
+
+        function markLoanAsRepaid(loanId) {
+            if (!confirm('Mark this loan as repaid?')) return;
+            
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Session expired. Please login again.');
+                return;
+            }
+
+            fetch(`${API_CONFIG.BASE_URL}/loans/${loanId}/repay`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ repaidAt: new Date().toISOString() })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to mark loan as repaid');
+                return response.json();
+            })
+            .then(data => {
+                alert('Loan marked as repaid!');
+                loadConfirmedLoans();
+            })
+            .catch(error => {
+                console.error('Error marking loan as repaid:', error);
+                alert(`Error marking loan as repaid: ${error.message}`);
+            });
+        }
+
+        function loadPaidLoans() {
+            const authToken = localStorage.getItem('authToken');
+            let userGroup = localStorage.getItem('userGroup') || currentGroupId;
+            
+            if (!authToken || !userGroup) {
+                console.error('Missing auth token or user group');
+                return;
+            }
+
+            fetch(`${API_CONFIG.BASE_URL}/loans?groupId=${userGroup}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load paid loans');
+                return response.json();
+            })
+            .then(data => {
+                const allLoans = Array.isArray(data) ? data : (data.data || []);
+                // Filter for repaid loans only
+                const paidLoans = allLoans.filter(l => l.status === 'repaid');
+                
+                // Update table
+                const tableBody = document.getElementById('paidLoansTableBody');
+                let html = '';
+                
+                if (paidLoans.length === 0) {
+                    html = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No paid loans yet</td></tr>`;
+                } else {
+                    paidLoans.forEach(loan => {
+                        const memberName = loan.first_name && loan.last_name ? `${loan.first_name} ${loan.last_name}` : 'Unknown';
+                        const loanType = loan.loan_type || 'unknown';
+                        const loanTypeDisplay = loanType === 'rapid' ? 'Rapid Loan' : (loanType === 'standard' ? 'Standard Loan' : 'Emergency Loan');
+                        const amount = loan.amount ? loan.amount.toLocaleString('en-RW') : '0';
+                        const repaidDate = loan.repaid_date ? new Date(loan.repaid_date).toLocaleDateString() : 'N/A';
+                        
+                        html += `
+                            <tr>
+                                <td>${memberName}</td>
+                                <td>${loanTypeDisplay}</td>
+                                <td>${amount} RWF</td>
+                                <td>${repaidDate}</td>
+                                <td><span class="status-badge" style="background: #d4edda; color: #155724;">Paid</span></td>
+                                <td>
+                                    <button class="action-btn" style="padding: 6px 12px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="viewLoanDetails('${loan.id}')">View</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                tableBody.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading paid loans:', error);
+                const tableBody = document.getElementById('paidLoansTableBody');
+                tableBody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">Error loading paid loans</td></tr>`;
+            });
+        }
+
+        function loadContributionSummary() {
+            const authToken = localStorage.getItem('authToken');
+            let userGroup = localStorage.getItem('userGroup') || currentGroupId;
+            
+            if (!authToken || !userGroup) {
+                console.error('Missing auth token or user group');
+                document.getElementById('contributionSummaryTableBody').innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #999;">Missing authentication or group information</td></tr>`;
+                return;
+            }
+
+            console.log('Loading contribution summary for group:', userGroup);
+
+            // Use the same successful approach as loadActiveMembers
+            Promise.all([
+                GroupsAPI.getActiveMembers(userGroup),
+                fetch(`${API_CONFIG.BASE_URL}/loans`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                }).then(r => {
+                    console.log('Loans response status:', r.status);
+                    if (!r.ok) throw new Error(`Loans API failed: ${r.status}`);
+                    return r.json();
+                }).catch(err => {
+                    console.warn('Loans endpoint failed, using empty array:', err);
+                    return [];
+                })
+            ])
+            .then(([membersResponse, loansData]) => {
+                console.log('Members Response:', membersResponse);
+                console.log('Loans Data:', loansData);
+
+                // Extract members from response - handle the structure returned by getActiveMembers
+                let members = [];
+                if (membersResponse) {
+                    // getActiveMembers returns {members: Array} based on what we saw in loadActiveMembers
+                    members = Array.isArray(membersResponse) ? membersResponse : 
+                               (membersResponse.members || membersResponse.data || []);
+                }
+
+                let loans = Array.isArray(loansData) ? loansData : (loansData.data || loansData.loans || []);
+                
+                // Filter loans by group ID
+                loans = loans.filter(l => l.group_id === userGroup);
+
+                console.log('Final members:', members);
+                console.log('Final loans (filtered):', loans);
+
+                // Calculate totals per member
+                const memberSummary = {};
+                
+                // Initialize all members with their total_contributions from the member object
+                members.forEach(member => {
+                    const userId = member.user_id || member.id;
+                    // Use the total_contributions that's already calculated on the member
+                    const memberContributions = Number(member.total_contributions) || 0;
+                    console.log(`📊 ${member.first_name} ${member.last_name}: contributions=${memberContributions}`);
+                    
+                    memberSummary[userId] = {
+                        name: (member.first_name && member.last_name) ? `${member.first_name} ${member.last_name}` : 'Unknown',
+                        contributions: memberContributions,
+                        loans: 0
+                    };
+                });
+
+                console.log('Initialized member summary:', memberSummary);
+
+                // Sum loans per member
+                loans.forEach(loan => {
+                    if (loan.status !== 'rejected' && memberSummary[loan.borrower_id]) {
+                        const loanAmount = Number(loan.amount) || 0;
+                        memberSummary[loan.borrower_id].loans += loanAmount;
+                        console.log(`💰 Added loan ${loanAmount} to ${memberSummary[loan.borrower_id].name}`);
+                    }
+                });
+
+                console.log('Final member summary:', memberSummary);
+
+                // Build table rows
+                const tableBody = document.getElementById('contributionSummaryTableBody');
+                let html = '';
+                let totalContributions = 0;
+                let totalLoans = 0;
+
+                const memberEntries = Object.entries(memberSummary);
+                if (memberEntries.length === 0) {
+                    html = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #999;">No members found</td></tr>`;
+                } else {
+                    memberEntries.forEach(([userId, data]) => {
+                        const netContribution = data.contributions - data.loans;
+                        const netColor = netContribution < 0 ? '#ff4444' : '#00c851';
+                        
+                        html += `
+                            <tr>
+                                <td style="padding: 12px;">${data.name}</td>
+                                <td style="padding: 12px; text-align: right;">${data.contributions.toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px; text-align: right;">${data.loans.toLocaleString('en-RW')}</td>
+                                <td style="padding: 12px; text-align: right; color: ${netColor}; font-weight: bold;">${netContribution.toLocaleString('en-RW')}</td>
+                            </tr>
+                        `;
+                        
+                        totalContributions += data.contributions;
+                        totalLoans += data.loans;
+                    });
+                }
+
+                tableBody.innerHTML = html;
+
+                // Update footer totals
+                const netTotal = totalContributions - totalLoans;
+                const netColor = netTotal < 0 ? '#ff4444' : '#00c851';
+
+                document.getElementById('totalContribution').textContent = totalContributions.toLocaleString('en-RW') + ' RWF';
+                document.getElementById('totalLoans').textContent = totalLoans.toLocaleString('en-RW') + ' RWF';
+                
+                const totalNetElement = document.getElementById('totalNetContribution');
+                totalNetElement.textContent = netTotal.toLocaleString('en-RW') + ' RWF';
+                totalNetElement.style.color = netColor;
+
+                console.log('✅ Contribution summary loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading contribution summary:', error);
+                const tableBody = document.getElementById('contributionSummaryTableBody');
+                tableBody.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #999;">Error loading data: ${error.message}</td></tr>`;
+            });
+        }
+
 
         // Attach edit and delete button listeners
         document.addEventListener('DOMContentLoaded', function() {
