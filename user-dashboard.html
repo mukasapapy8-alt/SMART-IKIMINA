@@ -1043,7 +1043,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title" data-en="Kigali Business Circle" data-rw="Itsinda ry'Ubucuruzi Kigali" data-fr="Cercle d'Affaires de Kigali">Kigali Business Circle</div>
+                <div class="sidebar-title" id="sidebarGroupName" data-en="Loading..." data-rw="Birimo gutangira..." data-fr="Chargement...">Loading...</div>
                 <div class="sidebar-subtitle" data-en="Tontine Member" data-rw="Umwe mu Banyamuryango" data-fr="Membre Tontine">Tontine Member</div>
             </div>
             
@@ -1722,6 +1722,58 @@
                 userRoleEl.textContent = roleDisplay;
                 userRoleEl.dataset.en = roleDisplay;
             }
+            
+            // Load and display user's group name in sidebar
+            fetch('http://localhost:5000/api/groups', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch groups');
+                return response.json();
+            })
+            .then(groupsData => {
+                const groups = (groupsData && groupsData.groups) ? groupsData.groups : (Array.isArray(groupsData) ? groupsData : []);
+                
+                if (groups.length > 0) {
+                    // Find user's group (either as leader or member with approved status)
+                    let userGroup = groups.find(g => {
+                        const isLeader = g.leader_id === user.id;
+                        const isApprovedMember = g.members && g.members.some(m => 
+                            (m.user_id === user.id || m.id === user.id) && m.status === 'approved'
+                        );
+                        return isLeader || isApprovedMember;
+                    });
+                    
+                    // If not found, check membership status (might be in different format)
+                    if (!userGroup) {
+                        userGroup = groups.find(g => g.leader_id === user.id);
+                    }
+                    
+                    // If still not found, use first group as fallback
+                    if (!userGroup && groups.length > 0) {
+                        userGroup = groups[0];
+                    }
+                    
+                    // Update sidebar with group name
+                    const sidebarGroupName = document.getElementById('sidebarGroupName');
+                    if (sidebarGroupName && userGroup) {
+                        sidebarGroupName.textContent = userGroup.name || 'My Tontine';
+                        sidebarGroupName.dataset.en = userGroup.name || 'My Tontine';
+                        sidebarGroupName.dataset.rw = userGroup.name || 'Ikimina Cyanje';
+                        sidebarGroupName.dataset.fr = userGroup.name || 'Ma Tontine';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading group name:', error);
+                // Keep "Loading..." or set default if error
+                const sidebarGroupName = document.getElementById('sidebarGroupName');
+                if (sidebarGroupName) {
+                    sidebarGroupName.textContent = 'My Tontine';
+                }
+            });
         }
         
         // Get user initials from name

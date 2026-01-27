@@ -4937,9 +4937,12 @@
                             <td>${new Date(repayment.payment_date).toLocaleDateString()}</td>
                             <td>${statusBadge}</td>
                             <td>${new Date(repayment.created_at).toLocaleDateString()}</td>
-                            <td>
-                                <button class="action-btn approve" onclick="openLoanRepaymentApprovalModal('${repayment.id}', '${repayment.first_name} ${repayment.last_name}', ${repayment.loan_amount}, '${repayment.receipt_url}'); return false;">
-                                    <i class="fas fa-check"></i> Review
+                            <td style="display: flex; gap: 10px;">
+                                <button class="action-btn approve" onclick="approveLoanRepayment('${repayment.id}'); return false;">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="action-btn reject" onclick="rejectLoanRepayment('${repayment.id}'); return false;">
+                                    <i class="fas fa-times"></i> Reject
                                 </button>
                             </td>
                         </tr>
@@ -4951,6 +4954,74 @@
                 const tbody = document.getElementById('paymentReceiptsTableBody');
                 const errorMsg = error.message || 'Error loading loan repayments';
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 36px; margin-bottom: 10px;"></i><p>${errorMsg}</p><p style="font-size: 0.85rem; margin-top: 10px;">Check browser console for details.</p></td></tr>`;
+            });
+        }
+
+        // Approve loan repayment
+        function approveLoanRepayment(paymentId) {
+            if (!confirm('Approve this loan repayment receipt?')) {
+                return;
+            }
+
+            const token = localStorage.getItem('authToken');
+            
+            fetch(`http://localhost:5000/api/loans/repayments/${paymentId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Failed to approve loan repayment');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Loan repayment approved successfully!');
+                loadLoanRepayments();
+            })
+            .catch(error => {
+                console.error('Error approving loan repayment:', error);
+                alert('Error: ' + error.message);
+            });
+        }
+
+        // Reject loan repayment
+        function rejectLoanRepayment(paymentId) {
+            const reason = prompt('Enter reason for rejection:');
+            if (reason === null) {
+                return;
+            }
+
+            const token = localStorage.getItem('authToken');
+            
+            fetch(`http://localhost:5000/api/loans/repayments/${paymentId}/reject`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reason: reason || 'No reason provided' })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Failed to reject loan repayment');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Loan repayment rejected');
+                loadLoanRepayments();
+            })
+            .catch(error => {
+                console.error('Error rejecting loan repayment:', error);
+                alert('Error: ' + error.message);
             });
         }
 

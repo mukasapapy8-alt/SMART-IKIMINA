@@ -1423,45 +1423,96 @@
         // Load approved tontines from backend
         async function loadApprovedTontines() {
             console.log('Loading approved tontines from backend...');
+            const list = document.getElementById('tontineList');
+            if (list) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: var(--gray);">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+                        <p>Loading tontines...</p>
+                    </div>
+                `;
+            }
+            
             try {
-                const response = await GroupsAPI.getAll();
-                console.log('Tontines response:', response);
+                // Try to get active/approved groups available for registration
+                let response;
+                
+                try {
+                    console.log('Fetching active tontines for registration...');
+                    response = await GroupsAPI.getActive();
+                    console.log('Got active groups:', response);
+                } catch (error) {
+                    console.log('getActive() failed:', error.message);
+                    console.log('Attempting fallback endpoints...');
+                    
+                    // Fallback: try to get all groups and filter
+                    try {
+                        response = await API.get('/api/groups/active');
+                        console.log('Got response from /api/groups/active:', response);
+                    } catch (error2) {
+                        console.log('Failed, trying /api/groups/all...');
+                        response = await API.get('/api/groups/all');
+                        console.log('Got response from /api/groups/all:', response);
+                    }
+                }
+                
+                console.log('Final tontines response:', response);
                 
                 if (response.groups && Array.isArray(response.groups)) {
-                    // Filter only approved groups
-                    const approvedGroups = response.groups.filter(g => g.status === 'active');
-                    console.log(`Found ${approvedGroups.length} approved tontines`);
+                    // Log all group statuses to debug
+                    const statusValues = response.groups.map(g => ({ name: g.name, status: g.status }));
+                    console.log('All groups from backend:', statusValues);
+                    console.log(`Total groups in system: ${response.groups.length}`);
                     
-                    tontines = approvedGroups.map(group => ({
-                        id: group.id,
-                        name: group.name,
-                        description: group.description || 'No description provided',
-                        members: group.current_members || 0,
-                        maxMembers: group.max_members || 0,
-                        contribution: `${group.contribution_amount || 0} ${group.currency || 'RWF'}/${group.meeting_frequency || 'month'}`,
-                        location: `${group.district || ''}, ${group.province || ''}`.trim() || 'Location not specified'
-                    }));
+                    // Count by status
+                    const counts = {};
+                    response.groups.forEach(g => {
+                        counts[g.status] = (counts[g.status] || 0) + 1;
+                    });
+                    console.log('Groups by status:', counts);
                     
-                    console.log('Mapped tontines:', tontines);
+                    // Filter only approved or active groups (fully approved by site admin)
+                    const approvedGroups = response.groups.filter(g => g.status === 'approved' || g.status === 'active');
+                    console.log(`Found ${approvedGroups.length} approved tontines out of ${response.groups.length} total groups`);
+                    
+                    if (approvedGroups.length > 0) {
+                        tontines = approvedGroups.map(group => ({
+                            id: group.id,
+                            name: group.name,
+                            description: group.description || 'No description provided',
+                            members: group.current_members || 0,
+                            maxMembers: group.max_members || 0,
+                            contribution: `${group.contribution_amount || 0} ${group.currency || 'RWF'}/${group.meeting_frequency || 'month'}`,
+                            location: `${group.district || ''}, ${group.province || ''}`.trim() || 'Location not specified'
+                        }));
+                        console.log('Mapped tontines:', tontines);
+                    } else {
+                        console.warn('No approved groups found. Status breakdown:', counts);
+                        console.warn('All groups:', response.groups);
+                        tontines = [];
+                    }
                     populateTontineList();
                 } else {
-                    console.warn('No groups array in response');
+                    console.warn('No groups array in response. Response:', response);
                     tontines = [];
                     populateTontineList();
                 }
             } catch (error) {
                 console.error('Error loading tontines:', error);
                 tontines = [];
-                populateTontineList();
                 
                 // Show error message in the tontine list
                 const list = document.getElementById('tontineList');
                 if (list) {
                     list.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: var(--danger);">
+                        <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: var(--danger);">
                             <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
-                            <p>Failed to load tontines: ${error.message}</p>
-                            <p style="font-size: 0.9rem; color: var(--gray);">Please check your internet connection and try again.</p>
+                            <p><strong>Failed to load tontines</strong></p>
+                            <p style="font-size: 0.9rem; color: var(--gray); margin: 10px 0;">Error: ${error.message}</p>
+                            <p style="font-size: 0.9rem; color: var(--gray);">The server may be temporarily unavailable. Please try refreshing the page or contact support.</p>
+                            <button type="button" onclick="loadApprovedTontines()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; margin-top: 15px;">
+                                <i class="fas fa-sync-alt"></i> Try Again
+                            </button>
                         </div>
                     `;
                 }
@@ -1555,7 +1606,14 @@
                     <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: var(--gray);">
                         <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
                         <p style="font-size: 1.1rem; margin-bottom: 10px;">No approved tontines available</p>
-                        <p style="font-size: 0.9rem;">Check back later or create your own tontine group!</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; line-height: 1.6;">
+                            There are currently no tontine groups available to join. This could mean:<br>
+                            • No groups have been created yet<br>
+                            • Newly created groups are awaiting platform administrator approval
+                        </p>
+                        <p style="font-size: 0.85rem; color: var(--primary); font-weight: 500;">
+                            Check back later or create your own tontine group!
+                        </p>
                     </div>
                 `;
                 return;
