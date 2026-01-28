@@ -4027,15 +4027,18 @@
         }
 
         function loadPaidLoans() {
+            console.log('🔵 loadPaidLoans() function called');
             const authToken = localStorage.getItem('authToken');
             let userGroup = localStorage.getItem('userGroup') || currentGroupId;
+            console.log('🔵 Auth token exists:', !!authToken, 'Group ID:', userGroup);
             
             if (!authToken || !userGroup) {
-                console.error('Missing auth token or user group');
+                console.error('❌ Missing auth token or user group - Auth:', !!authToken, 'Group:', userGroup);
                 return;
             }
 
-            fetch(`${API_CONFIG.BASE_URL}/loans?groupId=${userGroup}`, {
+            // Use /loans/group/:groupId to get ALL loans in the group, not just current user's loans
+            fetch(`${API_CONFIG.BASE_URL}/loans/group/${userGroup}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -4043,13 +4046,33 @@
                 }
             })
             .then(response => {
+                console.log('🔵 Paid loans API response status:', response.status);
                 if (!response.ok) throw new Error('Failed to load paid loans');
                 return response.json();
             })
             .then(data => {
+                console.log('🔵 Raw API data received:', data);
+                console.log('🔵 Data type:', typeof data, 'Is array:', Array.isArray(data));
                 const allLoans = Array.isArray(data) ? data : (data.data || []);
+                console.log('🔵 All loans from API:', allLoans);
+                console.log('🔵 Number of loans:', allLoans.length);
+                
+                // Log each loan's status in detail
+                allLoans.forEach((loan, index) => {
+                    console.log(`🔵 Loan ${index + 1}:`, {
+                        id: loan.id,
+                        status: loan.status,
+                        statusType: typeof loan.status,
+                        statusLength: loan.status ? loan.status.length : 'null',
+                        amount: loan.amount,
+                        repaid_date: loan.repaid_date
+                    });
+                });
+                
                 // Filter for repaid loans only
                 const paidLoans = allLoans.filter(l => l.status === 'repaid');
+                console.log('🔵 Filtered paid loans count:', paidLoans.length);
+                console.log('🔵 Filtered paid loans:', paidLoans);
                 
                 // Update table
                 const tableBody = document.getElementById('paidLoansTableBody');
@@ -4081,9 +4104,11 @@
                 }
                 
                 tableBody.innerHTML = html;
+                console.log('🔵 Paid loans table updated. Displayed:', paidLoans.length, 'loans');
             })
             .catch(error => {
-                console.error('Error loading paid loans:', error);
+                console.error('❌ Error loading paid loans:', error);
+                console.error('❌ Error details:', error.message, error.stack);
                 const tableBody = document.getElementById('paidLoansTableBody');
                 tableBody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">Error loading paid loans</td></tr>`;
             });
@@ -4929,6 +4954,7 @@
                 
                 tbody.innerHTML = data.map(repayment => {
                     const statusBadge = `<span class="status-badge status-pending">Pending</span>`;
+                    const receiptUrl = repayment.receipt_url || repayment.receiptUrl || '#';
                     
                     return `
                         <tr>
@@ -4937,7 +4963,10 @@
                             <td>${new Date(repayment.payment_date).toLocaleDateString()}</td>
                             <td>${statusBadge}</td>
                             <td>${new Date(repayment.created_at).toLocaleDateString()}</td>
-                            <td style="display: flex; gap: 10px;">
+                            <td style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <a href="#" onclick="openReceiptPreview('${receiptUrl}'); return false;" class="action-btn" style="background: var(--primary); color: white; text-decoration: none;">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
                                 <button class="action-btn approve" onclick="approveLoanRepayment('${repayment.id}'); return false;">
                                     <i class="fas fa-check"></i> Approve
                                 </button>
@@ -4982,7 +5011,8 @@
             })
             .then(data => {
                 alert('Loan repayment approved successfully!');
-                loadLoanRepayments();
+                loadLoanRepayments(); // Refresh loan repayment approvals table
+                loadPaidLoans(); // Refresh paid loans table to show the newly approved payment
             })
             .catch(error => {
                 console.error('Error approving loan repayment:', error);

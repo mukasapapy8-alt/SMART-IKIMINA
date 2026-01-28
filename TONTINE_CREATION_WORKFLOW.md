@@ -269,7 +269,7 @@ async function submitTontineForm() {
             
             <div class="modal-actions">
                 <a href="user-dashboard.html" class="btn btn-primary">Go to My Dashboard</a>
-                <a href="ikimina.html" class="btn btn-secondary">Return to Home</a>
+                <a href="index.html" class="btn btn-secondary">Return to Home</a>
             </div>
         `;
         

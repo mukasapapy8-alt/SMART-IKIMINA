@@ -1789,33 +1789,35 @@
         
         // Load user's contributions from API
         function loadMyContributions() {
+            console.log('🔵 loadMyContributions() called');
             const user = TokenManager.getUser();
             if (!user) {
-                console.warn('No user found');
+                console.error('❌ No user found in TokenManager');
                 return;
             }
             
-            console.log('Loading contributions for user:', user.id);
+            console.log('🔵 Loading contributions for user:', user.id, user.email);
             
-            // First, fetch the user's groups
-            fetch('http://localhost:5000/api/groups', {
+            // Use API_CONFIG.BASE_URL instead of hardcoded localhost
+            fetch(`${API_CONFIG.BASE_URL}/groups`, {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('authToken')
                 }
             })
             .then(response => {
+                console.log('🔵 Groups API response status:', response.status);
                 if (!response.ok) throw new Error('Failed to fetch groups');
                 return response.json();
             })
             .then(groupsData => {
-                console.log('Groups API response:', groupsData);
+                console.log('🔵 Groups API response:', groupsData);
                 
                 // Get all groups
                 const groups = (groupsData && groupsData.groups) ? groupsData.groups : (Array.isArray(groupsData) ? groupsData : []);
-                console.log('Total groups in system:', groups.length);
+                console.log('🔵 Total groups in system:', groups.length);
                 
                 if (groups.length === 0) {
-                    console.log('No groups found in system');
+                    console.warn('❌ No groups found in system');
                     const tbody = document.getElementById('myContributionsTableBody');
                     if (tbody) {
                         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No groups available</p></td></tr>`;
@@ -1832,46 +1834,64 @@
                     return isLeader || isMember;
                 });
                 
-                console.log('User groups found:', userGroups.length, 'out of', groups.length);
-                console.log('User groups:', userGroups.map(g => ({ id: g.id, name: g.name, leader_id: g.leader_id })));
+                console.log('🔵 User groups found:', userGroups.length, 'out of', groups.length);
+                console.log('🔵 User groups:', userGroups.map(g => ({ id: g.id, name: g.name, leader_id: g.leader_id })));
                 
                 // If no user-specific groups, show ALL groups (in case membership info is stored differently)
                 const groupsToFetch = userGroups.length > 0 ? userGroups : groups;
-                console.log('Fetching contributions from', groupsToFetch.length, 'groups');
+                console.log('🔵 Fetching contributions from', groupsToFetch.length, 'groups');
                 
-                // Fetch BOTH contributions AND approved payments from all relevant groups
+                // Fetch contributions from all relevant groups
                 const allFetches = [];
                 for (const group of groupsToFetch) {
+                    console.log('🔵 Fetching contributions for group:', group.id, group.name);
                     allFetches.push(
-                        fetch('http://localhost:5000/api/contributions?groupId=' + group.id, {
+                        fetch(`${API_CONFIG.BASE_URL}/contributions?groupId=` + group.id, {
                             headers: {
                                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
                             }
                         })
                         .then(response => {
-                            if (!response.ok) return [];
+                            console.log('🔵 Contributions fetch response for', group.id, ':', response.status);
+                            if (!response.ok) {
+                                console.warn('⚠️ Contributions API returned', response.status, 'for group', group.id);
+                                return [];
+                            }
                             return response.json();
                         })
+                        .then(data => {
+                            console.log('🔵 Contributions data for', group.id, ':', data);
+                            return { type: 'contributions', data: data };
+                        })
                         .catch(error => {
-                            console.error('Error fetching contributions for group ' + group.id, error);
-                            return [];
+                            console.error('❌ Error fetching contributions for group ' + group.id, error);
+                            return { type: 'contributions', data: [] };
                         })
                     );
                     
-                    // Also fetch approved payments
+                    // Also fetch approved payment_requests
+                    console.log('🔵 Fetching approved payment requests for group:', group.id, group.name);
                     allFetches.push(
-                        fetch('http://localhost:5000/api/payments/requests?groupId=' + group.id + '&status=approved', {
+                        fetch(`${API_CONFIG.BASE_URL}/payments/requests?groupId=` + group.id + '&status=approved', {
                             headers: {
                                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
                             }
                         })
                         .then(response => {
-                            if (!response.ok) return [];
+                            console.log('🔵 Payment requests fetch response for', group.id, ':', response.status);
+                            if (!response.ok) {
+                                console.warn('⚠️ Payment requests API returned', response.status, 'for group', group.id);
+                                return [];
+                            }
                             return response.json();
                         })
+                        .then(data => {
+                            console.log('🔵 Payment requests data for', group.id, ':', data);
+                            return { type: 'payments', data: data };
+                        })
                         .catch(error => {
-                            console.error('Error fetching approved payments for group ' + group.id, error);
-                            return [];
+                            console.error('❌ Error fetching payment requests for group ' + group.id, error);
+                            return { type: 'payments', data: [] };
                         })
                     );
                 }
@@ -1879,122 +1899,89 @@
                 return Promise.all(allFetches);
             })
             .then(allDataArrays => {
-                // Separate contributions and approved payments
-                const contributionArrays = [];
-                const approvedPaymentArrays = [];
+                console.log('🔵 All fetch promises resolved. Results:', allDataArrays.length);
+                console.log('🔵 All data arrays:', allDataArrays);
                 
-                for (let i = 0; i < allDataArrays.length; i += 2) {
-                    contributionArrays.push(allDataArrays[i]);
-                    approvedPaymentArrays.push(allDataArrays[i + 1]);
-                }
-                
-                return { contributionArrays, approvedPaymentArrays };
-            })
-            .then(({ contributionArrays, approvedPaymentArrays }) => {
-                // Flatten and filter contributions for this user
+                // Separate contributions and payment requests
                 let allContributions = [];
-                let allContributionsUnfiltered = [];
+                let allPayments = [];
                 
-                if (Array.isArray(contributionArrays)) {
-                    for (const contribData of contributionArrays) {
-                        let contributions = [];
-                        if (Array.isArray(contribData)) {
-                            contributions = contribData;
-                        } else if (contribData && contribData.contributions) {
-                            contributions = contribData.contributions;
-                        } else if (contribData && contribData.data) {
-                            contributions = contribData.data;
-                        }
-                        
-                        allContributionsUnfiltered = allContributionsUnfiltered.concat(contributions);
-                        
-                        console.log('Contributions from this group:', contributions.length);
-                        if (contributions.length > 0) {
-                            console.log('Sample contribution:', contributions[0]);
-                        }
-                        
-                        // Filter for current user's contributions
-                        const userContribs = contributions.filter(c => {
-                            if (c.user_id && c.user_id === user.id) return true;
-                            if (c.first_name && c.last_name && user.first_name && user.last_name) {
-                                if (c.first_name.toLowerCase() === user.first_name.toLowerCase() && 
-                                    c.last_name.toLowerCase() === user.last_name.toLowerCase()) {
-                                    return true;
-                                }
-                            }
-                            if (c.email && user.email && c.email.toLowerCase() === user.email.toLowerCase()) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        
-                        allContributions = allContributions.concat(userContribs);
+                for (const item of allDataArrays) {
+                    if (item.type === 'contributions') {
+                        const contributions = Array.isArray(item.data) ? item.data : (item.data?.contributions || item.data?.data || []);
+                        console.log('🔵 Processing contributions:', contributions.length);
+                        allContributions = allContributions.concat(contributions);
+                    } else if (item.type === 'payments') {
+                        const payments = Array.isArray(item.data) ? item.data : (item.data?.payments || item.data?.data || []);
+                        console.log('🔵 Processing payment requests:', payments.length);
+                        allPayments = allPayments.concat(payments);
                     }
                 }
                 
-                console.log('Total contributions in all groups:', allContributionsUnfiltered.length);
-                console.log('Total user-matched contributions:', allContributions.length);
-                console.log('Current user object:', user);
+                console.log('🔵 Total contributions fetched:', allContributions.length);
+                console.log('🔵 Total approved payments fetched:', allPayments.length);
                 
-                // If no matches found, show all contributions (they may be for this user even if not explicitly matched)
-                if (allContributions.length === 0 && allContributionsUnfiltered.length > 0) {
-                    console.log('No user-specific match found. Showing all contributions.');
-                    allContributions = allContributionsUnfiltered;
+                // Filter for current user
+                const userContributions = allContributions.filter(c => {
+                    if (c.user_id && c.user_id === user.id) return true;
+                    if (c.email && user.email && c.email.toLowerCase() === user.email.toLowerCase()) return true;
+                    return false;
+                });
+                
+                const userPayments = allPayments.filter(p => {
+                    if (p.user_id && p.user_id === user.id) return true;
+                    if (p.email && user.email && p.email.toLowerCase() === user.email.toLowerCase()) return true;
+                    return false;
+                });
+                
+                console.log('🔵 User contributions:', userContributions.length);
+                console.log('🔵 User payments:', userPayments.length);
+                
+                // Combine both into unified format
+                let combinedTransactions = [];
+                
+                // Add contributions
+                combinedTransactions = combinedTransactions.concat(userContributions.map(c => ({
+                    id: c.id,
+                    amount: c.amount,
+                    payment_method: c.payment_method || 'Contribution',
+                    created_at: c.created_at || c.contribution_date,
+                    status: c.status || 'approved',
+                    receipt_url: c.receipt_url
+                })));
+                
+                // Add approved payment requests
+                combinedTransactions = combinedTransactions.concat(userPayments.map(p => ({
+                    id: p.id,
+                    amount: p.amount,
+                    payment_method: p.payment_method || 'Payment',
+                    created_at: p.created_at || p.payment_date || p.approval_date,
+                    status: 'approved',
+                    receipt_url: p.receipt_url
+                })));
+                
+                console.log('🔵 Final combined transactions:', combinedTransactions.length);
+                
+                // If no user-specific matches but there are transactions, show all
+                if (combinedTransactions.length === 0 && (allContributions.length > 0 || allPayments.length > 0)) {
+                    console.log('⚠️ No user-specific match found. Showing all transactions.');
+                    combinedTransactions = allContributions.concat(allPayments.map(p => ({
+                        id: p.id,
+                        amount: p.amount,
+                        payment_method: p.payment_method || 'Payment',
+                        created_at: p.created_at || p.payment_date || p.approval_date,
+                        status: 'approved',
+                        receipt_url: p.receipt_url
+                    })));
                 }
                 
-                // Also process approved payments and add them to contributions
-                console.log('Processing', approvedPaymentArrays.length, 'approved payment arrays');
-                if (Array.isArray(approvedPaymentArrays)) {
-                    for (const paymentData of approvedPaymentArrays) {
-                        let payments = [];
-                        if (Array.isArray(paymentData)) {
-                            payments = paymentData;
-                        } else if (paymentData && paymentData.payments) {
-                            payments = paymentData.payments;
-                        } else if (paymentData && paymentData.data) {
-                            payments = paymentData.data;
-                        }
-                        
-                        console.log('Approved payments from this group:', payments.length);
-                        if (payments.length > 0) {
-                            console.log('Sample approved payment:', payments[0]);
-                        }
-                        
-                        // Filter for current user's approved payments
-                        const userPayments = payments.filter(p => {
-                            if (p.user_id && p.user_id === user.id) return true;
-                            if (p.first_name && p.last_name && user.first_name && user.last_name) {
-                                if (p.first_name.toLowerCase() === user.first_name.toLowerCase() && 
-                                    p.last_name.toLowerCase() === user.last_name.toLowerCase()) {
-                                    return true;
-                                }
-                            }
-                            if (p.email && user.email && p.email.toLowerCase() === user.email.toLowerCase()) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        
-                        // Convert approved payments to contribution format
-                        const convertedPayments = userPayments.map(p => ({
-                            id: p.id,
-                            amount: p.amount,
-                            payment_method: p.payment_method,
-                            first_name: p.first_name,
-                            last_name: p.last_name,
-                            created_at: p.created_at || p.approved_at,
-                            status: 'approved',
-                            receipt_url: p.receipt_url
-                        }));
-                        
-                        allContributions = allContributions.concat(convertedPayments);
-                    }
-                }
+                // Use combined transactions as final result
+                const finalContributions = combinedTransactions;
                 
-                console.log('Total transactions after adding approved payments:', allContributions.length);
+                console.log('🔵 Final contributions to display:', finalContributions.length);
                 
                 // Sort by date, newest first
-                allContributions.sort((a, b) => {
+                finalContributions.sort((a, b) => {
                     const dateA = new Date(a.created_at || 0);
                     const dateB = new Date(b.created_at || 0);
                     return dateB - dateA;
@@ -2007,7 +1994,7 @@
                     return;
                 }
                 
-                if (allContributions.length === 0) {
+                if (finalContributions.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);"><i class="fas fa-inbox" style="font-size: 36px; margin-bottom: 10px;"></i><p>No contributions yet</p></td></tr>`;
                     return;
                 }
@@ -2015,7 +2002,7 @@
                 // Calculate contributions total - ensure conversion to numbers
                 let totalContributions = 0;
                 
-                allContributions.forEach(contrib => {
+                finalContributions.forEach(contrib => {
                     const amount = parseFloat(contrib.amount) || 0;
                     totalContributions += amount;
                     console.log('Adding contribution amount:', amount, 'new total:', totalContributions);
@@ -2024,7 +2011,7 @@
                 console.log('Total Contributions calculated:', totalContributions);
                 
                 // Render table rows
-                tbody.innerHTML = allContributions.map(contrib => {
+                tbody.innerHTML = finalContributions.map(contrib => {
                     const date = new Date(contrib.created_at).toLocaleDateString();
                     const amount = (contrib.amount || 0).toLocaleString() + ' RWF';
                     const method = contrib.payment_method 

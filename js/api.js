@@ -19,6 +19,7 @@ const API_CONFIG = {
         
         // Groups
         GROUPS: '/groups',
+        GROUPS_ACTIVE: '/groups/active',  // Get all active/approved groups (for registration)
         JOIN_GROUP: '/groups/join',
         CREATE_GROUP: '/groups',  // Fixed: backend uses POST /groups, not /groups/create
         PENDING_GROUPS: '/groups/pending/all',  // Site admin: get all pending groups
@@ -195,6 +196,11 @@ const AuthAPI = {
 const GroupsAPI = {
     async getAll() {
         return API.get(API_CONFIG.ENDPOINTS.GROUPS);
+    },
+    
+    async getActive() {
+        // Get all active/approved groups available for joining (for registration)
+        return API.get(API_CONFIG.ENDPOINTS.GROUPS_ACTIVE);
     },
     
     async getById(groupId) {

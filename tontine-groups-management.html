@@ -1037,13 +1037,42 @@
                 // Fetch all groups
                 const response = await GroupsAPI.getAll();
                 console.log('Groups API response:', response);
+                console.log('Response keys:', Object.keys(response || {}));
+                console.log('response.groups:', response.groups);
+                console.log('Is response.groups an array?', Array.isArray(response.groups));
+                
+                if (response.groups && response.groups.length > 0) {
+                    console.log('First group sample:', response.groups[0]);
+                    console.log('First group keys:', Object.keys(response.groups[0]));
+                }
 
                 if (response.groups && Array.isArray(response.groups)) {
                     // Map backend data to frontend format
-                    groupsData = response.groups.map(group => ({
+                    groupsData = response.groups.map(group => {
+                        // Construct admin name from available fields
+                        let adminName = 'Unknown';
+                        
+                        // Try different possible field combinations
+                        if (group.leader_first_name && group.leader_last_name) {
+                            adminName = `${group.leader_first_name} ${group.leader_last_name}`;
+                        } else if (group.leader_name) {
+                            adminName = group.leader_name;
+                        } else if (group.first_name && group.last_name) {
+                            adminName = `${group.first_name} ${group.last_name}`;
+                        }
+                        
+                        console.log(`Group "${group.name}" admin: ${adminName} (from fields:`, {
+                            leader_first_name: group.leader_first_name,
+                            leader_last_name: group.leader_last_name,
+                            leader_name: group.leader_name,
+                            first_name: group.first_name,
+                            last_name: group.last_name
+                        }, ')');
+                        
+                        return {
                         id: group.id,
                         name: group.name,
-                        admin: group.leader_name || 'Unknown',
+                        admin: adminName,
                         adminPhone: group.leader_phone || 'N/A',
                         description: group.description || 'No description provided',
                         region: group.district || group.province || 'N/A',
@@ -1055,7 +1084,8 @@
                         currency: group.currency || 'RWF',
                         maxMembers: group.max_members || 'N/A',
                         membersList: [] // Will be loaded separately when viewing details
-                    }));
+                    };
+                    });
 
                     console.log('✅ Loaded', groupsData.length, 'groups from backend');
                     console.log('Mapped groups data:', groupsData);

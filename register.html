@@ -197,6 +197,22 @@
             background: var(--light);
             padding: 8px;
             border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .language-switcher.collapsed {
+            width: 80px;
+            padding: 8px;
+        }
+
+        .language-switcher.collapsed .language-btn:not(.active) {
+            width: 0;
+            padding: 0;
+            opacity: 0;
+            pointer-events: none;
         }
 
         .language-btn {
@@ -209,6 +225,11 @@
             transition: all 0.3s ease;
             border-radius: 50px;
             font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .language-btn:hover {
+            transform: scale(1.05);
         }
 
         .language-btn.active {
@@ -986,7 +1007,7 @@
                 </a>
                 
                 <div class="nav-right">
-                    <div class="language-switcher" id="languageSwitcher">
+                    <div class="language-switcher collapsed" id="languageSwitcher">
                         <button class="language-btn active" data-lang="en">EN</button>
                         <button class="language-btn" data-lang="rw">RW</button>
                         <button class="language-btn" data-lang="fr">FR</button>
@@ -1342,14 +1363,51 @@
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
             setLanguage(savedLanguage);
 
-            // Add click event listeners to language buttons
-            const languageButtons = document.querySelectorAll('.language-btn');
-            languageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    setLanguage(lang);
-                    localStorage.setItem('selectedLanguage', lang);
-                });
+            // Language switcher collapse/expand functionality
+            const languageSwitcher = document.getElementById('languageSwitcher');
+            const languageBtns = document.querySelectorAll('.language-btn');
+            let isExpanded = false;
+
+            // Toggle expand/collapse on click
+            languageSwitcher.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                if (e.target.classList.contains('language-btn')) {
+                    const selectedLang = e.target.getAttribute('data-lang');
+                    
+                    // Only change language if clicking a different button
+                    if (!e.target.classList.contains('active')) {
+                        setLanguage(selectedLang);
+                        localStorage.setItem('selectedLanguage', selectedLang);
+                        
+                        // Update active state
+                        languageBtns.forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+                    }
+                    
+                    // Collapse after selection
+                    setTimeout(() => {
+                        languageSwitcher.classList.add('collapsed');
+                        isExpanded = false;
+                    }, 200);
+                } else {
+                    // Toggle expand/collapse when clicking the container
+                    if (languageSwitcher.classList.contains('collapsed')) {
+                        languageSwitcher.classList.remove('collapsed');
+                        isExpanded = true;
+                    } else {
+                        languageSwitcher.classList.add('collapsed');
+                        isExpanded = false;
+                    }
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!languageSwitcher.contains(e.target) && isExpanded) {
+                    languageSwitcher.classList.add('collapsed');
+                    isExpanded = false;
+                }
             });
 
             // Mobile menu toggle

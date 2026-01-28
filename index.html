@@ -31,6 +31,7 @@
             background-color: #ffffff;
             line-height: 1.6;
             overflow-x: hidden;
+            padding-top: 80px; /* Only for fixed main header */
         }
 
         .container {
@@ -109,12 +110,20 @@
 
         /* Header & Navigation */
         header {
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            background-color: transparent;
+            position: relative;
+        }
+
+        .main-nav {
             padding: 15px 0;
-            position: sticky;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.98);
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
 
@@ -178,26 +187,42 @@
             align-items: center;
             gap: 30px;
         }
-        /* Language Switcher Single Button */
+        
+        /* Language Switcher Collapsible */
         .language-switcher {
             display: flex;
-            gap: 0;
+            gap: 8px;
             background: var(--light);
-            padding: 6px 8px;
+            padding: 8px;
             border-radius: 50px;
-            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-switcher.collapsed {
+            width: 80px;
+            padding: 8px;
+        }
+
+        .language-switcher.collapsed .language-btn:not(.active) {
+            width: 0;
+            padding: 0;
+            opacity: 0;
+            pointer-events: none;
         }
 
         .language-btn {
-            background: transparent;
+            padding: 8px 16px;
             border: none;
-            padding: 6px 12px;
-            border-radius: 40px;
+            background: transparent;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--dark);
+            color: var(--gray);
             transition: all 0.3s ease;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .language-btn:hover {
@@ -235,22 +260,179 @@
             color: var(--dark);
         }
 
+        /* Advertising Navigation Bar - Scrolls with page */
+        .advertising-nav {
+            background: transparent;
+            color: white;
+            position: relative;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            margin-top: 70px; /* Reduced space for fixed main nav */
+        }
+
+        .ad-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ad-scroll-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            height: 100%;
+            width: 100%;
+            padding: 0 15px; /* Reduced from 30px */
+        }
+
+        .ad-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            flex: 1;
+            height: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .ad-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .ad-weather {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .weather-icon {
+            font-size: 1.2rem;
+            color: #FFD700;
+        }
+
+        .temperature {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .location {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .ad-divider {
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .ad-main-text {
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .ad-tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .ad-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00D4AA;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .ad-cta {
+            background: var(--gradient);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .ad-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(46, 91, 255, 0.3);
+        }
+
+        /* For multiple ad cards - gradient backgrounds */
+        .ad-scroll-container .ad-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.2) 0%, rgba(0, 212, 170, 0.2) 100%);
+        }
+
+        .ad-scroll-container .ad-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(255, 46, 91, 0.2) 0%, rgba(212, 0, 170, 0.2) 100%);
+        }
+
+        .ad-scroll-container .ad-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(91, 255, 46, 0.2) 0%, rgba(212, 170, 0, 0.2) 100%);
+        }
+
+        .ad-controls {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .ad-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ad-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, rgba(46, 91, 255, 0.05) 0%, rgba(0, 212, 170, 0.05) 100%);
             padding: 100px 0;
+            position: relative;
+            overflow: hidden;
         }
 
         .hero-content {
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 60px;
+            min-height: 600px;
         }
 
         .hero-text {
-            flex: 1;
+            position: relative;
+            z-index: 10;
             max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
         }
 
         .hero-text h1 {
@@ -277,75 +459,55 @@
         }
 
         .hero-image {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 65%;
+            height: 100%;
+            z-index: 1;
         }
 
         .hero-visual {
             position: relative;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
         }
 
-        .circle-container {
+        .slideshow-container {
             position: relative;
             width: 100%;
             height: 100%;
         }
 
-        .circle {
+        .hero-slide {
             position: absolute;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
+            width: 100%;
+            height: 100%;
             opacity: 0;
-            animation: slideshow 12s infinite ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
 
-        .circle-1 {
-            width: 120px;
-            height: 120px;
-            background: var(--primary);
-            top: 20px;
-            left: 90px;
-            animation-delay: 0s;
+        .hero-slide.active {
+            opacity: 1;
         }
 
-        .circle-2 {
-            width: 100px;
-            height: 100px;
-            background: var(--secondary);
-            bottom: 60px;
-            left: 30px;
-            animation-delay: 3s;
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .circle-3 {
-            width: 90px;
-            height: 90px;
-            background: var(--primary);
-            opacity: 0.8;
-            bottom: 80px;
-            right: 40px;
-            animation-delay: 6s;
-        }
-
-        .circle-4 {
-            width: 80px;
-            height: 80px;
-            background: var(--secondary);
-            top: 80px;
-            right: 60px;
-            animation-delay: 9s;
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(248, 249, 252, 0.9) 0%, rgba(248, 249, 252, 0.4) 30%, transparent 60%);
+            z-index: 1;
         }
 
         @keyframes slideshow {
@@ -467,6 +629,289 @@
             font-size: 0.9rem;
         }
 
+        /* Announcement Section */
+        .announcement-section {
+            background: linear-gradient(135deg, #2E5BFF 0%, #00D4AA 100%);
+            padding: 30px 0;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .announcement-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .announcement-icon {
+            font-size: 3rem;
+            color: white;
+            opacity: 0.9;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .announcement-content {
+            flex: 1;
+            color: white;
+        }
+
+        .announcement-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .announcement-content p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .announcement-btn {
+            background: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .announcement-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .announcement-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* Statistics Counter Section */
+        .stats-section {
+            background: white;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(46, 91, 255, 0.03) 0%, rgba(0, 212, 170, 0.03) 100%);
+            z-index: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        /* Comparison Table Section */
+        .comparison-section {
+            background: var(--light);
+            padding: 80px 0;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-top: 40px;
+        }
+
+        .comparison-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .comparison-header h3 {
+            color: white;
+            margin: 0;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-row:hover {
+            background: rgba(46, 91, 255, 0.05);
+        }
+
+        .comparison-cell {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .comparison-cell:first-child {
+            justify-content: flex-start;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .check-icon {
+            color: var(--success);
+            font-size: 1.5rem;
+        }
+
+        .cross-icon {
+            color: var(--danger);
+            font-size: 1.5rem;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(46, 91, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            animation: fabPulse 2s infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(46, 91, 255, 0.6);
+        }
+
+        @keyframes fabPulse {
+            0%, 100% {
+                box-shadow: 0 5px 20px rgba(46, 91, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 5px 30px rgba(46, 91, 255, 0.7);
+            }
+        }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
         /* CTA Section */
         .cta-section {
             background: var(--gradient);
@@ -574,21 +1019,73 @@
             
             .hero-content {
                 flex-direction: column;
-                text-align: center;
+                min-height: auto;
             }
             
             .hero-text {
                 max-width: 100%;
-                margin-bottom: 60px;
+                margin-bottom: 40px;
+                position: relative;
+                z-index: 10;
             }
             
             .hero-buttons {
                 justify-content: center;
             }
             
-            .hero-visual {
+            .hero-image {
+                position: relative;
                 width: 100%;
-                max-width: 500px;
+                transform: none;
+                top: auto;
+                right: auto;
+            }
+            
+            .hero-visual {
+                min-height: 400px;
+            }
+            
+            .advertising-nav {
+                height: 60px;
+            }
+
+            .announcement-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .announcement-icon {
+                font-size: 2.5rem;
+            }
+
+            .announcement-content h3 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .comparison-header,
+            .comparison-row {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-cell:nth-child(2) {
+                display: none;
+            }
+
+            .comparison-header h3:nth-child(2) {
+                display: none;
+            }
+
+            .fab {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
             }
         }
 
@@ -600,7 +1097,7 @@
             
             .nav-links {
                 position: fixed;
-                top: 80px;
+                top: 140px; /* Adjusted for advertising navbar */
                 left: 0;
                 right: 0;
                 width: 100vw;
@@ -609,7 +1106,7 @@
                 align-items: center;
                 padding: 20px 0;
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-                max-height: calc(100vh - 80px);
+                max-height: calc(100vh - 140px);
                 overflow-y: auto;
                 pointer-events: none;
                 opacity: 0;
@@ -646,6 +1143,29 @@
                 max-width: 300px;
                 margin-bottom: 15px;
             }
+            
+            .ad-scroll-container {
+                gap: 20px;
+                padding: 0 20px;
+            }
+            
+            .ad-card {
+                min-width: 250px;
+                height: 50px;
+                padding: 10px 15px;
+            }
+            
+            .ad-main-text {
+                font-size: 0.9rem;
+            }
+            
+            .ad-tagline, .location {
+                font-size: 0.8rem;
+            }
+            
+            .ad-controls {
+                display: none; /* Hide controls on mobile */
+            }
         }
 
         @media (max-width: 480px) {
@@ -668,38 +1188,146 @@
             .cta-section {
                 padding: 60px 20px;
             }
+            
+            .advertising-nav {
+                height: 50px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .comparison-section {
+                padding: 60px 0;
+            }
+
+            .comparison-cell {
+                padding: 15px 10px;
+                font-size: 0.9rem;
+            }
+
+            .fab {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .ad-card {
+                min-width: 220px;
+                height: 45px;
+                padding: 8px 12px;
+            }
+            
+            .temperature {
+                font-size: 1rem;
+            }
+            
+            .ad-main-text {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header & Navigation -->
     <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="index.html" class="logo-container">
-                    <div class="logo-icon"></div>
-                    <div class="logo-text">My Smart <span>ekimina</span></div>
-                </a>
-                
-                <div class="nav-right">
-                    <div class="language-switcher" id="languageSwitcher">
-                        <button class="language-btn" id="languageToggle" title="Click to change language">EN/RW/FR</button>
-                    </div>
+        <!-- Main Navigation -->
+        <div class="main-nav">
+            <div class="container">
+                <nav class="navbar">
+                    <a href="index.html" class="logo-container">
+                        <div class="logo-icon"></div>
+                        <div class="logo-text">My Smart <span>ekimina</span></div>
+                    </a>
+                    
+                    <div class="nav-right">
+                        <div class="language-switcher collapsed" id="languageSwitcher">
+                            <button class="language-btn active" data-lang="en">EN</button>
+                            <button class="language-btn" data-lang="rw">RW</button>
+                            <button class="language-btn" data-lang="fr">FR</button>
+                        </div>
 
-                    <div class="mobile-menu-btn" id="mobileMenuBtn">
-                        <i class="fas fa-bars"></i>
+                        <div class="mobile-menu-btn" id="mobileMenuBtn">
+                            <i class="fas fa-bars"></i>
+                        </div>
+                        
+                        <ul class="nav-links" id="navLinks">
+                            <li><a href="index.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
+                            <li><a href="#features" data-en="How It Works" data-rw="Uburyo Ibikorwa" data-fr="Comment Ça Marche">How It Works</a></li>
+                            <li><a href="#testimonials" data-en="Testimonials" data-rw="Amategeko" data-fr="Témoignages">Testimonials</a></li>
+                            <li><a href="About us.html" data-en="About" data-rw="Kubijyanye" data-fr="À Propos">About</a></li>
+                            <li><a href="#contact" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
+                            <li><a href="register.html" class="btn btn-primary" data-en="Get Started" data-rw="Tangira" data-fr="Commencer">Get Started</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Fixed Advertising Navigation Bar -->
+        <div class="advertising-nav" id="advertisingNav">
+            <div class="ad-container">
+                <div class="ad-scroll-container" id="adScroll">
+                    <!-- Three ad cards displayed side by side -->
+                    <div class="ad-card">
+                        <div class="ad-weather">
+                            <i class="fas fa-sun weather-icon"></i>
+                            <div>
+                                <div class="temperature">+26°C</div>
+                                <div class="location" data-en="Kigali" data-rw="Kigali" data-fr="Kigali">Kigali</div>
+                            </div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <div class="ad-content">
+                            <div class="ad-main-text" data-en="TURNING YOUR IDEAS INTO POWERFUL CONTENT." data-rw="GUKORANA NO MU BURYO BW'IBINTU BY'INKURU." data-fr="TRANSFORMER VOS IDÉES EN CONTENU PUISSANT.">TURNING YOUR IDEAS INTO POWERFUL CONTENT.</div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <div class="ad-brand">storykast</div>
                     </div>
                     
-                    <ul class="nav-links" id="navLinks">
-                        <li><a href="index.html" data-en="Home" data-rw="Ahabanza" data-fr="Accueil">Home</a></li>
-                        <li><a href="#features" data-en="How It Works" data-rw="Uburyo Ibikorwa" data-fr="Comment Ça Marche">How It Works</a></li>
-                        <li><a href="#testimonials" data-en="Testimonials" data-rw="Amategeko" data-fr="Témoignages">Testimonials</a></li>
-                        <li><a href="About us.html" data-en="About" data-rw="Kubijyanye" data-fr="À Propos">About</a></li>
-                        <li><a href="#contact" data-en="Contact" data-rw="Guharanira" data-fr="Contact">Contact</a></li>
-                        <li><a href="register.html" class="btn btn-primary" data-en="Get Started" data-rw="Tangira" data-fr="Commencer">Get Started</a></li>
-                    </ul>
+                    <div class="ad-card">
+                        <div class="ad-weather">
+                            <i class="fas fa-cloud-sun weather-icon"></i>
+                            <div>
+                                <div class="temperature">+24°C</div>
+                                <div class="location" data-en="Kampala" data-rw="Kampala" data-fr="Kampala">Kampala</div>
+                            </div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <div class="ad-content">
+                            <div class="ad-main-text" data-en="CREATE IMPACTFUL STORIES THAT CONNECT." data-rw="KORA INKURU Z'INGARUKA ZIHUZA." data-fr="CRÉEZ DES HISTOIRES IMPACTANTES QUI CONNECTENT.">CREATE IMPACTFUL STORIES THAT CONNECT.</div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <a href="#" class="ad-cta" data-en="Learn More" data-rw="Menya Byinshi" data-fr="En Savoir Plus">Learn More</a>
+                    </div>
+                    
+                    <div class="ad-card">
+                        <div class="ad-weather">
+                            <i class="fas fa-cloud weather-icon"></i>
+                            <div>
+                                <div class="temperature">+22°C</div>
+                                <div class="location" data-en="Nairobi" data-rw="Nairobi" data-fr="Nairobi">Nairobi</div>
+                            </div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <div class="ad-content">
+                            <div class="ad-main-text" data-en="DIGITAL STORYTELLING FOR MODERN BRANDS." data-rw="UBURYO BW'INKURU BWA DIGITAL KURI BRANDS ZA MODERNE." data-fr="RACONTAGE NUMÉRIQUE POUR LES MARQUES MODERNES.">DIGITAL STORYTELLING FOR MODERN BRANDS.</div>
+                        </div>
+                        <div class="ad-divider"></div>
+                        <div class="ad-brand">storykast</div>
+                    </div>
                 </div>
-            </nav>
+                
+                <div class="ad-controls">
+                    <button class="ad-btn" id="adClose" title="Close ad bar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -717,13 +1345,76 @@
                 </div>
                 <div class="hero-image">
                     <div class="hero-visual">
-                        <div class="circle-container">
-                            <div class="circle circle-1" data-en="Secure" data-rw="Byizeye" data-fr="Sécurisé">Secure</div>
-                            <div class="circle circle-2" data-en="Transparent" data-rw="Kandi Cyane" data-fr="Transparent">Transparent</div>
-                            <div class="circle circle-3" data-en="Digital" data-rw="Digitale" data-fr="Numérique">Digital</div>
-                            <div class="circle circle-4" data-en="Growth" data-rw="Iterambere" data-fr="Croissance">Growth</div>
+                        <div class="slideshow-container">
+                            <div class="hero-slide active">
+                                <img src="supprize.jpg" alt="Surprise">
+                            </div>
+                            <div class="hero-slide">
+                                <img src="groupe.jpg" alt="Group">
+                            </div>
+                            <div class="hero-slide">
+                                <img src="money.webp" alt="Money">
+                            </div>
+                            <div class="hero-slide">
+                                <img src="dsa.jpg" alt="DSA">
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Announcement Section -->
+    <section class="announcement-section" id="announcement">
+        <div class="container">
+            <button class="announcement-close" id="closeAnnouncement" title="Close announcement">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="announcement-container">
+                <div class="announcement-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="announcement-content">
+                    <h3 data-en="🎉 Special Launch Offer!" data-rw="🎉 Itangazo Ryihariye!" data-fr="🎉 Offre Spéciale de Lancement!">🎉 Special Launch Offer!</h3>
+                    <p data-en="Join now and get 3 months free premium features! Limited time offer for the first 1000 groups." data-rw="Injira ubu uhabwe amezi 3 y'ibikoresho byiza kubuntu! Itangazo ry'igihe gito ku matsinda 1000 ya mbere." data-fr="Inscrivez-vous maintenant et obtenez 3 mois de fonctionnalités premium gratuites! Offre limitée pour les 1000 premiers groupes.">Join now and get 3 months free premium features! Limited time offer for the first 1000 groups.</p>
+                </div>
+                <a href="register.html" class="btn announcement-btn" data-en="Claim Offer" data-rw="Habwa Itangazo" data-fr="Réclamer l'Offre">Claim Offer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Counter Section -->
+    <section class="stats-section reveal">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-target="15000">0</div>
+                    <div class="stat-label" data-en="Active Members" data-rw="Abanyamuryango Bakora" data-fr="Membres Actifs">Active Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="stat-number" data-target="850">0</div>
+                    <div class="stat-label" data-en="Active Groups" data-rw="Amatsinda Akora" data-fr="Groupes Actifs">Active Groups</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-number" data-target="2500000">0</div>
+                    <div class="stat-label" data-en="Total Savings (RWF)" data-rw="Ubwonko Bwose (RWF)" data-fr="Épargne Totale (RWF)">Total Savings (RWF)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-number" data-target="98">0</div>
+                    <div class="stat-label" data-en="Success Rate %" data-rw="Ikigero cy'Intsinzi %" data-fr="Taux de Réussite %">Success Rate %</div>
                 </div>
             </div>
         </div>
@@ -826,6 +1517,55 @@
         </div>
     </section>
 
+    <!-- Comparison Section -->
+    <section class="comparison-section reveal">
+        <div class="container">
+            <h2 data-en="Traditional vs Smart ekimina" data-rw="Ekimina Gakondo vs Smart" data-fr="Tontine Traditionnelle vs Smart">Traditional vs Smart ekimina</h2>
+            <div class="comparison-table">
+                <div class="comparison-header">
+                    <h3 data-en="Feature" data-rw="Icyitonderwa" data-fr="Fonctionnalité">Feature</h3>
+                    <h3 data-en="Traditional" data-rw="Gakondo" data-fr="Traditionnel">Traditional</h3>
+                    <h3 data-en="My Smart ekimina" data-rw="My Smart ekimina" data-fr="My Smart ekimina">My Smart ekimina</h3>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Digital Access" data-rw="Kubona Digitale" data-fr="Accès Numérique">Digital Access</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Real-time Tracking" data-rw="Kurikirana mu Gihe Nyacyo" data-fr="Suivi en Temps Réel">Real-time Tracking</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Automated Calculations" data-rw="Kubara Byikora" data-fr="Calculs Automatisés">Automated Calculations</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Investment Tools" data-rw="Ibikoresho by'Imigire" data-fr="Outils d'Investissement">Investment Tools</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Secure Banking" data-rw="Banki Yizewe" data-fr="Banque Sécurisée">Secure Banking</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Mobile App" data-rw="Porogaramu ya Telefone" data-fr="Application Mobile">Mobile App</div>
+                    <div class="comparison-cell"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-cell" data-en="Transparency" data-rw="Kandi Cyane" data-fr="Transparence">Transparency</div>
+                    <div class="comparison-cell" data-en="Limited" data-rw="Bigaruye" data-fr="Limité">Limited</div>
+                    <div class="comparison-cell"><i class="fas fa-check check-icon"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="container">
         <div class="cta-section">
@@ -887,30 +1627,71 @@
         </div>
     </footer>
 
+    <!-- Floating Action Button -->
+    <a href="register.html" class="fab" title="Get Started">
+        <i class="fas fa-rocket"></i>
+    </a>
+
     <script>
         // Language Switching Functionality
         let currentLanguage = 'en';
         const languages = ['en', 'rw', 'fr'];
-        const languageNames = {
-            'en': 'EN/RW/FR',
-            'rw': 'RW/FR/EN',
-            'fr': 'FR/EN/RW'
-        };
 
-        // Initialize language switcher
+        // Advertising bar controls
+        const adCloseBtn = document.getElementById('adClose');
+        const advertisingNav = document.getElementById('advertisingNav');
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Load saved language from localStorage
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
             setLanguage(savedLanguage);
 
-            // Language button click to cycle through languages
-            const languageToggle = document.getElementById('languageToggle');
-            languageToggle.addEventListener('click', function() {
-                const currentIndex = languages.indexOf(currentLanguage);
-                const nextIndex = (currentIndex + 1) % languages.length;
-                const nextLanguage = languages[nextIndex];
-                setLanguage(nextLanguage);
-                localStorage.setItem('selectedLanguage', nextLanguage);
+            // Language switcher collapse/expand functionality
+            const languageSwitcher = document.getElementById('languageSwitcher');
+            const languageBtns = document.querySelectorAll('.language-btn');
+            let isExpanded = false;
+
+            // Toggle expand/collapse on click
+            languageSwitcher.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                if (e.target.classList.contains('language-btn')) {
+                    const selectedLang = e.target.getAttribute('data-lang');
+                    
+                    // Only change language if clicking a different button
+                    if (!e.target.classList.contains('active')) {
+                        setLanguage(selectedLang);
+                        localStorage.setItem('selectedLanguage', selectedLang);
+                        
+                        // Update active state
+                        languageBtns.forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+                    }
+                    
+                    // Collapse after selection
+                    setTimeout(() => {
+                        languageSwitcher.classList.add('collapsed');
+                        isExpanded = false;
+                    }, 200);
+                } else {
+                    // Toggle expand/collapse when clicking the container
+                    if (languageSwitcher.classList.contains('collapsed')) {
+                        languageSwitcher.classList.remove('collapsed');
+                        isExpanded = true;
+                    } else {
+                        languageSwitcher.classList.add('collapsed');
+                        isExpanded = false;
+                    }
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!languageSwitcher.contains(e.target) && isExpanded) {
+                    languageSwitcher.classList.add('collapsed');
+                    isExpanded = false;
+                }
             });
 
             // Mobile menu toggle
@@ -931,6 +1712,31 @@
                 }
             });
 
+            // Close ad bar
+            if (adCloseBtn) {
+                adCloseBtn.addEventListener('click', () => {
+                    advertisingNav.style.display = 'none';
+                    // No need to adjust padding since it's not fixed
+                    localStorage.setItem('adClosed', 'true');
+                });
+            }
+
+            // Close announcement
+            const closeAnnouncementBtn = document.getElementById('closeAnnouncement');
+            const announcementSection = document.getElementById('announcement');
+            
+            if (closeAnnouncementBtn && announcementSection) {
+                // Check if announcement was previously closed
+                if (localStorage.getItem('announcementClosed') === 'true') {
+                    announcementSection.style.display = 'none';
+                }
+                
+                closeAnnouncementBtn.addEventListener('click', () => {
+                    announcementSection.style.display = 'none';
+                    localStorage.setItem('announcementClosed', 'true');
+                });
+            }
+
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
@@ -950,35 +1756,104 @@
                         }
                         
                         window.scrollTo({
-                            top: targetElement.offsetTop - 80,
+                            top: targetElement.offsetTop - 160, // Adjusted for fixed header
                             behavior: 'smooth'
                         });
                     }
                 });
             });
 
-            // Add scroll effect to header
+            // Add scroll effect to main nav
             window.addEventListener('scroll', () => {
-                const header = document.querySelector('header');
+                const mainNav = document.querySelector('.main-nav');
                 if (window.scrollY > 100) {
-                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                    mainNav.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
                 } else {
-                    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
-                    header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                    mainNav.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
                 }
             });
+
+            // Hero image slideshow
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.hero-slide');
+            
+            function showNextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            // Change slide every 4 seconds
+            setInterval(showNextSlide, 4000);
+
+            // Scroll Reveal Animation
+            const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+            
+            function checkReveal() {
+                revealElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', checkReveal);
+            checkReveal(); // Check on load
+
+            // Counter Animation
+            let counterAnimated = false;
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            function animateCounters() {
+                if (counterAnimated) return;
+                
+                const statsSection = document.querySelector('.stats-section');
+                const statsSectionTop = statsSection.getBoundingClientRect().top;
+                
+                if (statsSectionTop < window.innerHeight - 150) {
+                    counterAnimated = true;
+                    
+                    statNumbers.forEach(stat => {
+                        const target = parseInt(stat.getAttribute('data-target'));
+                        const duration = 2000; // 2 seconds
+                        const increment = target / (duration / 16); // 60fps
+                        let current = 0;
+                        
+                        const updateCounter = () => {
+                            current += increment;
+                            if (current < target) {
+                                stat.textContent = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                stat.textContent = target.toLocaleString();
+                            }
+                        };
+                        
+                        updateCounter();
+                    });
+                }
+            }
+            
+            window.addEventListener('scroll', animateCounters);
+            animateCounters(); // Check on load
         });
 
         // Function to set the language
         function setLanguage(lang) {
             currentLanguage = lang;
 
-            // Update single language button display
-            const languageToggle = document.getElementById('languageToggle');
-            if (languageToggle) {
-                languageToggle.textContent = languageNames[lang];
-            }
+            // Update active button state
+            const languageBtns = document.querySelectorAll('.language-btn');
+            languageBtns.forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
 
             // Update all elements with data attributes
             const elementsWithData = document.querySelectorAll('[data-en]');
@@ -1002,3 +1877,4 @@
     </script>
 </body>
 </html>
+

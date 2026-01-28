@@ -1137,7 +1137,7 @@
                 
                 console.log('Loaded pending tontines:', pendingData);
                 updatePendingTable();
-                updateStats();
+                await updateStats();
             } catch (error) {
                 console.error('Error loading pending tontines:', error);
                 pendingData = [];
@@ -1162,7 +1162,7 @@
                 usersData = data.users || [];
                 
                 console.log('Loaded users:', usersData);
-                updateStats();
+                await updateStats();
             } catch (error) {
                 console.error('Error loading users:', error);
                 usersData = [];
@@ -1268,13 +1268,21 @@
 
         // Reject tontine
         async function rejectTontine(tontineId, tontineName) {
+            console.log('🔴 rejectTontine called for:', tontineId, tontineName);
             const reason = prompt(`Please provide a reason for rejecting "${tontineName}":`);
             if (!reason) {
+                console.log('🔴 Rejection cancelled - no reason provided');
                 return;
             }
 
+            console.log('🔴 Rejection reason:', reason);
+            
             try {
-                const response = await fetch(`http://localhost:5000/api/groups/${tontineId}/reject`, {
+                const url = `${API_CONFIG.BASE_URL}/groups/${tontineId}/reject`;
+                console.log('🔴 Reject URL:', url);
+                console.log('🔴 Request body:', { reason });
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${TokenManager.getToken()}`,
@@ -1283,18 +1291,23 @@
                     body: JSON.stringify({ reason })
                 });
 
+                console.log('🔴 Response status:', response.status);
+                
                 if (!response.ok) {
                     const error = await response.json();
+                    console.error('🔴 API error response:', error);
                     throw new Error(error.error || 'Failed to reject tontine');
                 }
 
                 const data = await response.json();
+                console.log('🔴 Success response:', data);
                 alert(`Tontine "${tontineName}" has been rejected.`);
                 
                 // Reload data
                 await loadPendingTontines();
             } catch (error) {
-                console.error('Error rejecting tontine:', error);
+                console.error('🔴 Error rejecting tontine:', error);
+                console.error('🔴 Error stack:', error.stack);
                 alert('Failed to reject tontine: ' + error.message);
             }
         }
@@ -1496,7 +1509,7 @@ Status: ${tontine.status || 'pending'}
                     console.log('✅ Mapped pending data:', pendingData);
                     
                     // Update stats
-                    updateStats();
+                    await updateStats();
                     // Refresh the table
                     populatePendingTable();
                 } else {
@@ -1553,7 +1566,7 @@ Status: ${tontine.status || 'pending'}
             await loadRecentActivities();
             
             // Initialize UI
-            updateStats();
+            await updateStats();
             
             // Setup event listeners
             setupEventListeners();
@@ -1646,11 +1659,37 @@ Status: ${tontine.status || 'pending'}
         }
 
         // Update Statistics
-        function updateStats() {
-            document.getElementById('pendingCount').textContent = pendingData.length;
-            document.getElementById('approvedCount').textContent = 156;
-            document.getElementById('rejectedCount').textContent = 8;
-            document.getElementById('totalCount').textContent = 176;
+        async function updateStats() {
+            try {
+                // Fetch all groups to get real counts
+                const response = await GroupsAPI.getAll();
+                
+                if (response.groups && Array.isArray(response.groups)) {
+                    const groups = response.groups;
+                    
+                    // Count by status
+                    const pendingCount = groups.filter(g => g.status === 'pending').length;
+                    const approvedCount = groups.filter(g => g.status === 'approved' || g.status === 'active').length;
+                    const rejectedCount = groups.filter(g => g.status === 'rejected').length;
+                    const totalCount = groups.length;
+                    
+                    console.log('📊 Stats updated:', { pendingCount, approvedCount, rejectedCount, totalCount });
+                    
+                    // Update UI
+                    document.getElementById('pendingCount').textContent = pendingCount;
+                    document.getElementById('approvedCount').textContent = approvedCount;
+                    document.getElementById('rejectedCount').textContent = rejectedCount;
+                    document.getElementById('totalCount').textContent = totalCount;
+                } else {
+                    console.warn('⚠️ No groups data for stats');
+                    // Show pending count from pendingData at least
+                    document.getElementById('pendingCount').textContent = pendingData.length;
+                }
+            } catch (error) {
+                console.error('❌ Error updating stats:', error);
+                // Fallback to pending data count
+                document.getElementById('pendingCount').textContent = pendingData.length;
+            }
         }
 
         // Populate Pending Table
@@ -1834,10 +1873,10 @@ Status: ${tontine.status || 'pending'}
         }
 
         // Utility Functions
-        function refreshData() {
+        async function refreshData() {
             // Simulate loading
             alert('Refreshing data...');
-            updateStats();
+            await updateStats();
             populatePendingTable();
             populateActivityTable();
         }
